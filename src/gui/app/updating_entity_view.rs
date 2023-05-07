@@ -13,7 +13,7 @@ impl SqlGui {
     pub(super) fn update_label_view(&mut self, event: ColViewMes) -> Result<(), LoreTexError> {
         let state = &mut self.entity_view_state;
         match event {
-            ColViewMes::New => self.dialog = Some(NewEntityDialog::new()),
+            ColViewMes::New => self.dialog = Some(Box::new(NewEntityDialog::new())),
             ColViewMes::SearchFieldUpd(text) => state.label_view_state.search_text = text,
             ColViewMes::Selected(label) => {
                 state.label_view_state.set_selected(label);

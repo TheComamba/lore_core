@@ -4,12 +4,11 @@ use iced::{
     Element, Renderer,
 };
 use iced_aw::{style::CardStyles, Card};
-use iced_lazy::Component;
 
 pub(crate) mod error;
 pub(crate) mod new_entity;
 
-pub(crate) trait Dialog: Component<GuiMes, Renderer> {
+pub(crate) trait Dialog {
     fn card_style(&self) -> CardStyles {
         CardStyles::Primary
     }
