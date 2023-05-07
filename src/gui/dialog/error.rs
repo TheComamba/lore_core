@@ -4,6 +4,7 @@ use iced::{
     widget::{Button, Column, Text},
     Element, Renderer,
 };
+use iced_aw::style::CardStyles;
 use iced_lazy::{component, Component};
 use loretex::errors::LoreTexError;
 
@@ -19,6 +20,10 @@ impl ErrorDialog {
 }
 
 impl Dialog for ErrorDialog {
+    fn card_style(&self) -> CardStyles {
+        CardStyles::Danger
+    }
+
     fn header(&self) -> String {
         "Error".to_string()
     }

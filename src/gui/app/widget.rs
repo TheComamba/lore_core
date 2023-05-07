@@ -114,7 +114,7 @@ impl SqlGui {
 
     fn dialog(&self) -> Element<'_, GuiMes> {
         if let Some(dialog) = self.dialog.as_ref() {
-            dialog.clone().into()
+            dialog.to_element()
         } else {
             Row::new().into()
         }
