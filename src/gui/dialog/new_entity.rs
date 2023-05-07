@@ -1,22 +1,18 @@
-use super::{Dialog, DialogType};
+use super::Dialog;
 use crate::gui::app::message_handling::GuiMes;
 use iced::{
     widget::{Button, Column, Text, TextInput},
     Element, Renderer,
 };
-use iced_lazy::{component, Component};
+use iced_lazy::Component;
 
-impl Dialog {
-    pub(crate) fn new_entity() -> Self {
-        Dialog {
-            dialog_type: DialogType::NewEntity(NewEntityDialog {
-                label: "".to_string(),
-                ent_type: "".to_string(),
-            }),
-            header: "Create new Entity".to_string(),
-        }
-    }
+#[derive(Debug, Clone)]
+pub(crate) struct NewEntityDialog {
+    label: String,
+    ent_type: String,
 }
+
+impl Dialog for NewEntityDialog {}
 
 impl Component<GuiMes, Renderer> for NewEntityDialog {
     type State = ();
@@ -50,18 +46,6 @@ impl Component<GuiMes, Renderer> for NewEntityDialog {
             .padding(5)
             .spacing(5)
             .into()
-    }
-}
-
-#[derive(Debug, Clone)]
-pub(crate) struct NewEntityDialog {
-    label: String,
-    ent_type: String,
-}
-
-impl<'a> From<NewEntityDialog> for Element<'a, GuiMes> {
-    fn from(dialog: NewEntityDialog) -> Self {
-        component(dialog)
     }
 }
 
