@@ -6,21 +6,21 @@ use iced::{
 use iced_aw::{style::CardStyles, Card};
 use iced_lazy::{component, Component};
 
-mod error;
-mod new_entity;
+pub(crate) mod error;
+pub(crate) mod new_entity;
 
-pub(crate) trait Dialog: Sized + Component<GuiMes, Renderer> {
-    fn card_style(self) -> CardStyles {
+pub(crate) trait Dialog: Component<GuiMes, Renderer> {
+    fn card_style(&self) -> CardStyles {
         CardStyles::Primary
     }
 
-    fn header(self) -> String;
+    fn header(&self) -> String;
 
-    fn body<'a>(self) -> Element<'a, GuiMes> {
+    fn body<'a>(&self) -> Element<'a, GuiMes> {
         component(self).into()
     }
 
-    fn to_element<'a>(self) -> Element<'a, GuiMes> {
+    fn to_element<'a>(&self) -> Element<'a, GuiMes> {
         let header: Text<'a, Renderer> = Text::new(self.header());
         let body = self.body();
         let card =

@@ -1,7 +1,7 @@
 use super::{message_handling::GuiMes, SqlGui, ViewType};
 use crate::{
     gui::{
-        dialog::Dialog,
+        dialog::error::ErrorDialog,
         entity_view::{EntityView, EntityViewState},
         history_view::{HistoryView, HistoryViewState},
         relationship_view::{RelationshipView, RelationshipViewState},
@@ -30,7 +30,7 @@ impl Sandbox for SqlGui {
         if let Some(path) = load_database_path() {
             match gui.open_database(path) {
                 Ok(_) => (),
-                Err(e) => gui.dialog = Some(Dialog::error(e)),
+                Err(e) => gui.dialog = Some(Box::new(ErrorDialog::new(e))),
             };
         }
         gui
@@ -42,7 +42,7 @@ impl Sandbox for SqlGui {
 
     fn update(&mut self, message: Self::Message) {
         if let Err(e) = self.handle_message(message) {
-            self.dialog = Some(Dialog::error(e));
+            self.dialog = Some(Box::new(ErrorDialog::new(e)));
         }
     }
 

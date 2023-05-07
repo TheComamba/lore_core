@@ -1,7 +1,7 @@
 use super::SqlGui;
 use crate::gui::{
     db_col_view::{state::DbColViewState, ColViewMes},
-    dialog::Dialog,
+    dialog::new_entity::NewEntityDialog,
     entity_view::EntityViewState,
 };
 use loretex::{
@@ -13,7 +13,7 @@ impl SqlGui {
     pub(super) fn update_label_view(&mut self, event: ColViewMes) -> Result<(), LoreTexError> {
         let state = &mut self.entity_view_state;
         match event {
-            ColViewMes::New => self.dialog = Some(Dialog::new_entity()),
+            ColViewMes::New => self.dialog = Some(NewEntityDialog::new()),
             ColViewMes::SearchFieldUpd(text) => state.label_view_state.search_text = text,
             ColViewMes::Selected(label) => {
                 state.label_view_state.set_selected(label);

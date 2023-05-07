@@ -12,7 +12,17 @@ pub(crate) struct ErrorDialog {
     error: LoreTexError,
 }
 
-impl Dialog for ErrorDialog {}
+impl ErrorDialog {
+    pub(crate) fn new(error: LoreTexError) -> Self {
+        ErrorDialog { error }
+    }
+}
+
+impl Dialog for ErrorDialog {
+    fn header(&self) -> String {
+        "Error".to_string()
+    }
+}
 
 impl Component<GuiMes, Renderer> for ErrorDialog {
     type State = ();

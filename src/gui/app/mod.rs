@@ -17,7 +17,7 @@ pub(crate) struct SqlGui {
     history_view_state: HistoryViewState,
     relationship_view_state: RelationshipViewState,
     lore_database: Option<LoreDatabase>,
-    pub(crate) dialog: Option<dyn Dialog<State = (), Event = ()>>,
+    pub(crate) dialog: Option<Box<dyn Dialog<State = (), Event = ()>>>,
 }
 
 #[derive(Debug, Clone)]

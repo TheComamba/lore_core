@@ -12,7 +12,20 @@ pub(crate) struct NewEntityDialog {
     ent_type: String,
 }
 
-impl Dialog for NewEntityDialog {}
+impl NewEntityDialog {
+    pub(crate) fn new() -> Self {
+        NewEntityDialog {
+            label: String::new(),
+            ent_type: String::new(),
+        }
+    }
+}
+
+impl Dialog for NewEntityDialog {
+    fn header(&self) -> String {
+        "Create new entity".to_string()
+    }
+}
 
 impl Component<GuiMes, Renderer> for NewEntityDialog {
     type State = ();
