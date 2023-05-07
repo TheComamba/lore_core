@@ -4,7 +4,7 @@ use iced::{
     widget::{Button, Column, Text},
     Element, Renderer,
 };
-use iced_lazy::Component;
+use iced_lazy::{component, Component};
 use loretex::errors::LoreTexError;
 
 #[derive(Debug, Clone)]
@@ -21,6 +21,10 @@ impl ErrorDialog {
 impl Dialog for ErrorDialog {
     fn header(&self) -> String {
         "Error".to_string()
+    }
+
+    fn body<'a>(&self) -> Element<'a, GuiMes> {
+        component(self.clone()).into()
     }
 }
 

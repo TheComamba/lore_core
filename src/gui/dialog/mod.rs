@@ -4,7 +4,7 @@ use iced::{
     Element, Renderer,
 };
 use iced_aw::{style::CardStyles, Card};
-use iced_lazy::{component, Component};
+use iced_lazy::Component;
 
 pub(crate) mod error;
 pub(crate) mod new_entity;
@@ -16,9 +16,7 @@ pub(crate) trait Dialog: Component<GuiMes, Renderer> {
 
     fn header(&self) -> String;
 
-    fn body<'a>(&self) -> Element<'a, GuiMes> {
-        component(self).into()
-    }
+    fn body<'a>(&self) -> Element<'a, GuiMes>;
 
     fn to_element<'a>(&self) -> Element<'a, GuiMes> {
         let header: Text<'a, Renderer> = Text::new(self.header());

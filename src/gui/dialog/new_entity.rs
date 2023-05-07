@@ -4,7 +4,7 @@ use iced::{
     widget::{Button, Column, Text, TextInput},
     Element, Renderer,
 };
-use iced_lazy::Component;
+use iced_lazy::{component, Component};
 
 #[derive(Debug, Clone)]
 pub(crate) struct NewEntityDialog {
@@ -24,6 +24,10 @@ impl NewEntityDialog {
 impl Dialog for NewEntityDialog {
     fn header(&self) -> String {
         "Create new entity".to_string()
+    }
+
+    fn body<'a>(&self) -> Element<'a, GuiMes> {
+        component(self.clone()).into()
     }
 }
 
