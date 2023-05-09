@@ -6,15 +6,10 @@ on:
   #   branches: ["main"]
 
 jobs:
-  build:
+  buildLinux:
     name: Build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        target:
-          - x86_64-unknown-linux-gnu
-          # - x86_64-pc-windows-msvc
-          # - x86_64-apple-darwin
+    
     steps:
       - uses: actions/checkout@v2
 
@@ -31,11 +26,8 @@ jobs:
         with:
           use-cross: true
           command: build
-          args: --release --target=${{ matrix.target }}
+          args: --release
 
-  archive-build-artifacts:
-    runs-on: ubuntu-latest
-    steps:
       - name: Create a temporary artifact downloads folder
         run: mkdir artifacts
 
