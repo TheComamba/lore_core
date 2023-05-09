@@ -4,13 +4,13 @@ use crate::gui::{
     dialog::new_entity::NewEntityDialog,
     entity_view::EntityViewState,
 };
-use loretex::{
-    errors::LoreTexError,
+use lorecore::{
+    errors::LoreCoreError,
     sql::{entity::EntityColumn, lore_database::LoreDatabase},
 };
 
 impl SqlGui {
-    pub(super) fn update_label_view(&mut self, event: ColViewMes) -> Result<(), LoreTexError> {
+    pub(super) fn update_label_view(&mut self, event: ColViewMes) -> Result<(), LoreCoreError> {
         let state = &mut self.entity_view_state;
         match event {
             ColViewMes::New => self.dialog = Some(Box::new(NewEntityDialog::new())),
@@ -24,7 +24,7 @@ impl SqlGui {
         Ok(())
     }
 
-    pub(super) fn update_descriptor_view(&mut self, event: ColViewMes) -> Result<(), LoreTexError> {
+    pub(super) fn update_descriptor_view(&mut self, event: ColViewMes) -> Result<(), LoreCoreError> {
         let state = &mut self.entity_view_state;
         match event {
             ColViewMes::New => (),
@@ -39,7 +39,7 @@ impl SqlGui {
 }
 
 impl EntityViewState {
-    pub(super) fn reset(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    pub(super) fn reset(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         self.reset_selections();
         self.update_labels(db)?;
         Ok(())
@@ -51,7 +51,7 @@ impl EntityViewState {
         self.current_description = String::new();
     }
 
-    fn update_labels(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn update_labels(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         match db {
             Some(db) => self
                 .label_view_state
@@ -62,7 +62,7 @@ impl EntityViewState {
         Ok(())
     }
 
-    fn update_descriptors(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn update_descriptors(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let label = self.label_view_state.get_selected();
         match db {
             Some(db) => self
@@ -74,7 +74,7 @@ impl EntityViewState {
         Ok(())
     }
 
-    fn update_description(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn update_description(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let label = match self.label_view_state.get_selected() {
             Some(label) => label,
             None => {
@@ -96,10 +96,10 @@ impl EntityViewState {
         Ok(())
     }
 
-    fn new_entity(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn new_entity(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let label = self.label_view_state.search_text.clone();
         if label.is_empty() {
-            return Err(LoreTexError::InputError(
+            return Err(LoreCoreError::InputError(
                 "Cannot create entity with empty label.".to_string(),
             ));
         }
@@ -113,7 +113,7 @@ impl EntityViewState {
         match db {
             Some(db) => db.write_entity_column(new_col)?,
             None => {
-                return Err(LoreTexError::InputError(
+                return Err(LoreCoreError::InputError(
                     "No database loaded to which to add new entity.".to_string(),
                 ));
             }
@@ -122,18 +122,18 @@ impl EntityViewState {
         Ok(())
     }
 
-    fn new_descriptor(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn new_descriptor(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let label = match self.label_view_state.get_selected().as_ref() {
             Some(label) => label.clone(),
             None => {
-                return Err(LoreTexError::InputError(
+                return Err(LoreCoreError::InputError(
                     "No label selected for which to create new descriptor.".to_string(),
                 ));
             }
         };
         let descriptor = self.descriptor_view_state.search_text.clone();
         if descriptor.is_empty() {
-            return Err(LoreTexError::InputError(
+            return Err(LoreCoreError::InputError(
                 "Cannot create empty descriptor.".to_string(),
             ));
         }
@@ -146,7 +146,7 @@ impl EntityViewState {
         match db {
             Some(db) => db.write_entity_column(new_col)?,
             None => {
-                return Err(LoreTexError::InputError(
+                return Err(LoreCoreError::InputError(
                     "No database loaded to which to add descriptor.".to_string(),
                 ));
             }

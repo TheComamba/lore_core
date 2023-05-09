@@ -1,5 +1,5 @@
 use super::{lore_database::LoreDatabase, schema::relationships};
-use crate::errors::{sql_loading_error, LoreTexError};
+use crate::errors::{sql_loading_error, LoreCoreError};
 use ::diesel::prelude::*;
 use diesel::Insertable;
 use diesel::{QueryDsl, Queryable, RunQueryDsl};
@@ -14,20 +14,20 @@ pub struct EntityRelationship {
 }
 
 impl LoreDatabase {
-    pub fn write_relationship(&self, rel: EntityRelationship) -> Result<(), LoreTexError> {
+    pub fn write_relationship(&self, rel: EntityRelationship) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::insert_into(relationships::table)
             .values(&rel)
             .execute(&mut connection)
             .map_err(|e| {
-                LoreTexError::SqlError(
+                LoreCoreError::SqlError(
                     "Writing relationship to database failed: ".to_string() + &e.to_string(),
                 )
             })?;
         Ok(())
     }
 
-    pub fn get_parents(&self, child: &Option<&String>) -> Result<Vec<String>, LoreTexError> {
+    pub fn get_parents(&self, child: &Option<&String>) -> Result<Vec<String>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = relationships::table.into_boxed();
         if let Some(child) = child {
@@ -42,7 +42,7 @@ impl LoreDatabase {
         Ok(parents)
     }
 
-    pub fn get_children(&self, parent: &Option<&String>) -> Result<Vec<String>, LoreTexError> {
+    pub fn get_children(&self, parent: &Option<&String>) -> Result<Vec<String>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = relationships::table.into_boxed();
         if let Some(parent) = parent {
@@ -63,7 +63,7 @@ impl LoreDatabase {
         &self,
         parent: &String,
         child: &String,
-    ) -> Result<Option<String>, LoreTexError> {
+    ) -> Result<Option<String>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let relationships = relationships::table
             .filter(relationships::parent.eq(parent))
@@ -78,7 +78,7 @@ impl LoreDatabase {
                 )
             })?;
         if relationships.len() > 1 {
-            Err(LoreTexError::SqlError(
+            Err(LoreCoreError::SqlError(
                 "More than one entry found for parent '".to_string()
                     + parent
                     + "' and child '"
@@ -89,7 +89,7 @@ impl LoreDatabase {
             let role = match relationships.first() {
                 Some(relationship) => relationship.role.to_owned(),
                 None => {
-                    return Err(LoreTexError::SqlError(
+                    return Err(LoreCoreError::SqlError(
                         "No content found for parent '".to_string()
                             + parent
                             + "' and child '"

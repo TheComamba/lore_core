@@ -1,6 +1,6 @@
 use super::lore_database::LoreDatabase;
 use crate::{
-    errors::{sql_loading_error, sql_loading_error_no_params, LoreTexError},
+    errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreError},
     sql::schema::entities,
 };
 use ::diesel::prelude::*;
@@ -16,20 +16,20 @@ pub struct EntityColumn {
 }
 
 impl LoreDatabase {
-    pub fn write_entity_column(&self, col: EntityColumn) -> Result<(), LoreTexError> {
+    pub fn write_entity_column(&self, col: EntityColumn) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::insert_into(entities::table)
             .values(&col)
             .execute(&mut connection)
             .map_err(|e| {
-                LoreTexError::SqlError(
+                LoreCoreError::SqlError(
                     "Writing column to database failed: ".to_string() + &e.to_string(),
                 )
             })?;
         Ok(())
     }
 
-    pub fn get_all_entity_labels(&self) -> Result<Vec<String>, LoreTexError> {
+    pub fn get_all_entity_labels(&self) -> Result<Vec<String>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let labels = entities::table
             .load::<EntityColumn>(&mut connection)
@@ -40,7 +40,7 @@ impl LoreDatabase {
         Ok(labels)
     }
 
-    pub fn get_descriptors(&self, label: &Option<&String>) -> Result<Vec<String>, LoreTexError> {
+    pub fn get_descriptors(&self, label: &Option<&String>) -> Result<Vec<String>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = entities::table.into_boxed();
         if let Some(label) = label {
@@ -59,7 +59,7 @@ impl LoreDatabase {
         &self,
         label: &String,
         descriptor: &String,
-    ) -> Result<String, LoreTexError> {
+    ) -> Result<String, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let descriptions = entities::table
             .filter(entities::label.eq(label))
@@ -74,7 +74,7 @@ impl LoreDatabase {
                 )
             })?;
         if descriptions.len() > 1 {
-            Err(LoreTexError::SqlError(
+            Err(LoreCoreError::SqlError(
                 "More than one description found for label '".to_string()
                     + label
                     + "' and descriptor '"
@@ -85,7 +85,7 @@ impl LoreDatabase {
             let description = match descriptions.first() {
                 Some(col) => col.description.to_owned(),
                 None => {
-                    return Err(LoreTexError::SqlError(
+                    return Err(LoreCoreError::SqlError(
                         "No description found for label '".to_string()
                             + label
                             + "' and descriptor '"

@@ -1,6 +1,6 @@
 use super::{SqlGui, ViewType};
 use crate::gui::db_col_view::ColViewMes;
-use loretex::errors::LoreTexError;
+use lorecore::errors::LoreCoreError;
 
 #[derive(Debug, Clone)]
 pub(crate) enum GuiMes {
@@ -18,7 +18,7 @@ pub(crate) enum GuiMes {
 }
 
 impl SqlGui {
-    pub(super) fn handle_message(&mut self, message: GuiMes) -> Result<(), LoreTexError> {
+    pub(super) fn handle_message(&mut self, message: GuiMes) -> Result<(), LoreCoreError> {
         match message {
             GuiMes::ViewSelected(view) => self.selected_view = view,
             GuiMes::NewDatabase => self.new_database_from_dialog()?,

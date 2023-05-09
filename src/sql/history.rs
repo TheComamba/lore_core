@@ -1,5 +1,5 @@
 use super::{lore_database::LoreDatabase, schema::history_items};
-use crate::errors::{sql_loading_error, sql_loading_error_no_params, LoreTexError};
+use crate::errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreError};
 use ::diesel::prelude::*;
 use diesel::Insertable;
 
@@ -18,20 +18,20 @@ pub struct HistoryItem {
 }
 
 impl LoreDatabase {
-    pub fn write_history_item(&self, col: HistoryItem) -> Result<(), LoreTexError> {
+    pub fn write_history_item(&self, col: HistoryItem) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::insert_into(history_items::table)
             .values(&col)
             .execute(&mut connection)
             .map_err(|e| {
-                LoreTexError::SqlError(
+                LoreCoreError::SqlError(
                     "Writing history item to database failed: ".to_string() + &e.to_string(),
                 )
             })?;
         Ok(())
     }
 
-    pub fn get_all_years(&self) -> Result<Vec<i32>, LoreTexError> {
+    pub fn get_all_years(&self) -> Result<Vec<i32>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let years = history_items::table
             .load::<HistoryItem>(&mut connection)
@@ -42,7 +42,7 @@ impl LoreDatabase {
         Ok(years)
     }
 
-    pub fn get_all_days(&self, year: Option<i32>) -> Result<Vec<Option<i32>>, LoreTexError> {
+    pub fn get_all_days(&self, year: Option<i32>) -> Result<Vec<Option<i32>>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = history_items::table.into_boxed();
         if let Some(year) = year {
@@ -61,7 +61,7 @@ impl LoreDatabase {
         &self,
         year: Option<i32>,
         day: Option<i32>,
-    ) -> Result<Vec<String>, LoreTexError> {
+    ) -> Result<Vec<String>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = history_items::table.into_boxed();
         if let Some(year) = year {
@@ -86,7 +86,7 @@ impl LoreDatabase {
         Ok(labels)
     }
 
-    pub fn get_history_item_content(&self, label: &String) -> Result<String, LoreTexError> {
+    pub fn get_history_item_content(&self, label: &String) -> Result<String, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let items = history_items::table
             .filter(history_items::label.eq(label))
@@ -95,14 +95,14 @@ impl LoreDatabase {
                 sql_loading_error("history item", "content", vec![("label", &Some(label))], e)
             })?;
         if items.len() > 1 {
-            Err(LoreTexError::SqlError(
+            Err(LoreCoreError::SqlError(
                 "More than one entry found for label '".to_string() + label + "'.",
             ))
         } else {
             let content = match items.first() {
                 Some(item) => item.content.to_owned(),
                 None => {
-                    return Err(LoreTexError::SqlError(
+                    return Err(LoreCoreError::SqlError(
                         "No content found for label '".to_string() + label + "'.",
                     ))
                 }

@@ -2,12 +2,12 @@ use crate::gui::{
     db_col_view::{state::DbColViewState, ColViewMes},
     history_view::HistoryViewState,
 };
-use loretex::{errors::LoreTexError, sql::lore_database::LoreDatabase};
+use lorecore::{errors::LoreCoreError, sql::lore_database::LoreDatabase};
 
 use super::SqlGui;
 
 impl SqlGui {
-    pub(super) fn update_year_view(&mut self, event: ColViewMes) -> Result<(), LoreTexError> {
+    pub(super) fn update_year_view(&mut self, event: ColViewMes) -> Result<(), LoreCoreError> {
         let state = &mut self.history_view_state;
         match event {
             ColViewMes::New => (),
@@ -21,7 +21,7 @@ impl SqlGui {
         Ok(())
     }
 
-    pub(super) fn update_day_view(&mut self, event: ColViewMes) -> Result<(), LoreTexError> {
+    pub(super) fn update_day_view(&mut self, event: ColViewMes) -> Result<(), LoreCoreError> {
         let state = &mut self.history_view_state;
         match event {
             ColViewMes::New => (),
@@ -38,7 +38,7 @@ impl SqlGui {
     pub(super) fn update_history_label_view(
         &mut self,
         event: ColViewMes,
-    ) -> Result<(), LoreTexError> {
+    ) -> Result<(), LoreCoreError> {
         let state = &mut self.history_view_state;
         match event {
             ColViewMes::New => (),
@@ -53,7 +53,7 @@ impl SqlGui {
 }
 
 impl HistoryViewState {
-    pub(super) fn reset(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    pub(super) fn reset(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         self.reset_selections();
         self.update_years(db)?;
         Ok(())
@@ -66,7 +66,7 @@ impl HistoryViewState {
         self.current_content = String::new();
     }
 
-    fn update_years(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn update_years(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         match db {
             Some(db) => {
                 let years = db.get_all_years()?.iter().map(|y| y.to_string()).collect();
@@ -85,7 +85,7 @@ impl HistoryViewState {
         }
     }
 
-    fn update_days(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn update_days(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let year = self.year_view_state.get_selected_int()?;
         match db {
             Some(db) => {
@@ -102,7 +102,7 @@ impl HistoryViewState {
         Ok(())
     }
 
-    fn update_labels(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn update_labels(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let year = self.year_view_state.get_selected_int()?;
         let day = self.day_view_state.get_selected_int()?;
         match db {
@@ -115,7 +115,7 @@ impl HistoryViewState {
         Ok(())
     }
 
-    fn update_content(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn update_content(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let label = match self.label_view_state.get_selected() {
             Some(label) => label,
             None => {

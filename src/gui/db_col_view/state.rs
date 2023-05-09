@@ -1,4 +1,4 @@
-use loretex::errors::LoreTexError;
+use lorecore::errors::LoreCoreError;
 
 #[derive(Debug, Clone)]
 pub(crate) struct DbColViewState {
@@ -16,11 +16,11 @@ impl DbColViewState {
         }
     }
 
-    pub(crate) fn get_selected_int(&self) -> Result<Option<i32>, LoreTexError> {
+    pub(crate) fn get_selected_int(&self) -> Result<Option<i32>, LoreCoreError> {
         let year = match self.selected_entry.as_ref() {
             Some(year) => year
                 .parse::<i32>()
-                .map_err(|e| LoreTexError::InputError(e.to_string()))?,
+                .map_err(|e| LoreCoreError::InputError(e.to_string()))?,
             None => return Ok(None),
         };
         Ok(Some(year))

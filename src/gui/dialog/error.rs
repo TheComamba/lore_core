@@ -6,15 +6,15 @@ use iced::{
 };
 use iced_aw::style::CardStyles;
 use iced_lazy::{component, Component};
-use loretex::errors::LoreTexError;
+use lorecore::errors::LoreCoreError;
 
 #[derive(Debug, Clone)]
 pub(crate) struct ErrorDialog {
-    error: LoreTexError,
+    error: LoreCoreError,
 }
 
 impl ErrorDialog {
-    pub(crate) fn new(error: LoreTexError) -> Self {
+    pub(crate) fn new(error: LoreCoreError) -> Self {
         ErrorDialog { error }
     }
 }

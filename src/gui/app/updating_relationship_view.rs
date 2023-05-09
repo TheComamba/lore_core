@@ -1,9 +1,9 @@
 use super::SqlGui;
 use crate::gui::{db_col_view::ColViewMes, relationship_view::RelationshipViewState};
-use loretex::{errors::LoreTexError, sql::lore_database::LoreDatabase};
+use lorecore::{errors::LoreCoreError, sql::lore_database::LoreDatabase};
 
 impl SqlGui {
-    pub(super) fn update_parent_view(&mut self, event: ColViewMes) -> Result<(), LoreTexError> {
+    pub(super) fn update_parent_view(&mut self, event: ColViewMes) -> Result<(), LoreCoreError> {
         let state = &mut self.relationship_view_state;
         match event {
             ColViewMes::New => (),
@@ -17,7 +17,7 @@ impl SqlGui {
         Ok(())
     }
 
-    pub(super) fn update_child_view(&mut self, event: ColViewMes) -> Result<(), LoreTexError> {
+    pub(super) fn update_child_view(&mut self, event: ColViewMes) -> Result<(), LoreCoreError> {
         let state = &mut self.relationship_view_state;
         match event {
             ColViewMes::New => (),
@@ -33,7 +33,7 @@ impl SqlGui {
 }
 
 impl RelationshipViewState {
-    pub(super) fn reset(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    pub(super) fn reset(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         self.reset_selections();
         self.update_parents(db)?;
         self.update_children(db)?;
@@ -46,7 +46,7 @@ impl RelationshipViewState {
         self.current_role = None;
     }
 
-    fn update_parents(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn update_parents(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let child = self.child_view_state.get_selected();
         match db {
             Some(db) => self
@@ -57,7 +57,7 @@ impl RelationshipViewState {
         Ok(())
     }
 
-    fn update_children(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn update_children(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let parent = self.parent_view_state.get_selected();
         match db {
             Some(db) => self
@@ -68,7 +68,7 @@ impl RelationshipViewState {
         Ok(())
     }
 
-    fn update_role(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreTexError> {
+    fn update_role(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let parent = match self.parent_view_state.get_selected() {
             Some(parent) => parent,
             None => {

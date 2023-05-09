@@ -1,10 +1,10 @@
 [package]
-name = "loretex"
+name = "lorecore"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name         = "loretex"
+name         = "lorecore"
 crate-type   = ["rlib", "cdylib"]
 
 [dependencies]
