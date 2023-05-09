@@ -1,6 +1,7 @@
-name: Release Cross-compilation
+name: Release Binaries
 
-on: [push]
+on:
+  [push]
   # push:
   #   branches: ["main"]
 
@@ -12,19 +13,39 @@ jobs:
       matrix:
         target:
           - x86_64-unknown-linux-gnu
-          - x86_64-pc-windows-msvc
-          - x86_64-apple-darwin
+          # - x86_64-pc-windows-msvc
+          # - x86_64-apple-darwin
     steps:
       - uses: actions/checkout@v2
+
       - name: Install dependencies
         run: ./install_build_dependencies_linux.sh
+
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: ${{ matrix.target }}
           override: true
+
       - uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
           args: --release --target=${{ matrix.target }}
+
+  archive-build-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create a temporary artifact downloads folder
+        run: mkdir artifacts
+
+      - name: Add artifacts to folder
+        run: |
+          cp target/release/liblorecore.so artifacts
+          cp lorecore_api.h artifacts
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: LoreCoreLibrary
+          path: artifacts
