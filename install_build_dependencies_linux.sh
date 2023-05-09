@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if ! command -v rustup &> /dev/null
+if ! command -v cargo &> /dev/null
 then
     echo Installing rust...
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
