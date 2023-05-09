@@ -1,7 +1,6 @@
 name: Release Binaries
 
-on:
-  [push]
+on: [push]
   # push:
   #   branches: ["main"]
 
@@ -16,22 +15,15 @@ jobs:
       - name: Install dependencies
         run: ./install_build_dependencies_linux.sh
 
-      # - uses: actions-rs/toolchain@v1
-      #   with:
-      #     toolchain: stable
-      #     target: ${{ matrix.target }}
-      #     override: true
-
       - uses: actions-rs/cargo@v1
         with:
           command: build
           args: --release
 
-      - name: Create a temporary artifact downloads folder
-        run: mkdir artifacts
-
       - name: Add artifacts to folder
         run: |
+          mkdir artifacts
+          cp target/release/loregui artifacts
           cp target/release/liblorecore.so artifacts
           cp lorecore_api.h artifacts
 
@@ -41,29 +33,27 @@ jobs:
           name: LoreCoreLinuxLibrary
           path: artifacts
 
-  buildWindows:
-    name: Build
-    runs-on: windows-latest
+  # buildWindows:
+  #   name: Build
+  #   runs-on: windows-latest
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+  #     - uses: actions-rs/cargo@v1
+  #       with:
+  #         command: build
+  #         args: --release
 
-      - name: Create a temporary artifact downloads folder
-        run: mkdir artifacts
+  #     - name: Add artifacts to folder
+  #       run: |
+  #         mkdir artifacts
+  #         dir target/release
+  #         cp target/release/lorecore.dll artifacts
+  #         cp lorecore_api.h artifacts
 
-      - name: Add artifacts to folder
-        run: |
-          ls -l target/release
-          cp target/release/lorecore.dll artifacts
-          cp lorecore_api.h artifacts
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: LoreCoreWindowsLibrary
-          path: artifacts
+  #     - name: Upload Artifacts
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: LoreCoreWindowsLibrary
+  #         path: artifacts
