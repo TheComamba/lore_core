@@ -17,6 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install dependencies
+      run: chmod +x ./install_build_dependencies_linux.sh
       run: sudo ./install_build_dependencies_linux.sh
     - name: Build
       run: cargo build --verbose
