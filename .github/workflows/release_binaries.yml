@@ -1,12 +1,12 @@
 name: Release Binaries
 
-on: [push]
-  # push:
-  #   branches: ["main"]
+on:
+  push:
+    branches: ["main"]
 
 jobs:
   buildLinux:
-    name: Build
+    name: Build on Linux
     runs-on: ubuntu-latest
 
     steps:
@@ -34,7 +34,7 @@ jobs:
           path: artifacts
 
   buildWindows:
-    name: Build
+    name: Build on Windows
     runs-on: windows-latest
 
     steps:
