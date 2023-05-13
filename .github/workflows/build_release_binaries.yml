@@ -68,6 +68,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo build --release
 
+      - name: Display file structure
+        run: ls -l target/release
+
       - name: Add artifacts to folder
         run: |
           mkdir artifacts
@@ -104,4 +107,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: artifacts/*.zip
+          args: artifacts/*

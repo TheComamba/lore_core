@@ -1,4 +1,4 @@
-## [0.0.0] - Workflow test
+## [0.0.0] - 2023-05-13
 
-### Updated
-- Workflow for automatic release
+### Added
+- Workflow for automated release
