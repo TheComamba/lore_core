@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: LoreCoreLinuxLibrary
-          path: artifacts
+          path: artifactsLinux
 
   buildWindows:
     name: Build on Windows
@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: LoreCoreWindowsLibrary
-          path: artifacts
+          path: artifactsWindows
 
   buildMacOS:
     name: Build on MacOS
@@ -79,7 +79,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: LoreCoreMacOSLibrary
-          path: artifacts
+          path: artifactsMacOS
 
   publishBinaries:
     name: Publish Binaries
@@ -89,10 +89,20 @@ jobs:
     permissions: write-all
 
     steps:
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v3
         with:
-          path: artifacts
+          name: LoreCoreLinuxLibrary
+          path: artifactsLinux
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: LoreCoreWindowsLibrary
+          path: artifactsWindows
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: LoreCoreMacOSLibrary
+          path: artifactsMacOS
 
       - name: Checkout Repo to have access to CHANGELOG.md
         uses: actions/checkout@v3
@@ -110,4 +120,7 @@ jobs:
       - name: Upload Artifact
         uses: softprops/action-gh-release@v1
         with:
-          files: ./**/*.zip
+          files: |
+            artifactsLinux/*
+            artifactsWindows/*
+            artifactsMacOS/*
