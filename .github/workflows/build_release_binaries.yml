@@ -14,15 +14,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@stable
 
       - name: Install dependencies
         run: ./install_build_dependencies_linux.sh
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release
 
       - name: Add artifacts to folder
         run: |
@@ -32,7 +30,7 @@ jobs:
           cp lorecore_api.h artifacts
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@vstable
         with:
           name: LoreCoreLinuxLibrary
           path: artifacts
@@ -42,12 +40,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@vstable
 
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release
 
       - name: Add artifacts to folder
         run: |
@@ -57,7 +53,7 @@ jobs:
           cp lorecore_api.h artifacts
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@stable
         with:
           name: LoreCoreWindowsLibrary
           path: artifacts
@@ -70,7 +66,7 @@ jobs:
 
     steps:
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@stable
         with:
           path: artifacts
 
@@ -78,7 +74,7 @@ jobs:
         run: ls -R
 
       - name: Create Release
-        uses: anton-yurchenko/git-release@v5
+        uses: anton-yurchenko/git-release@stable
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
