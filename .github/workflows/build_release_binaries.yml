@@ -94,30 +94,6 @@ jobs:
         with:
           path: artifacts
 
-      - name: Display file structure
-        run: ls -R
-
-      - name: Packaging Linux Artifacts
-        run: |
-          cd artifacts
-          zip LoreCoreLinuxLibrary *
-          cd ..
-
-      - name: Packaging Windows Artifacts
-        run: |
-          cd artifacts
-          zip LoreCoreWindowsLibrary *
-          cd ..
-
-      - name: Packaging MacOS Artifacts
-        run: |
-          cd artifacts
-          zip LoreCoreMacOSLibrary *
-          cd ..
-
-      - name: Display file structure
-        run: ls -R
-
       - name: Checkout Repo to have access to CHANGELOG.md
         uses: actions/checkout@v3
 
@@ -134,4 +110,4 @@ jobs:
       - name: Upload Artifact
         uses: softprops/action-gh-release@v1
         with:
-          files: artifacts/*.zip
+          files: */*.zip
