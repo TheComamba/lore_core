@@ -114,10 +114,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Artifact
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/LoreCoreMacOSLibrary/lorecore
-          asset_name: testAsset
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          files: artifacts/*
