@@ -115,6 +115,9 @@ jobs:
           zip LoreCoreMacOSLibrary *
           cd ..
 
+      - name: Display file structure
+        run: ls -R
+
       - name: Checkout Repo to have access to CHANGELOG.md
         uses: actions/checkout@v3
 
