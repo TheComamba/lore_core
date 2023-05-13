@@ -116,4 +116,4 @@ jobs:
       - name: Upload Artifact
         uses: softprops/action-gh-release@v1
         with:
-          files: artifacts/*
+          files: artifacts/LoreCoreMacOSLibrary/*
