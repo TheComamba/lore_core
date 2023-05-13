@@ -121,6 +121,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifactsLinux/*
-            artifactsWindows/*
-            artifactsMacOS/*
+            /home/runner/work/LoreCore/LoreCore/artifactsLinux
+            /home/runner/work/LoreCore/LoreCore/artifactsLinux/*
