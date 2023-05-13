@@ -70,13 +70,11 @@ jobs:
         with:
           path: artifacts
 
-      - name: Checkout changelog
-        uses: Bhacaz/checkout-files@v2
-        with:
-          files: CHANGELOG.md
-
       - name: Display file structure
         run: ls -R
+      
+      - name: Checkout Repo to have access to CHANGELOG.md
+        uses: actions/checkout@v3
 
       - name: Create Release
         uses: anton-yurchenko/git-release@v5
