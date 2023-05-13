@@ -91,17 +91,17 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: LoreCoreLinuxLibrary
+          name: buildLinux
           path: artifactsLinux
 
       - uses: actions/download-artifact@v3
         with:
-          name: LoreCoreWindowsLibrary
+          name: buildWindows
           path: artifactsWindows
 
       - uses: actions/download-artifact@v3
         with:
-          name: LoreCoreMacOSLibrary
+          name: buildMacOS
           path: artifactsMacOS
 
       - name: Checkout Repo to have access to CHANGELOG.md
