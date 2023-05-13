@@ -90,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     # needs: [buildLinux, buildWindows, buildMacOS]
     needs: buildLinux
-    permissions: read-all|write-all
+    permissions: write-all
 
     steps:
       - name: Download all workflow run artifacts
