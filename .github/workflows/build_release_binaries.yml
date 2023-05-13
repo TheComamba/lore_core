@@ -97,11 +97,23 @@ jobs:
       - name: Display file structure
         run: ls -R
 
-      - name: Packaging files
+      - name: Packaging Linux Artifacts
         run: |
-          zip artifacts/LoreCoreLinuxLibrary *
-          zip artifacts/LoreCoreWindowsLibrary *
-          zip artifacts/LoreCoreMacOSLibrary *
+          cd artifacts
+          zip LoreCoreLinuxLibrary *
+          cd ..
+
+      - name: Packaging Windows Artifacts
+        run: |
+          cd artifacts
+          zip LoreCoreWindowsLibrary *
+          cd ..
+
+      - name: Packaging MacOS Artifacts
+        run: |
+          cd artifacts
+          zip LoreCoreMacOSLibrary *
+          cd ..
 
       - name: Checkout Repo to have access to CHANGELOG.md
         uses: actions/checkout@v3
