@@ -1,4 +1,4 @@
-name: Build Release Binaries
+name: Release Binaries
 
 on:
   push:
@@ -58,6 +58,29 @@ jobs:
           name: LoreCoreWindowsLibrary
           path: artifacts
 
+  buildMacOS:
+    name: Build on MacOS
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release
+
+      - name: Add artifacts to folder
+        run: |
+          mkdir artifacts
+          cp target/release/loregui artifacts
+          cp target/release/liblorecore.so artifacts
+          cp lorecore_api.h artifacts
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: LoreCoreMacOSLibrary
+          path: artifacts
+
   publishBinaries:
     name: Publish Binaries
     runs-on: ubuntu-latest
@@ -72,7 +95,7 @@ jobs:
 
       - name: Display file structure
         run: ls -R
-      
+
       - name: Checkout Repo to have access to CHANGELOG.md
         uses: actions/checkout@v3
 
