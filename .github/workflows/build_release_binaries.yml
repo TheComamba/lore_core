@@ -70,7 +70,12 @@ jobs:
         with:
           path: artifacts
 
-      - name: Display structure of downloaded files
+      - name: Checkout changelog
+        uses: Bhacaz/checkout-files@v2
+        with:
+          files: CHANGELOG.md
+
+      - name: Display file structure
         run: ls -R
 
       - name: Create Release
