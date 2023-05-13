@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: LoreCoreLinuxLibrary
-          path: artifactsLinux
+          path: artifacts
 
   buildWindows:
     name: Build on Windows
@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: LoreCoreWindowsLibrary
-          path: artifactsWindows
+          path: artifacts
 
   buildMacOS:
     name: Build on MacOS
@@ -79,7 +79,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: LoreCoreMacOSLibrary
-          path: artifactsMacOS
+          path: artifacts
 
   publishBinaries:
     name: Publish Binaries
@@ -91,17 +91,17 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: buildLinux
+          name: LoreCoreLinuxLibrary
           path: artifactsLinux
 
       - uses: actions/download-artifact@v3
         with:
-          name: buildWindows
+          name: LoreCoreWindowsLibrary
           path: artifactsWindows
 
       - uses: actions/download-artifact@v3
         with:
-          name: buildMacOS
+          name: LoreCoreMacOSLibrary
           path: artifactsMacOS
 
       - name: Checkout Repo to have access to CHANGELOG.md
