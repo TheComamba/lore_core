@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 changelog_tmp_file="changelog_tmp.md"
 
