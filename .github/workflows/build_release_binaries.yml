@@ -1,4 +1,4 @@
-name: Release Binaries
+name: Build Release Binaries
 
 on:
   push:
@@ -115,8 +115,10 @@ jobs:
 
       - name: Generate changelog
         uses: heinrichreimer/action-github-changelog-generator@v2
-      
-
+        id: generate_changelog
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Check Files' existence just before upload
         run: ls -l binaries*
 

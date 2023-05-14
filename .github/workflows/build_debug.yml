@@ -1,4 +1,4 @@
-name: Debug Build
+name: Build Debug Binaries
 
 on: [push]
 
@@ -12,6 +12,6 @@ jobs:
 
     - name: Install dependencies
       run: ./install_build_dependencies_linux.sh
-      
+
     - name: Build
       run: cargo build --verbose
