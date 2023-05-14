@@ -1,6 +1,9 @@
 name: Debug Build
 
-on: [push]
+# on: [push]
+on:
+  push:
+    branches: ["mainalicious"]
 
 jobs:
   buildDebug:
