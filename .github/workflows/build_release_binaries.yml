@@ -90,18 +90,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
-      - uses: actions/download-artifact@v3
+
+      - name: Download Linux Artifacts
+        uses: actions/download-artifact@v3
         with:
           name: LoreCoreLinuxLibrary
           path: artifactsLinux
 
-      - uses: actions/download-artifact@v3
+      - name: Download Windows Artifacts
+        uses: actions/download-artifact@v3
         with:
           name: LoreCoreWindowsLibrary
           path: artifactsWindows
 
-      - uses: actions/download-artifact@v3
+      - name: Download MacOS Artifacts
+        uses: actions/download-artifact@v3
         with:
           name: LoreCoreMacOSLibrary
           path: artifactsMacOS
@@ -119,9 +122,12 @@ jobs:
         run: find . -name changelog_tmp.md >> $GITHUB_OUTPUT
         id: find_changelog
 
+      - name: Show all files
+        run: ls -R *
+
       - name: Show changelog
         run: |
-          echo ${{ steps.find_changelog.outputs.stdout }}
+          ls -l ${{ steps.find_changelog.outputs.stdout }}
           cat ${{ steps.find_changelog.outputs.stdout }}
 
       - name: Check Binary Files' existence just before upload
