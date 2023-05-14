@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# This script generates a changelog diff between two tags.
-# It is used by the release process to generate the changelog for a release.
-
 changelog_tmp_file="changelog_tmp.md"
 
 rm -f $changelog_tmp_file

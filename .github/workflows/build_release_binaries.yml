@@ -89,9 +89,6 @@ jobs:
     permissions: write-all
 
     steps:
-      - name: Checkout Repo to have access to CHANGELOG.md
-        uses: actions/checkout@v3
-
       - uses: actions/download-artifact@v3
         with:
           name: LoreCoreLinuxLibrary
@@ -119,6 +116,9 @@ jobs:
       - name: Find changelog
         run: find . -name changelog_tmp.md >> $GITHUB_OUTPUT
         id: find_changelog
+
+      - name: Show changelog
+        run: cat ${{ steps.find_changelog.outputs.stdout }}
 
       - name: Check Binary Files' existence just before upload
         run: ls -l binaries*
