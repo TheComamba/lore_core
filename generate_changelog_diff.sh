@@ -9,15 +9,9 @@ rm -f $changelog_tmp_file
 
 lastTag=$(git describe --abbrev=0 --tags HEAD^)
 currentTag=$(git describe --abbrev=0 --tags HEAD)
+date=$(date +%Y-%m-%d)
 
-diff=$(git diff $lastTag..$currentTag -- CHANGELOG.md)
-
-if [ -z "$diff" ]
-then
-  echo "Error: Please update CHANGELOG.md before releasing. No changes since last tag."
-  exit 1
-else
-  echo "Changes since last tag:"
-  echo "$diff"
-  echo "$diff" > changelog_tmp.md
-fi
+echo "## [$currentTag] - $date" >> $changelog_tmp_file
+echo "" >> $changelog_tmp_file
+git log $lastTag..$currentTag --pretty=format:"%h %s" >> $changelog_tmp_file
+echo "" >> $changelog_tmp_file

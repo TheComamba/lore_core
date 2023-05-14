@@ -114,14 +114,15 @@ jobs:
           zip -r binariesMacOS.zip artifactsMacOS
 
       - name: Generate changelog
-        uses: heinrichreimer/action-github-changelog-generator@v2
-      
+        run: ./generate_changelog.sh
 
       - name: Check Files' existence just before upload
-        run: ls -l binaries*
+        run: |
+          ls -l binaries*
+          ls -l changelog_tmp.md
 
       - name: Upload Binaries
         uses: softprops/action-gh-release@v1
         with:
           files: binaries*.zip
-          body: ${{ steps.generate_changelog.outputs.changelog }}
+          body: changelog_tmp.md
