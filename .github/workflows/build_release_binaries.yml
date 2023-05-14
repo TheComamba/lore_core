@@ -116,13 +116,15 @@ jobs:
       - name: Generate changelog
         run: find . -name generate_changelog.sh -exec {} \;
 
-      - name: Check Files' existence just before upload
-        run: |
-          ls -l binaries*
-          ls -l changelog_tmp.md
+      - name: Find changelog
+        run: find . -name changelog_tmp.md >> $GITHUB_OUTPUT
+        id: find_changelog
+
+      - name: Check Binary Files' existence just before upload
+        run: ls -l binaries*
 
       - name: Upload Binaries
         uses: softprops/action-gh-release@v1
         with:
           files: binaries*.zip
-          body: changelog_tmp.md
+          body: ${{ steps.find_changelog.outputs.stdout }}
