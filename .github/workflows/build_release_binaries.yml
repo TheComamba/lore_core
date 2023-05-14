@@ -130,8 +130,10 @@ jobs:
           ls -l ${{ steps.find_changelog.outputs.stdout }}
           cat ${{ steps.find_changelog.outputs.stdout }}
 
-      - name: Check Binary Files' existence just before upload
-        run: ls -l binaries*
+      - name: Check Files' existence just before upload
+        run: |
+          ls -l binaries*
+          ls -l ${{ steps.find_changelog.outputs.stdout }}
 
       - name: Upload Binaries
         uses: softprops/action-gh-release@v1
