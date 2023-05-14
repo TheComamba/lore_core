@@ -92,6 +92,9 @@ jobs:
     permissions: write-all
 
     steps:
+      - name: Checkout Repo to have access to CHANGELOG.md
+        uses: actions/checkout@v3
+
       - uses: actions/download-artifact@v3
         with:
           name: LoreCoreLinuxLibrary
@@ -107,17 +110,11 @@ jobs:
           name: LoreCoreMacOSLibrary
           path: artifactsMacOS
 
-      - name: Check Files
+      - name: Compress folders
         run: |
-          ls -l artifactsLinux/*
-          ls -l artifactsWindows/*
-          ls -l artifactsMacOS/*
-
-      # - name: Checkout Repo to have access to CHANGELOG.md
-      #   uses: actions/checkout@v3
-
-      - name: TMP Create CHANGELOG.md
-        run: touch CHANGELOG.md
+          zip -r binariesLinux.zip artifactsLinux
+          zip -r binariesWindows.zip artifactsWindows
+          zip -r binariesMacOS.zip artifactsMacOS
 
       - name: Create Release
         uses: actions/create-release@v1
@@ -129,10 +126,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Artifact
+      - name: Check Files' existence just before upload
+        run: ls -l binaries*
+
+      - name: Upload Binaries
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            artifactsLinux/*
-            artifactsWindows/*
-            artifactsMacOS/*
+          files: binaries*.zip
