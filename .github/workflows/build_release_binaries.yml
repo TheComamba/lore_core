@@ -118,7 +118,9 @@ jobs:
         id: find_changelog
 
       - name: Show changelog
-        run: cat ${{ steps.find_changelog.outputs.stdout }}
+        run: |
+          echo ${{ steps.find_changelog.outputs.stdout }}
+          cat ${{ steps.find_changelog.outputs.stdout }}
 
       - name: Check Binary Files' existence just before upload
         run: ls -l binaries*
