@@ -114,7 +114,7 @@ jobs:
           zip -r binariesMacOS.zip artifactsMacOS
 
       - name: Generate changelog
-        run: ./generate_changelog.sh
+        run: find . -name generate_changelog.sh -exec {} \;
 
       - name: Check Files' existence just before upload
         run: |
