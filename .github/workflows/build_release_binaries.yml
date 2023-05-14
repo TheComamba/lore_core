@@ -113,8 +113,11 @@ jobs:
           ls -l artifactsWindows/*
           ls -l artifactsMacOS/*
 
-      - name: Checkout Repo to have access to CHANGELOG.md
-        uses: actions/checkout@v3
+      # - name: Checkout Repo to have access to CHANGELOG.md
+      #   uses: actions/checkout@v3
+
+      - name: TMP Create CHANGELOG.md
+        run: touch CHANGELOG.md
 
       - name: Create Release
         uses: actions/create-release@v1
