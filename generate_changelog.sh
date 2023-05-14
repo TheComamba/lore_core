@@ -5,8 +5,8 @@ changelog_tmp_file="changelog_tmp.md"
 
 rm -f $changelog_tmp_file
 
-lastTag=$(git describe --abbrev=0 --tags HEAD^)
-currentTag=$(git describe --abbrev=0 --tags HEAD)
+lastTag=$(git describe --abbrev=0 --tags main^)
+currentTag=$(git describe --abbrev=0 --tags main)
 date=$(date +%Y-%m-%d)
 
 echo "## [$currentTag] - $date" >> $changelog_tmp_file
