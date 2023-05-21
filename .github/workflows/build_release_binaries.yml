@@ -114,7 +114,9 @@ jobs:
           zip -r binariesMacOS.zip artifactsMacOS
 
       - name: Fetch current changelog
-        run: ./changelogs/get_current.sh
+        run: |
+          ls -l
+          ./$(git rev-parse --show-toplevel)/changelogs/get_current.sh
 
       - name: Check Files' existence just before upload
         run: |
