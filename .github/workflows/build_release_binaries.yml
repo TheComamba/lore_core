@@ -92,14 +92,14 @@ jobs:
       - name: Fetch current changelog
         run: ./changelogs/get_current.sh
 
-      - name: Rename file
-        run: mv changelogs/current.md changelogs/changelog.md
+      - name: Check File's existence just before upload
+        run: ls -l changelogs/current.md
 
       - name: Upload Changelog
         uses: actions/upload-artifact@v3
         with:
           name: Changelog
-          path: changelogs/changelog.md
+          path: changelogs/current.md
 
   publishBinaries:
     name: Publish Binaries
@@ -139,9 +139,6 @@ jobs:
           name: Changelog
           path: changelog.md
 
-      - name: Export changelog to environment
-        run: echo "CHANGELOG=$(cat changelog.md)" >> $GITHUB_ENV
-
       - name: Check Files' existence just before upload
         run: |
           ls -l binaries*
@@ -151,4 +148,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: binaries*.zip
-          body: ${{ env.CHANGELOG }}
+          body: changelog.md
