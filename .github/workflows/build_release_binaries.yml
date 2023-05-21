@@ -92,14 +92,14 @@ jobs:
       - name: Fetch current changelog
         run: ./changelogs/get_current.sh
 
-      - name: Check File's existence just before upload
-        run: ls -l changelogs/current.md
+      - name: Rename File's
+        run: mv changelogs/current.md changelogs/changelog.md
 
       - name: Upload Changelog
         uses: actions/upload-artifact@v3
         with:
           name: Changelog
-          path: changelogs/current.md
+          path: changelogs/changelog.md
 
   publishBinaries:
     name: Publish Binaries
