@@ -90,9 +90,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Fetch current changelog
-        run: |
-          ls -l
-          ./$(git rev-parse --show-toplevel)/changelogs/get_current.sh
+        run: ./changelogs/get_current.sh
 
       - name: Check File's existence just before upload
         run: ls -l changelogs/current.md
