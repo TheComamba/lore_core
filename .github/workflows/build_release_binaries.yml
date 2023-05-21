@@ -81,28 +81,11 @@ jobs:
           name: LoreCoreMacOSLibrary
           path: artifacts
 
-  generateChangelog:
-    name: Generate Changelog
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Generate changelog
-        run: find . -name generate_changelog.sh -exec {} \;
-
-      - name: Upload Changelog
-        uses: actions/upload-artifact@v3
-        with:
-          name: Changelog
-          path: changelog_tmp.md
-
   publishBinaries:
     name: Publish Binaries
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    needs: [buildLinux, buildWindows, buildMacOS, generateChangelog]
+    needs: [buildLinux, buildWindows, buildMacOS]
     permissions: write-all
 
     steps:
@@ -124,25 +107,22 @@ jobs:
           name: LoreCoreMacOSLibrary
           path: artifactsMacOS
 
-      - name: Download Changelog
-        uses: actions/download-artifact@v3
-        with:
-          name: Changelog
-          path: changelog
-
       - name: Compress folders
         run: |
           zip -r binariesLinux.zip artifactsLinux
           zip -r binariesWindows.zip artifactsWindows
           zip -r binariesMacOS.zip artifactsMacOS
 
+      - name: Fetch current changelog
+        run: ./changelogs/get_current.sh
+
       - name: Check Files' existence just before upload
         run: |
           ls -l binaries*
-          ls -l changelog
+          ls -l changelogs/current.md
 
       - name: Upload Binaries
         uses: softprops/action-gh-release@v1
         with:
           files: binaries*.zip
-          body: changelog
+          body: changelog/current.md
