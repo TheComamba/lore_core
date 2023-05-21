@@ -140,8 +140,7 @@ jobs:
           path: changelog.md
 
       - name: Export changelog to environment
-        run: echo "CHANGELOG=$(cat changelog.md)" >> $GITHUB_OUTPUT
-        id: changelog
+        run: echo "CHANGELOG=$(cat changelog.md)" >> $GITHUB_ENV
 
       - name: Check Files' existence just before upload
         run: |
@@ -152,4 +151,4 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: binaries*.zip
-          body: ${{ steps.changelog.outputs.CHANGELOG }}
+          body: ${{ env.CHANGELOG }}
