@@ -139,10 +139,13 @@ jobs:
           name: Changelog
           path: changelog.md
 
+      - name: Display file structure  
+        run: ls -lRa
+
       - name: Check Files' existence just before upload
         run: |
           ls -l binaries*
-          ls -l changelog.md
+          cat changelog.md
 
       - name: Upload Binaries
         uses: softprops/action-gh-release@v1
