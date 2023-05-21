@@ -1,17 +1,17 @@
 #[derive(Debug, Clone)]
-pub enum LoreTexError {
+pub enum LoreCoreError {
     FileError(String),
     InputError(String),
     SqlError(String),
 }
 
-impl ToString for LoreTexError {
+impl ToString for LoreCoreError {
     fn to_string(&self) -> String {
         format!("{:?}", self)
     }
 }
 
-pub(super) fn sql_loading_error_no_params<E>(loadee: &str, target: &str, err: E) -> LoreTexError
+pub(super) fn sql_loading_error_no_params<E>(loadee: &str, target: &str, err: E) -> LoreCoreError
 where
     E: ToString,
 {
@@ -23,7 +23,7 @@ pub(super) fn sql_loading_error<T, E>(
     target: &str,
     params: Vec<(&str, &Option<T>)>,
     err: E,
-) -> LoreTexError
+) -> LoreCoreError
 where
     T: ToString,
     E: ToString,
@@ -46,5 +46,5 @@ where
     }
     message += " failed: ";
     message += &err.to_string();
-    LoreTexError::SqlError(message)
+    LoreCoreError::SqlError(message)
 }

@@ -11,5 +11,5 @@ fn main() {
         .with_language(cbindgen::Language::C)
         .generate()
         .expect("Unable to generate C header file.")
-        .write_to_file("loretex_api.h");
+        .write_to_file("lorecore_api.h");
 }

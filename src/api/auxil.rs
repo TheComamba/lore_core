@@ -1,5 +1,5 @@
 use crate::{
-    errors::LoreTexError,
+    errors::LoreCoreError,
     sql::{
         entity::EntityColumn, history::HistoryItem, lore_database::LoreDatabase,
         relationships::EntityRelationship,
@@ -10,10 +10,10 @@ use std::{
     path::PathBuf,
 };
 
-fn char_pointer_to_string(string: *const libc::c_char) -> Result<String, LoreTexError> {
+fn char_pointer_to_string(string: *const libc::c_char) -> Result<String, LoreCoreError> {
     let string: &str = unsafe {
         CStr::from_ptr(string).to_str().map_err(|e| {
-            LoreTexError::InputError(
+            LoreCoreError::InputError(
                 "Could not convert characterpointer to string.".to_string() + &e.to_string(),
             )
         })?
@@ -23,7 +23,7 @@ fn char_pointer_to_string(string: *const libc::c_char) -> Result<String, LoreTex
 
 fn char_pointer_to_optional_string(
     string: *const libc::c_char,
-) -> Result<Option<String>, LoreTexError> {
+) -> Result<Option<String>, LoreCoreError> {
     let string = char_pointer_to_string(string)?;
     Ok(if string.is_empty() {
         None
@@ -40,7 +40,7 @@ fn to_entity_column(
     label: *const libc::c_char,
     descriptor: *const libc::c_char,
     description: *const libc::c_char,
-) -> Result<EntityColumn, LoreTexError> {
+) -> Result<EntityColumn, LoreCoreError> {
     Ok(EntityColumn {
         label: char_pointer_to_string(label)?,
         descriptor: char_pointer_to_string(descriptor)?,
@@ -53,7 +53,7 @@ pub(super) fn c_write_entity_column(
     label: *const libc::c_char,
     descriptor: *const libc::c_char,
     description: *const libc::c_char,
-) -> Result<(), LoreTexError> {
+) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
     let column = to_entity_column(label, descriptor, description)?;
@@ -71,7 +71,7 @@ fn to_history_item(
     day: i32,
     originator: *const libc::c_char,
     year_format: *const libc::c_char,
-) -> Result<HistoryItem, LoreTexError> {
+) -> Result<HistoryItem, LoreCoreError> {
     let day = if day > 0 { Some(day) } else { None };
     Ok(HistoryItem {
         label: char_pointer_to_string(label)?,
@@ -95,7 +95,7 @@ pub(super) fn c_write_history_item(
     day: i32,
     originator: *const libc::c_char,
     year_format: *const libc::c_char,
-) -> Result<(), LoreTexError> {
+) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
     let item = to_history_item(
@@ -117,7 +117,7 @@ fn to_relationship(
     parent: *const libc::c_char,
     child: *const libc::c_char,
     role: *const libc::c_char,
-) -> Result<EntityRelationship, LoreTexError> {
+) -> Result<EntityRelationship, LoreCoreError> {
     Ok(EntityRelationship {
         parent: char_pointer_to_string(parent)?,
         child: char_pointer_to_string(child)?,
@@ -130,7 +130,7 @@ pub(super) fn c_write_relationship(
     parent: *const libc::c_char,
     child: *const libc::c_char,
     role: *const libc::c_char,
-) -> Result<(), LoreTexError> {
+) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
     let relationship = to_relationship(parent, child, role)?;

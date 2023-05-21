@@ -2,7 +2,7 @@ use super::{
     dialog::Dialog, entity_view::EntityViewState, history_view::HistoryViewState,
     relationship_view::RelationshipViewState,
 };
-use loretex::sql::lore_database::LoreDatabase;
+use lorecore::sql::lore_database::LoreDatabase;
 
 pub(super) mod message_handling;
 mod updating_database;

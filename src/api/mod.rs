@@ -1,2 +1,2 @@
-mod aux;
+mod auxil;
 mod c_api;

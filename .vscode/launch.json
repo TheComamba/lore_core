@@ -7,16 +7,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in library 'loretex'",
+            "name": "Debug unit tests in library 'lorecore'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
                     "--lib",
-                    "--package=loretex"
+                    "--package=lorecore"
                 ],
                 "filter": {
-                    "name": "loretex",
+                    "name": "lorecore",
                     "kind": "lib"
                 }
             },
@@ -26,15 +26,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'loretex'",
+            "name": "Debug executable 'lorecore'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=loretex",
-                    "--package=loretex"
+                    "--bin=lorecore",
+                    "--package=lorecore"
                 ],
                 "filter": {
-                    "name": "loretex",
+                    "name": "lorecore",
                     "kind": "bin"
                 }
             },
@@ -44,16 +44,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'loretex'",
+            "name": "Debug unit tests in executable 'lorecore'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=loretex",
-                    "--package=loretex"
+                    "--bin=lorecore",
+                    "--package=lorecore"
                 ],
                 "filter": {
-                    "name": "loretex",
+                    "name": "lorecore",
                     "kind": "bin"
                 }
             },

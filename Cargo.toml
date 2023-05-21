@@ -1,10 +1,10 @@
 [package]
-name = "loretex"
+name = "loregui"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name         = "loretex"
+name         = "lorecore"
 crate-type   = ["rlib", "cdylib"]
 
 [dependencies]
@@ -16,6 +16,7 @@ iced_lazy = "0.6.1"
 libc = "0.2.140"
 preferences = {version = "1.1.0"}
 rfd = "0.11.3"
+rusqlite = { version = "0.29.0", features = ["bundled"] }
 
 [build-dependencies]
 cbindgen = "0.24.3"

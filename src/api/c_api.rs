@@ -1,4 +1,4 @@
-use super::aux::{c_write_entity_column, c_write_history_item, c_write_relationship, char_ptr};
+use super::auxil::{c_write_entity_column, c_write_history_item, c_write_relationship, char_ptr};
 
 #[no_mangle]
 pub unsafe extern "C" fn write_entity_column(

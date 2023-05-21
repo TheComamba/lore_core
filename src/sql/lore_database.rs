@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use crate::errors::LoreTexError;
+use crate::errors::LoreCoreError;
 use diesel::{Connection, SqliteConnection};
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 
@@ -11,12 +11,12 @@ pub struct LoreDatabase {
 const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
 
 impl LoreDatabase {
-    pub fn open(path: PathBuf) -> Result<Self, LoreTexError> {
+    pub fn open(path: PathBuf) -> Result<Self, LoreCoreError> {
         let db = LoreDatabase { path };
         db.db_connection()?
             .run_pending_migrations(MIGRATIONS)
             .map_err(|e| {
-                LoreTexError::SqlError(
+                LoreCoreError::SqlError(
                     "Failed to run SQL database migrations: ".to_string() + &e.to_string(),
                 )
             })?;
@@ -27,10 +27,10 @@ impl LoreDatabase {
         self.path.to_string_lossy().to_string()
     }
 
-    pub(super) fn db_connection(&self) -> Result<SqliteConnection, LoreTexError> {
+    pub(super) fn db_connection(&self) -> Result<SqliteConnection, LoreCoreError> {
         let path = match self.path.to_str() {
             Some(str) => str,
-            None => return Err(LoreTexError::FileError(
+            None => return Err(LoreCoreError::FileError(
                 "Could not open database path.".to_string()
                     + "This is likely because it contains characters that can not be UTF-8 encoded."
                     + "The lossy path conversion reads:\n"
@@ -38,7 +38,7 @@ impl LoreDatabase {
             )),
         };
         SqliteConnection::establish(path).map_err(|e| {
-            LoreTexError::SqlError(
+            LoreCoreError::SqlError(
                 "Failed to establish a connection to the database: ".to_string() + &e.to_string(),
             )
         })
