@@ -83,7 +83,7 @@ jobs:
 
   exportChangelog:
     name: Export Changelog
-    if: startsWith(github.ref, 'refs/tags/v')
+    # if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
 
     steps:
@@ -93,7 +93,7 @@ jobs:
         run: ./changelogs/get_current.sh
 
       - name: Export contents
-        run: echo "CHANGELOG=$(cat changelogs/current.md)" >> $GITHUB_OUTPUT
+        run: echo '::set-output name=CHANGELOG::$(cat changelogs/current.md)' >> $GITHUB_OUTPUT
 
   publishBinaries:
     name: Publish Binaries
