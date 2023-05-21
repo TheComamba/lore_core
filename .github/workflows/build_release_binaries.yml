@@ -99,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Changelog
-          path: changelog/current.md
+          path: changelogs/current.md
 
   publishBinaries:
     name: Publish Binaries
