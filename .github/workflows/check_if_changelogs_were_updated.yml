@@ -1,0 +1,15 @@
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  checkForChangelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check for changelog
+        run: |
+          if ! grep -q "changelogs/v" $(git diff main --name-only); then
+            echo "No updates of the changelogs were found. Please add some."
+            exit 1
+          fi
