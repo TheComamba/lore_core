@@ -3,47 +3,51 @@ name: Build
 on:
   workflow_call:
     inputs:
-      os:
-        required: true
-        type: string
+      isRelease:
+        type: boolean
+        required: false
+        default: false
 
 jobs:
-  runnerSetup:
-    uses: ./.github/workflows/_runner_setup.yml
-    with:
-      os: ${{ inputs.os }}
-
-  uploadArtifacts:
-    needs: [runnerSetup]
-    runs-on: ${{ needs.runnerSetup.outputs.runner }}
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
 
       - name: Install dependencies
-        if: ${{ inputs.os == 'linux' }}
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: ./install_build_dependencies_linux.sh
 
       - run: cargo build --release
+        if: ${{ matrix.isRelease }}
+
+      - run: |
+          cargo build
+          exit 0
+        if: ${{ !matrix.isRelease }}
 
       - name: Make artifacts folder
         run: mkdir artifacts
 
       - name: Add artifacts to folder
-        if: ${{ inputs.os == 'linux' }}
+        if: ${{ matrix.os == 'ubuntu-latest' }}
         run: |
           cp target/release/loregui artifacts
           cp target/release/liblorecore.so artifacts
           cp lorecore_api.h artifacts
 
       - name: Add artifacts to folder
-        if: ${{ inputs.os == 'windows' }}
+        if: ${{ matrix.os == 'windows-latest' }}
         run: |
           cp target/release/loregui.exe artifacts
           cp target/release/liblorecore.dll artifacts
           cp lorecore_api.h artifacts
 
       - name: Add artifacts to folder
-        if: ${{ inputs.os == 'macos' }}
+        if: ${{ matrix.os == 'macos-latest' }}
         run: |
           cp target/release/loregui artifacts
           cp target/release/liblorecore.dylib artifacts
@@ -52,5 +56,5 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: LoreCoreLibrary_${{ inputs.os}}
+          name: LoreCoreLibrary_${{ matrix.os}}
           path: artifacts
