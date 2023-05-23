@@ -100,6 +100,7 @@ jobs:
         run: |
           cd artifacts
           chmod +x loregui
+          export RUST_BACKTRACE=1
           ./loregui &
           sleep 5
           killall loregui
@@ -122,6 +123,7 @@ jobs:
       - name: Test Executability
         run: |
           cd artifacts
+          set RUST_BACKTRACE=1
           .\loregui.exe &
           sleep 5
           taskkill /IM loregui.exe /F
@@ -145,6 +147,7 @@ jobs:
         run: |
           cd artifacts
           chmod +x loregui
+          export RUST_BACKTRACE=1
           ./loregui &
           sleep 5
           killall loregui
