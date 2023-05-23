@@ -28,6 +28,9 @@ jobs:
           cp target/release/liblorecore.so artifacts
           cp lorecore_api.h artifacts
 
+      - name: Make executable
+        run: chmod +x artifacts/loregui
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -75,6 +78,9 @@ jobs:
           cp target/release/liblorecore.dylib artifacts
           cp lorecore_api.h artifacts
 
+      - name: Make executable
+        run: chmod +x artifacts/loregui
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -99,7 +105,9 @@ jobs:
       - name: Test Executability
         run: |
           cd artifacts
-          ./loregui
+          ./loregui &
+          sleep 5
+          killall loregui
 
   testExecutabilityWindows:
     name: Test Executability on Windows
@@ -119,7 +127,9 @@ jobs:
       - name: Test Executability
         run: |
           cd artifacts
-          .\loregui.exe
+          .\loregui.exe &
+          sleep 5
+          taskkill /IM loregui.exe /F
 
   testExecutabilityMacOS:
     name: Test Executability on MacOS
@@ -139,7 +149,9 @@ jobs:
       - name: Test Executability
         run: |
           cd artifacts
-          ./loregui
+          ./loregui &
+          sleep 5
+          killall loregui
 
   uploadChangelog:
     name: Upload Changelog
