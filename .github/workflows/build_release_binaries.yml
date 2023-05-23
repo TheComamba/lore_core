@@ -21,18 +21,19 @@ jobs:
 
       - run: cargo build --release
 
-      - name: Add artifacts to folder
-        run: |
-          mkdir artifacts
-          cp target/release/loregui artifacts
-          cp target/release/liblorecore.so artifacts
-          cp lorecore_api.h artifacts
+      - uses: TheComamba/LoreCore/.github/workflows/_upload_artifacts.yml
+      # - name: Add artifacts to folder
+      #   run: |
+      #     mkdir artifacts
+      #     cp target/release/loregui artifacts
+      #     cp target/release/liblorecore.so artifacts
+      #     cp lorecore_api.h artifacts
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: LoreCoreLinuxLibrary
-          path: artifacts
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: LoreCoreLinuxLibrary
+      #     path: artifacts
 
   buildWindows:
     name: Build on Windows
@@ -43,18 +44,19 @@ jobs:
 
       - run: cargo build --release
 
-      - name: Add artifacts to folder
-        run: |
-          mkdir artifacts
-          cp target/release/loregui.exe artifacts
-          cp target/release/lorecore.dll artifacts
-          cp lorecore_api.h artifacts
+      - uses: TheComamba/LoreCore/.github/workflows/_upload_artifacts.yml
+      # - name: Add artifacts to folder
+      #   run: |
+      #     mkdir artifacts
+      #     cp target/release/loregui.exe artifacts
+      #     cp target/release/lorecore.dll artifacts
+      #     cp lorecore_api.h artifacts
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: LoreCoreWindowsLibrary
-          path: artifacts
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: LoreCoreWindowsLibrary
+      #     path: artifacts
 
   buildMacOS:
     name: Build on MacOS
@@ -65,21 +67,19 @@ jobs:
 
       - run: cargo build --release
 
-      - name: Display file structure
-        run: ls -l target/release
+      - uses: TheComamba/LoreCore/.github/workflows/_upload_artifacts.yml
+      # - name: Add artifacts to folder
+      #   run: |
+      #     mkdir artifacts
+      #     cp target/release/loregui artifacts
+      #     cp target/release/liblorecore.dylib artifacts
+      #     cp lorecore_api.h artifacts
 
-      - name: Add artifacts to folder
-        run: |
-          mkdir artifacts
-          cp target/release/loregui artifacts
-          cp target/release/liblorecore.dylib artifacts
-          cp lorecore_api.h artifacts
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: LoreCoreMacOSLibrary
-          path: artifacts
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: LoreCoreMacOSLibrary
+      #     path: artifacts
 
   testExecutabilityLinux:
     name: Test Executability on Linux

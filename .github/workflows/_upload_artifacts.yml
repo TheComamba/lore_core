@@ -1,0 +1,59 @@
+name: Upload Artifacts
+
+on:
+  workflow_call:
+    inputs:
+      os:
+        required: true
+        type: string
+
+jobs:
+  runnerSetup:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.step1.outputs.runner }}
+    steps:
+      - name: Check branch
+        id: step1
+        run: |
+          if [ ${{ inputs.os }} == 'linux' ]; then
+            echo "::set-output name=runner::ubuntu-latest"
+          elif [ ${{ inputs.os }} == 'windows' ]; then
+            echo "::set-output name=runner::windows-latest"
+          elif [ ${{ inputs.os }} == 'macos' ]; then
+            echo "::set-output name=runner::macos-latest"
+          fi
+
+  uploadArtifacts:
+    needs: [runnerSetup]
+    runs-on: ${{ needs.runnerSetup.outputs.runner }}
+    steps:
+      - name: Make artifacts folder
+        run: mkdir artifacts
+
+      - name: Add artifacts to folder
+        if: ${{ inputs.os == 'linux' }}
+        run: |
+          cp target/release/loregui artifacts
+          cp target/release/liblorecore.so artifacts
+          cp lorecore_api.h artifacts
+
+      - name: Add artifacts to folder
+        if: ${{ inputs.os == 'windows' }}
+        run: |
+          cp target/release/loregui.exe artifacts
+          cp target/release/liblorecore.dll artifacts
+          cp lorecore_api.h artifacts
+
+      - name: Add artifacts to folder
+        if: ${{ inputs.os == 'macos' }}
+        run: |
+          cp target/release/loregui artifacts
+          cp target/release/liblorecore.dylib artifacts
+          cp lorecore_api.h artifacts
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: LoreCoreLibrary_${{ inputs.os}}
+          path: artifacts
