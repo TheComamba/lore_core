@@ -28,6 +28,14 @@ jobs:
     needs: [runnerSetup]
     runs-on: ${{ needs.runnerSetup.outputs.runner }}
     steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        if: ${{ inputs.os == 'linux' }}
+        run: ./install_build_dependencies_linux.sh
+
+      - run: cargo build --release
+
       - name: Make artifacts folder
         run: mkdir artifacts
 

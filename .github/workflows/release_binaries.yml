@@ -10,76 +10,19 @@ on:
 
 jobs:
   buildLinux:
-    name: Build on Linux
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: ./install_build_dependencies_linux.sh
-
-      - run: cargo build --release
-
-      - uses: ./.github/workflows/_upload_artifacts.yml
-      # - name: Add artifacts to folder
-      #   run: |
-      #     mkdir artifacts
-      #     cp target/release/loregui artifacts
-      #     cp target/release/liblorecore.so artifacts
-      #     cp lorecore_api.h artifacts
-
-      # - name: Upload Artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: LoreCoreLinuxLibrary
-      #     path: artifacts
+  - uses: ./github/workflows/_build.yml
+    with:
+      os: linux
 
   buildWindows:
-    name: Build on Windows
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - run: cargo build --release
-
-      - uses: ./.github/workflows/_upload_artifacts.yml
-      # - name: Add artifacts to folder
-      #   run: |
-      #     mkdir artifacts
-      #     cp target/release/loregui.exe artifacts
-      #     cp target/release/lorecore.dll artifacts
-      #     cp lorecore_api.h artifacts
-
-      # - name: Upload Artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: LoreCoreWindowsLibrary
-      #     path: artifacts
+  - uses: ./github/workflows/_build.yml
+    with:
+      os: windows
 
   buildMacOS:
-    name: Build on MacOS
-    runs-on: macos-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - run: cargo build --release
-
-      - uses: ./.github/workflows/_upload_artifacts.yml
-      # - name: Add artifacts to folder
-      #   run: |
-      #     mkdir artifacts
-      #     cp target/release/loregui artifacts
-      #     cp target/release/liblorecore.dylib artifacts
-      #     cp lorecore_api.h artifacts
-
-      # - name: Upload Artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: LoreCoreMacOSLibrary
-      #     path: artifacts
+  - uses: ./github/workflows/_build.yml
+    with:
+      os: macos
 
   testExecutabilityLinux:
     name: Test Executability on Linux
