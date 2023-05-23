@@ -6,6 +6,7 @@ on:
       isRelease:
         type: boolean
         required: false
+        default: false
 
 jobs:
   build:
@@ -21,12 +22,12 @@ jobs:
         run: ./install_build_dependencies_linux.sh
 
       - run: cargo build --release
-        if: ${{ matrix.isRelease }}
+        if: ${{ inputs.isRelease }}
 
       - run: |
           cargo build
           exit 0
-        if: ${{ !matrix.isRelease }}
+        if: ${{ !inputs.isRelease }}
 
       - name: Make artifacts folder
         run: mkdir artifacts
