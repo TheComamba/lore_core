@@ -21,7 +21,7 @@ jobs:
 
       - run: cargo build --release
 
-      - uses: TheComamba/LoreCore/.github/workflows/_upload_artifacts.yml
+      - uses: ./.github/workflows/_upload_artifacts.yml
       # - name: Add artifacts to folder
       #   run: |
       #     mkdir artifacts
@@ -44,7 +44,7 @@ jobs:
 
       - run: cargo build --release
 
-      - uses: TheComamba/LoreCore/.github/workflows/_upload_artifacts.yml
+      - uses: ./.github/workflows/_upload_artifacts.yml
       # - name: Add artifacts to folder
       #   run: |
       #     mkdir artifacts
@@ -67,7 +67,7 @@ jobs:
 
       - run: cargo build --release
 
-      - uses: TheComamba/LoreCore/.github/workflows/_upload_artifacts.yml
+      - uses: ./.github/workflows/_upload_artifacts.yml
       # - name: Add artifacts to folder
       #   run: |
       #     mkdir artifacts
