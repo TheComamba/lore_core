@@ -10,17 +10,17 @@ on:
 
 jobs:
   buildLinux:
-  - uses: ./github/workflows/_build.yml
+  - uses: ./.github/workflows//_build.yml
     with:
       os: linux
 
   buildWindows:
-  - uses: ./github/workflows/_build.yml
+  - uses: ./.github/workflows//_build.yml
     with:
       os: windows
 
   buildMacOS:
-  - uses: ./github/workflows/_build.yml
+  - uses: ./.github/workflows//_build.yml
     with:
       os: macos
 
