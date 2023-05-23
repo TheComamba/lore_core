@@ -6,7 +6,6 @@ on:
       isRelease:
         type: boolean
         required: false
-        default: false
 
 jobs:
   build:
