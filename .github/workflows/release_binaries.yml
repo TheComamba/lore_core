@@ -9,7 +9,7 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  releaseBuild:
     uses: ./.github/workflows/_build.yml
     with:
       isRelease: true

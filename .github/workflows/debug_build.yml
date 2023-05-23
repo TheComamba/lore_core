@@ -3,7 +3,7 @@ name: Debug Build
 on: [push]
 
 jobs:
-  build:
+  debugBuild:
     uses: ./.github/workflows/_build.yml
     with:
       isRelease: false
