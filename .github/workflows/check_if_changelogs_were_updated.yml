@@ -12,7 +12,7 @@ jobs:
 
       - name: Check for changelog
         run: |
-          if ! grep -q "changelogs/v" $(git diff origin/main --name-only); then
+          if ! grep -q "changelogs/v" <<< $(git diff origin/main --name-only); then
             echo "No updates of the changelogs were found. Please add some."
             exit 1
           fi
