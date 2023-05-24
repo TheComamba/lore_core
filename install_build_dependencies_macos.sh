@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-rust_rusqlite_req=libsqlite3-dev
+rust_rusqlite_req=sqlite3
 
 brew update
 brew install $rust_rusqlite_req
