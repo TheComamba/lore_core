@@ -1,10 +1,7 @@
 #!/bin/bash
 set -e
 
-rust_rusqlite_req=sqlite3
-
 brew update
-brew install $rust_rusqlite_req
 
 if ! command -v cargo &> /dev/null
 then

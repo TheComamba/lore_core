@@ -2,10 +2,9 @@
 set -e
 
 rust_rfd_req=libgtk-3-dev
-rust_rusqlite_req=libsqlite3-dev
 
 sudo apt-get update
-sudo apt-get install $rust_rfd_req $rust_rusqlite_req
+sudo apt-get install $rust_rfd_req
 
 if ! command -v cargo &> /dev/null
 then
