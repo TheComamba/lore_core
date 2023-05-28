@@ -15,6 +15,7 @@ jobs:
       isRelease: true
 
   testExecutability:
+    needs: [releaseBuild]
     uses: ./.github/workflows/_test_executability.yml
 
   uploadChangelog:
