@@ -44,6 +44,7 @@ jobs:
           cp target/*/loregui artifacts
           cp target/*/liblorecore.so artifacts
           cp lorecore_api.h artifacts
+          cp install_runtime_dependencies_linux.sh artifacts
 
       - name: Add Windows artifacts to folder
         if: matrix.os == 'windows-latest'
