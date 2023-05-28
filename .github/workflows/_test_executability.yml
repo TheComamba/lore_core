@@ -61,7 +61,7 @@ jobs:
         run: |
           cd artifacts
           ls -l
-          lua load_lib.lua
+          lua -l ffi load_lib.lua
 
       - name: Test Executability Linux
         if: matrix.os == 'ubuntu-latest'
