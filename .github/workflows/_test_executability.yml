@@ -56,7 +56,7 @@ jobs:
       - name: Test Library Include
         run: |
           cd artifacts
-          lua artifacts/load_lib.lua
+          lua load_lib.lua
 
       - name: Test Executability Linux
         if: matrix.os == 'ubuntu-latest'
