@@ -54,7 +54,7 @@ jobs:
           cp target/*/loregui.exe artifacts
           cp target/*/liblorecore.dll artifacts
           cp lorecore_api.h artifacts
-          cp scripts/install_lua_dependencies_windows.sh artifacts
+          cp scripts/install_lua_dependencies_windows.bat artifacts
           cp scripts/load_lib.lua artifacts
 
       - name: Add MacOS artifacts to folder

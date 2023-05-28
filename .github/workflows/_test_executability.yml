@@ -23,7 +23,7 @@ jobs:
           name: LoreCoreLibrary_${{ matrix.os }}
           path: artifacts
 
-      - name: Install Dependencies Linux
+      - name: Setup Linux
         if: matrix.os == 'ubuntu-latest'
         run: |
           set -e
@@ -33,21 +33,24 @@ jobs:
           chmod +x install_runtime_dependencies_linux.sh
           ./install_runtime_dependencies_linux.sh
           chmod +x install_lua_dependencies_linux.sh
-            ./install_lua_dependencies_linux.sh
+          ./install_lua_dependencies_linux.sh
+          export RUST_BACKTRACE=1
 
-      - name: Install Dependencies Windows
+      - name: Setup Windows
         if: matrix.os == 'windows-latest'
         run: |
           cd artifacts
           .\install_lua_dependencies_windows.sh
+          set RUST_BACKTRACE=1
 
-      - name: Install Dependencies MacOS
+      - name: Setup MacOS
         if: matrix.os == 'macos-latest'
         run: |
           set -e
           cd artifacts
           chmod +x install_lua_dependencies_macos.sh
           ./install_lua_dependencies_macos.sh
+          export RUST_BACKTRACE=1
 
       - name: Test Library Include
         run: lua scripts/load_lib.lua
@@ -58,19 +61,6 @@ jobs:
           set -e
           cd artifacts
           ls -l
-          export RUST_BACKTRACE=1
-          ./loregui &
-          sleep 5
-          killall loregui
-
-      - name: Test Executability MacOS (Not Working on GitHub Actions)
-        if: matrix.os == 'macos-latest' && false
-        run: |
-          set -e
-          cd artifacts
-          chmod +x loregui
-          ls -l
-          export RUST_BACKTRACE=1
           ./loregui &
           sleep 5
           killall loregui
@@ -80,7 +70,17 @@ jobs:
         run: |
           cd artifacts
           dir /A
-          set RUST_BACKTRACE=1
           .\loregui.exe &
           sleep 5
           taskkill /IM loregui.exe /F
+
+      - name: Test Executability MacOS (Not Working on GitHub Actions)
+        if: matrix.os == 'macos-latest' && false
+        run: |
+          set -e
+          cd artifacts
+          chmod +x loregui
+          ls -l
+          ./loregui &
+          sleep 5
+          killall loregui
