@@ -19,15 +19,15 @@ jobs:
 
       - name: Install dependencies for Linux
         if: matrix.os == 'ubuntu-latest'
-        run: ./install_build_dependencies_linux.sh
+        run: ./scripts/install_build_dependencies_linux.sh
 
       - name: Install dependencies for Windows
         if: matrix.os == 'windows-latest'
-        run: .\install_build_dependencies_windows.bat
+        run: .\scripts\install_build_dependencies_windows.bat
 
       - name: Install dependencies for MacOS
         if: matrix.os == 'macos-latest'
-        run: ./install_build_dependencies_macos.sh
+        run: ./scripts/install_build_dependencies_macos.sh
 
       - run: cargo build
         if: ${{ !inputs.isRelease }}
@@ -44,7 +44,7 @@ jobs:
           cp target/*/loregui artifacts
           cp target/*/liblorecore.so artifacts
           cp lorecore_api.h artifacts
-          cp install_runtime_dependencies_linux.sh artifacts
+          cp scripts/install_runtime_dependencies_linux.sh artifacts
 
       - name: Add Windows artifacts to folder
         if: matrix.os == 'windows-latest'
