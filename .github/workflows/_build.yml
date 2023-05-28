@@ -45,6 +45,7 @@ jobs:
           cp target/*/liblorecore.so artifacts
           cp lorecore_api.h artifacts
           cp scripts/install_runtime_dependencies_linux.sh artifacts
+          cp scripts/load_lib.lua artifacts
 
       - name: Add Windows artifacts to folder
         if: matrix.os == 'windows-latest'
@@ -52,6 +53,7 @@ jobs:
           cp target/*/loregui.exe artifacts
           cp target/*/liblorecore.dll artifacts
           cp lorecore_api.h artifacts
+          cp scripts/load_lib.lua artifacts
 
       - name: Add MacOS artifacts to folder
         if: matrix.os == 'macos-latest'
@@ -59,6 +61,7 @@ jobs:
           cp target/*/loregui artifacts
           cp target/*/liblorecore.dylib artifacts
           cp lorecore_api.h artifacts
+          cp scripts/load_lib.lua artifacts
 
       - name: Upload Artifacts
         if: inputs.isRelease
