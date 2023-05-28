@@ -23,21 +23,41 @@ jobs:
           name: LoreCoreLibrary_${{ matrix.os }}
           path: artifacts
 
-      - name: Test Library Include
-        run: |
-          luarocks install --server=https://luarocks.org/dev luaffi
-          lua 
-
-      - name: Test Executability Linux
+      - name: Install Dependencies Linux
         if: matrix.os == 'ubuntu-latest'
         run: |
           set -e
           apt-get update
           apt-get install sudo
           cd artifacts
-          chmod +x loregui install_runtime_dependencies_linux.sh
-          ls -l
+          chmod +x install_runtime_dependencies_linux.sh
           ./install_runtime_dependencies_linux.sh
+          chmod +x install_lua_dependencies_linux.sh
+            ./install_lua_dependencies_linux.sh
+
+      - name: Install Dependencies Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd artifacts
+          .\install_lua_dependencies_windows.sh
+
+      - name: Install Dependencies MacOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          set -e
+          cd artifacts
+          chmod +x install_lua_dependencies_macos.sh
+          ./install_lua_dependencies_macos.sh
+
+      - name: Test Library Include
+        run: lua scripts/load_lib.lua
+
+      - name: Test Executability Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          set -e
+          cd artifacts
+          ls -l
           export RUST_BACKTRACE=1
           ./loregui &
           sleep 5
