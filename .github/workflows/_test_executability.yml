@@ -54,7 +54,9 @@ jobs:
           export RUST_BACKTRACE=1
 
       - name: Test Library Include
-        run: lua artifacts/load_lib.lua
+        run: |
+          cd artifacts
+          lua artifacts/load_lib.lua
 
       - name: Test Executability Linux
         if: matrix.os == 'ubuntu-latest'
