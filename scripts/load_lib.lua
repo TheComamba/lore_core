@@ -12,7 +12,7 @@ end
 
 local function try_loading_lib(ffi)
     for _, start in ipairs({ "./", "../" }) do
-        for _, path in ipairs({ "./", "target/debug/", "target/release/" }) do
+        for _, path in ipairs({ "./", "artifacts/", "target/debug/", "target/release/" }) do
             local fullpath = start .. path .. libname(ffi)
             print("Trying to find " .. fullpath)
             local f = io.open(fullpath, "r")
