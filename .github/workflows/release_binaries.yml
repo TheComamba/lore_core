@@ -14,76 +14,8 @@ jobs:
     with:
       isRelease: true
 
-  testExecutabilityLinux:
-    name: Test Executability on Linux
-    runs-on: ubuntu-latest
-    needs: [releaseBuild]
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: LoreCoreLibrary_ubuntu-latest
-          path: artifacts
-
-      - name: Display file structure
-        run: ls -l artifacts
-
-      - name: Test Executability
-        run: |
-          cd artifacts
-          chmod +x loregui
-          export RUST_BACKTRACE=1
-          ./loregui &
-          sleep 5
-          killall loregui
-
-  testExecutabilityWindows:
-    name: Test Executability on Windows
-    runs-on: windows-latest
-    needs: [releaseBuild]
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: LoreCoreLibrary_windows-latest
-          path: artifacts
-
-      - name: Display file structure
-        run: ls -l artifacts
-
-      - name: Test Executability
-        run: |
-          cd artifacts
-          set RUST_BACKTRACE=1
-          .\loregui.exe &
-          sleep 5
-          taskkill /IM loregui.exe /F
-
-  testExecutabilityMacOS:
-    name: Test Executability on MacOS
-    runs-on: macos-latest
-    needs: [releaseBuild]
-
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: LoreCoreLibrary_macos-latest
-          path: artifacts
-
-      - name: Display file structure
-        run: ls -l artifacts
-
-      - name: Test Executability
-        run: |
-          cd artifacts
-          chmod +x loregui
-          export RUST_BACKTRACE=1
-          ./loregui &
-          sleep 5
-          killall loregui
+  testExecutability:
+    uses: ./.github/workflows/_test_executability.yml
 
   uploadChangelog:
     name: Upload Changelog

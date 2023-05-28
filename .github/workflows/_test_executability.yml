@@ -1,0 +1,36 @@
+name: Test Executability
+
+on: [workflow_call]
+
+jobs:
+  testExecutability:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    name: Test Executability
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: LoreCoreLibrary_${{ matrix.os }}
+          path: artifacts
+
+      - name: Test Executability POSIX
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+        run: |
+          cd artifacts
+          chmod +x loregui
+          export RUST_BACKTRACE=1
+          ./loregui &
+          sleep 5
+          killall loregui
+
+      - name: Test Executability
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd artifacts
+          set RUST_BACKTRACE=1
+          .\loregui.exe &
+          sleep 5
+          taskkill /IM loregui.exe /F
