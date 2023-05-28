@@ -23,8 +23,21 @@ jobs:
           name: LoreCoreLibrary_${{ matrix.os }}
           path: artifacts
 
-      - name: Test Executability POSIX
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      - name: Test Executability Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          set -e
+          cd artifacts
+          chmod +x loregui install_runtime_dependencies_linux.sh
+          ls -l
+          ./install_runtime_dependencies_linux.sh
+          export RUST_BACKTRACE=1
+          ./loregui &
+          sleep 5
+          killall loregui
+
+      - name: Test Executability MacOS (Not Working on GitHub Actions)
+        if: matrix.os == 'macos-latest' && false
         run: |
           set -e
           cd artifacts
