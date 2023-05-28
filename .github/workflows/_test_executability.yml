@@ -27,6 +27,8 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           set -e
+          apt-get update
+          apt-get install sudo
           cd artifacts
           chmod +x loregui install_runtime_dependencies_linux.sh
           ls -l
