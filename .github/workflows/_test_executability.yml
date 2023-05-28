@@ -7,8 +7,17 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            container: ubuntu
+          - os: windows-latest
+            container: mcr.microsoft.com/windows:1909
+          - os: macos-latest
+            container: macos
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
     name: Test Executability
+
     steps:
       - name: Download Artifacts
         uses: actions/download-artifact@v3
