@@ -28,8 +28,8 @@ jobs:
         run: |
           set -e
           cd artifacts
-          ls -l
           chmod +x loregui
+          ls -l
           export RUST_BACKTRACE=1
           ./loregui &
           sleep 5
@@ -39,7 +39,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           cd artifacts
-          dir
+          dir /A
           set RUST_BACKTRACE=1
           .\loregui.exe &
           sleep 5
