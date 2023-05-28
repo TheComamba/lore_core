@@ -37,6 +37,9 @@ jobs:
           ./install_lua_dependencies_linux.sh
           export RUST_BACKTRACE=1
 
+      - name: Enable Developer Command Prompt for Windows
+        uses: ilammy/msvc-dev-cmd@v1.12.1
+
       - name: Setup Windows
         if: matrix.os == 'windows-latest'
         run: |
@@ -51,11 +54,13 @@ jobs:
           cd artifacts
           chmod +x install_lua_dependencies_macos.sh
           ./install_lua_dependencies_macos.sh
+          find / -name ffi.so
           export RUST_BACKTRACE=1
 
       - name: Test Library Include
         run: |
           cd artifacts
+          ls -l
           lua load_lib.lua
 
       - name: Test Executability Linux

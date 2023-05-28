@@ -28,11 +28,15 @@ local function try_loading_lib(ffi)
 end
 
 local function main()
+    print("This script tests loading the shared library. It will try to load the library from several locations. If it fails, you may need to run `cargo build` first.\n")
+
+    print("Loading FFI")
     local ffi = require("ffi")
     if not ffi then
         error("Could not load FFI")
     end
 
+    print("Loading header file")
     local header_file = io.open("lorecore_api.h", "r")
     if not header_file then
         header_file = io.open("../lorecore_api.h", "r")
@@ -43,6 +47,7 @@ local function main()
     local header = header_file:read "*all"
     header_file:close()
 
+    print("Defining FFI")
     ffi.cdef(header)
 
     try_loading_lib(ffi)
