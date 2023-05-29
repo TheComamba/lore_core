@@ -2,6 +2,9 @@ name: Test Executability
 
 on: [workflow_call]
 
+env:
+  RUST_BACKTRACE: 1
+
 jobs:
   testExecutability:
     strategy:
@@ -33,8 +36,6 @@ jobs:
           luaVersion: "5.1.5"
 
       - uses: leafo/gh-actions-luarocks@v4
-        with:
-          luarocksVersion: "2.4.4"
 
       - name: Install LuaFFI
         run: luarocks install --server=https://luarocks.org/dev luaffi --verbose
