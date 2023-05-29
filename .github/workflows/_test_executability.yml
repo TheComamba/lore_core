@@ -8,13 +8,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        include:
-          - os: ubuntu-latest
-            container: ubuntu
-          - os: windows-latest
-          - os: macos-latest
+        # include:
+        #   - os: ubuntu-latest
+        #     container: ubuntu
+        #   - os: windows-latest
+        #   - os: macos-latest
     runs-on: ${{ matrix.os }}
-    container: ${{ matrix.container }}
+    # container: ${{ matrix.container }}
     name: Test Executability
 
     steps:
@@ -24,39 +24,45 @@ jobs:
           name: LoreCoreLibrary_${{ matrix.os }}
           path: artifacts
 
-      - name: Setup Linux
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          set -e
-          apt-get update
-          apt-get install sudo
-          cd artifacts
-          chmod +x install_runtime_dependencies_linux.sh
-          ./install_runtime_dependencies_linux.sh
-          chmod +x install_lua_dependencies_linux.sh
-          ./install_lua_dependencies_linux.sh
-          export RUST_BACKTRACE=1
-          echo $LUA_PATH
+      - uses: leafo/gh-actions-lua@v10
+    
+      - uses: leafo/gh-actions-luarocks@v4
+    
+      - run: luarocks install ffi
 
-      - name: Enable Developer Command Prompt for Windows
-        if: matrix.os == 'windows-latest'
-        uses: ilammy/msvc-dev-cmd@v1.12.1
+      # - name: Setup Linux
+      #   if: matrix.os == 'ubuntu-latest'
+      #   run: |
+      #     set -e
+      #     apt-get update
+      #     apt-get install sudo
+      #     cd artifacts
+      #     chmod +x install_runtime_dependencies_linux.sh
+      #     ./install_runtime_dependencies_linux.sh
+      #     chmod +x install_lua_dependencies_linux.sh
+      #     ./install_lua_dependencies_linux.sh
+      #     export RUST_BACKTRACE=1
+      #     echo $LUA_PATH
 
-      - name: Setup Windows
-        if: matrix.os == 'windows-latest'
-        run: |
-          cd artifacts
-          .\install_lua_dependencies_windows.bat
-          set RUST_BACKTRACE=1
+      # - name: Enable Developer Command Prompt for Windows
+      #   if: matrix.os == 'windows-latest'
+      #   uses: ilammy/msvc-dev-cmd@v1.12.1
 
-      - name: Setup MacOS
-        if: matrix.os == 'macos-latest'
-        run: |
-          set -e
-          cd artifacts
-          chmod +x install_lua_dependencies_macos.sh
-          ./install_lua_dependencies_macos.sh
-          export RUST_BACKTRACE=1
+      # - name: Setup Windows
+      #   if: matrix.os == 'windows-latest'
+      #   run: |
+      #     cd artifacts
+      #     .\install_lua_dependencies_windows.bat
+      #     set RUST_BACKTRACE=1
+
+      # - name: Setup MacOS
+      #   if: matrix.os == 'macos-latest'
+      #   run: |
+      #     set -e
+      #     cd artifacts
+      #     chmod +x install_lua_dependencies_macos.sh
+      #     ./install_lua_dependencies_macos.sh
+      #     export RUST_BACKTRACE=1
 
       - name: Test Library Include
         run: |
