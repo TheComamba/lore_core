@@ -27,8 +27,13 @@ jobs:
       - uses: leafo/gh-actions-lua@v10
     
       - uses: leafo/gh-actions-luarocks@v4
-    
-      - run: luarocks install ffi
+      
+      - name: Enable Developer Command Prompt cor C compiler on Windows
+        if: matrix.os == 'windows-latest'
+        uses: ilammy/msvc-dev-cmd@v1.12.1
+
+      - name: Install LuaFFI
+        run: luarocks install --server=https://luarocks.org/dev luaffi --verbose
 
       # - name: Setup Linux
       #   if: matrix.os == 'ubuntu-latest'
@@ -44,9 +49,6 @@ jobs:
       #     export RUST_BACKTRACE=1
       #     echo $LUA_PATH
 
-      # - name: Enable Developer Command Prompt for Windows
-      #   if: matrix.os == 'windows-latest'
-      #   uses: ilammy/msvc-dev-cmd@v1.12.1
 
       # - name: Setup Windows
       #   if: matrix.os == 'windows-latest'
