@@ -26,13 +26,15 @@ jobs:
 
       - name: Enable Developer Command Prompt cor C compiler on Windows
         if: matrix.os == 'windows-latest'
-        uses: ilammy/msvc-dev-cmd@v1.12.1
+        uses: ilammy/msvc-dev-cmd@v1
     
       - uses: leafo/gh-actions-lua@v10
         with:
           luaVersion: "5.1.5"
 
       - uses: leafo/gh-actions-luarocks@v4
+        with:
+          luarocksVersion: "2.4.4"
 
       - name: Install LuaFFI
         run: luarocks install --server=https://luarocks.org/dev luaffi --verbose
