@@ -36,8 +36,10 @@ jobs:
           chmod +x install_lua_dependencies_linux.sh
           ./install_lua_dependencies_linux.sh
           export RUST_BACKTRACE=1
+          echo $LUA_PATH
 
       - name: Enable Developer Command Prompt for Windows
+        if: matrix.os == 'windows-latest'
         uses: ilammy/msvc-dev-cmd@v1.12.1
 
       - name: Setup Windows
@@ -54,7 +56,6 @@ jobs:
           cd artifacts
           chmod +x install_lua_dependencies_macos.sh
           ./install_lua_dependencies_macos.sh
-          find / -name ffi.so
           export RUST_BACKTRACE=1
 
       - name: Test Library Include
