@@ -25,50 +25,44 @@ jobs:
       - name: Install dependencies for Linux
         if: matrix.os == 'ubuntu-latest'
         run: ./scripts/install_build_dependencies_linux.sh
-
       - name: Install dependencies for Windows
         if: matrix.os == 'windows-latest'
         run: .\scripts\install_build_dependencies_windows.bat
-
       - name: Install dependencies for MacOS
         if: matrix.os == 'macos-latest'
         run: ./scripts/install_build_dependencies_macos.sh
 
       - run: cargo build
         if: ${{ !inputs.isRelease }}
-
       - run: cargo build --release
         if: ${{ inputs.isRelease }}
 
       - name: Make artifacts folder
         run: mkdir artifacts
 
+      - name: Add OS-independent artifacts to folder
+        run: |
+          cp lorecore_api.h artifacts
+          cp scripts/load_lib.lua artifacts
+          cp scripts/ffitest.lua artifacts
       - name: Add Linux artifacts to folder
         if: matrix.os == 'ubuntu-latest'
         run: |
           cp target/*/loregui artifacts
           cp target/*/liblorecore.so artifacts
-          cp lorecore_api.h artifacts
           cp scripts/install_lua_dependencies_linux.sh artifacts
-          cp scripts/load_lib.lua artifacts
-
       - name: Add Windows artifacts to folder
         if: matrix.os == 'windows-latest'
         run: |
           cp target/*/loregui.exe artifacts
           cp target/*/liblorecore.dll artifacts
-          cp lorecore_api.h artifacts
           cp scripts/install_lua_dependencies_windows.bat artifacts
-          cp scripts/load_lib.lua artifacts
-
       - name: Add MacOS artifacts to folder
         if: matrix.os == 'macos-latest'
         run: |
           cp target/*/loregui artifacts
           cp target/*/liblorecore.dylib artifacts
-          cp lorecore_api.h artifacts
           cp scripts/install_lua_dependencies_macos.sh artifacts
-          cp scripts/load_lib.lua artifacts
 
       - name: Upload Artifacts
         if: inputs.isRelease

@@ -12,7 +12,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
-    container: ${{ matrix.container }}
     name: Test Executability
 
     steps:
@@ -26,14 +25,17 @@ jobs:
         if: matrix.os == 'windows-latest'
         uses: ilammy/msvc-dev-cmd@v1
     
-      - uses: leafo/gh-actions-lua@v10
-        with:
-          luaVersion: "5.1.5"
-
-      - uses: leafo/gh-actions-luarocks@v4
-
-      - name: Install LuaFFI
-        run: luarocks install --server=https://luarocks.org/dev luaffi --verbose  
+      - name: Install Lua and dependencies on Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          chmod +x install_lua_dependencies_linux.sh
+          ./install_lua_dependencies_linux.sh
+      - name: Install Lua and dependencies on Windows
+        if: matrix.os == 'windows-latest'
+        run: .\install_lua_dependencies_windows.bat
+      - name: Install Lua and dependencies on MacOS
+        if: matrix.os == 'macos-latest'
+        run: ./install_lua_dependencies_macos.sh
 
       - name: Test Library Include
         run: |
@@ -51,7 +53,6 @@ jobs:
           xvfb-run -a ./loregui &
           sleep 5
           killall loregui
-
       - name: Test Executability on Windows
         if: matrix.os == 'windows-latest'
         run: |
@@ -60,7 +61,6 @@ jobs:
           .\loregui.exe &
           sleep 5
           taskkill /IM loregui.exe /F
-
       - name: Test Executability on MacOS (Not Working on GitHub Actions)
         if: matrix.os == 'macos-latest' && false
         run: |

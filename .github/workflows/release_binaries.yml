@@ -51,13 +51,11 @@ jobs:
         with:
           name: LoreCoreLinuxLibrary
           path: artifactsLinux
-
       - name: Download Windows Artifacts
         uses: actions/download-artifact@v3
         with:
           name: LoreCoreWindowsLibrary
           path: artifactsWindows
-
       - name: Download MacOS Artifacts
         uses: actions/download-artifact@v3
         with:
