@@ -1,10 +1,11 @@
 #!/bin/bash
 set -e
 
+rust_req="build-essential cmake pkg-config libfontconfig1-dev"
 rust_rfd_req=libgtk-3-dev
 
 sudo apt-get update
-sudo apt-get install -y $rust_rfd_req
+sudo apt-get install -y "$rust_req" "$rust_rfd_req"
 
 if ! command -v cargo &> /dev/null
 then

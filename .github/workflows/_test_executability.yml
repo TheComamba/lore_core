@@ -11,11 +11,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        include:
-          - os: ubuntu-latest
-            container: sabotagecla6/ubuntu-ui:latest
-          - os: windows-latest
-          - os: macos-latest
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
     name: Test Executability
@@ -47,13 +42,13 @@ jobs:
           ls -l
           lua -l ffi load_lib.lua
 
-      - name: Test Executability on Linux
-        if: matrix.os == 'ubuntu-latest'
+      - name: Test Executability on Linux (not yet supported by iced)
+        if: matrix.os == 'ubuntu-latest' && false
         run: |
           cd artifacts
           ls -l
           chmod +x loregui
-          ./loregui &
+          xvfb-run -a ./loregui &
           sleep 5
           killall loregui
 
