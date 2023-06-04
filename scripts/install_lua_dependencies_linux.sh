@@ -10,4 +10,5 @@ luarocks install --local --server=https://luarocks.org/dev luaffi
 
 echo Checking installation...
 path=$(find . -name ffitest.lua)
-lua $path
+echo "Executing $path" 
+lua "$path"
