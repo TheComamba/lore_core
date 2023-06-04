@@ -45,16 +45,14 @@ jobs:
 
       - name: Test Library Include
         run: |
-          export RUST_BACKTRACE=1
           cd artifacts
-          ls -l
           lua -l ffi load_lib.lua
 
-      - name: Test Executability on Linux (not yet supported by iced)
+      # run in xvfb (X virtual framebuffer) on headless systems
+      - name: Test Executability on Linux # not yet supported by iced, expected for v0.12.0
         if: matrix.os == 'ubuntu-latest' && false
         run: |
           cd artifacts
-          ls -l
           chmod +x loregui
           xvfb-run -a ./loregui &
           sleep 5
@@ -63,15 +61,13 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: |
           cd artifacts
-          dir /A
           .\loregui.exe &
           sleep 5
           taskkill /IM loregui.exe /F
-      - name: Test Executability on MacOS (Not Working on GitHub Actions)
+      - name: Test Executability on MacOS # not yet (?) working on GitHub actions, needs support for metal
         if: matrix.os == 'macos-latest' && false
         run: |
           cd artifacts
-          ls -l
           chmod +x loregui
           ./loregui &
           sleep 5
