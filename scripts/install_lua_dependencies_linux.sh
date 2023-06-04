@@ -10,3 +10,4 @@ luarocks install --local --server=https://luarocks.org/dev luaffi
 
 echo Checking installation...
 find . -name ffitest.lua -exec lua {} \;
+exit $?

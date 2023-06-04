@@ -11,3 +11,4 @@ luarocks install --lua-dir=/usr/local/opt/lua@$version --server=https://luarocks
 
 echo Checking installation...
 find . -name ffitest.lua -exec lua {} \;
+exit $?

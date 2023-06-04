@@ -11,4 +11,4 @@ refreshenv
 
 echo Checking installation...
 rem Yep. That's how you pass output of one command to another in Windows.
-for /f usebackq %F in (`where /r . ffitest.lua`) do lua %F
+for /f usebackq %F in (`where /r . ffitest.lua`) do lua %F || exit /b 1
