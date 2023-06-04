@@ -2,10 +2,10 @@
 set -e
 
 sudo apt-get update
-sudo apt-get install -y lua5.4 luarocks
+sudo apt-get install -y lua5.2 luarocks
 
-luainc=$(pkg-config --cflags lua5.4)
-export LUA_INCDIR=$LUA_INCDIR:$luainc
+# luainc=$(pkg-config --cflags lua5.2)
+# export LUA_INCDIR=$LUA_INCDIR:$luainc
 
 luarocks install --local --server=https://luarocks.org/dev luaffi
 
