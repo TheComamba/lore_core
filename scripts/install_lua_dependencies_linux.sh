@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-version=5.3
+version=5.4
 sudo apt-get update
 sudo apt-get install -y lua$version liblua$version-dev luarocks
 
