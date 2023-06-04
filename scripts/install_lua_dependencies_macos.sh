@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+# Lua5.2 is not a brew package
+# Lua5.3 clashes with luaffi
 version=5.1
 brew update
 brew install lua@$version luarocks
