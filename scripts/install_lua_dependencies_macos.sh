@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-version=5.3
+version=5.1
 brew update
 brew install lua@$version luarocks
 
