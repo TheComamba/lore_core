@@ -9,5 +9,5 @@ sudo apt-get install -y lua$version liblua$version-dev luarocks
 luarocks install --local --server=https://luarocks.org/dev luaffi
 
 echo Checking installation...
-find . -name ffitest.lua -exec lua {} \;
-exit $?
+path=$(find . -name ffitest.lua)
+lua $path
