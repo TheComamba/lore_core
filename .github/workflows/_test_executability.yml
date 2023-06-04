@@ -21,7 +21,7 @@ jobs:
           name: LoreCoreLibrary_${{ matrix.os }}
           path: artifacts
 
-      - name: Enable Developer Command Prompt for C compiler on Windows
+      - name: Enable Developer Command Prompt for C compiler on Windows # needed to compile lua
         if: matrix.os == 'windows-latest'
         uses: ilammy/msvc-dev-cmd@v1
     

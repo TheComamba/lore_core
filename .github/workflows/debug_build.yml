@@ -3,7 +3,6 @@ on: [push]
 
 jobs:
   debugBuild:
-    if: false
     uses: ./.github/workflows/_build.yml
     with:
       isRelease: false
