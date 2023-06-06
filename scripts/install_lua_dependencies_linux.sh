@@ -6,6 +6,13 @@ version=5.1
 sudo apt-get update
 sudo apt-get install -y lua$version liblua$version-dev luarocks
 
+if ! [[ $PATH =~ .*luarocks.* ]]; then
+    luarocks_path=$(luarocks config home_tree)
+    echo Adding luarocks to PATH...
+    PATH=$PATH:$luarocks_path >> ~/.bashrc
+    source ~/.bashrc
+fi
+
 luarocks install --local --server=https://luarocks.org/dev luaffi
 
 echo Checking installation...
