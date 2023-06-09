@@ -26,25 +26,10 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
     
       - name: Test Library Include on Linux
-        if: matrix.os == 'ubuntu-latest'
+        if: true
         run: |
           cd artifacts
-          chmod +x install_lua_dependencies_linux.sh
-          ./install_lua_dependencies_linux.sh
-          lua load_lib.lua
-      - name: Test Library Include Windows
-        if: matrix.os == 'windows-latest'
-        run: |
-          cd artifacts
-          .\install_lua_dependencies_windows.bat
-          lua52 load_lib.lua
-      - name: Test Library Include MacOS
-        if: matrix.os == 'macos-latest'
-        run: |
-          cd artifacts
-          chmod +x install_lua_dependencies_macos.sh
-          ./install_lua_dependencies_macos.sh
-          lua load_lib.lua
+          python3 load_python.py
 
       # run in xvfb (X virtual framebuffer) on headless systems
       - name: Test Executability on Linux # not yet supported by iced, expected for v0.12.0
