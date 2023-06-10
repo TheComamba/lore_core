@@ -26,7 +26,6 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
     
       - name: Test Library Include on Linux
-        if: true
         run: |
           cd artifacts
           python3 load_lib.py
