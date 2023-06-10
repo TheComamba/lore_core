@@ -1,0 +1,81 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      isRelease:
+        type: boolean
+        required: false
+        default: false
+
+env:
+  DEBIAN_FRONTEND: noninteractive
+  TZ: Europe/Berlin
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            container: ubuntu:20.04 # Linking against an older version of Glibc
+          - os: windows-latest
+          - os: macos-latest
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies for Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          apt-get update
+          apt-get install -y sudo curl build-essential cmake pkg-config libfontconfig1-dev
+          ./scripts/install_build_dependencies_linux.sh
+
+      - uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+
+      - uses: actions-rs/cargo@v1
+        if: ${{ !inputs.isRelease }}
+        with:
+            command: build
+
+      - uses: actions-rs/cargo@v1
+        if: ${{ inputs.isRelease }}
+        with:
+            command: build
+            args: --release
+
+      - name: Make artifacts folder
+        run: mkdir artifacts
+
+      - name: Add OS-independent artifacts to folder
+        run: |
+          cp lorecore_api.h artifacts
+          cp scripts/load_lib.py artifacts
+      - name: Add Linux artifacts to folder
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cp target/*/loregui artifacts
+          cp target/*/liblorecore.so artifacts
+      - name: Add Windows artifacts to folder
+        if: matrix.os == 'windows-latest'
+        run: |
+          cp target\*\loregui.exe artifacts
+          cp target\*\lorecore.dll artifacts
+      - name: Add MacOS artifacts to folder
+        if: matrix.os == 'macos-latest'
+        run: |
+          cp target/*/loregui artifacts
+          cp target/*/liblorecore.dylib artifacts
+
+      - name: Upload Artifacts
+        if: inputs.isRelease
+        uses: actions/upload-artifact@v3
+        with:
+          name: LoreCoreLibrary_${{ matrix.os}}
+          path: artifacts
