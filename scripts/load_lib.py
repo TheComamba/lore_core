@@ -1,7 +1,11 @@
 import sys
 import os
-from ctypes import CDLL, WinDLL
+
 from typing import Union
+if sys.platform.startswith('win'):
+    from ctypes import WinDLL
+else:
+    from ctypes import CDLL
 
 def get_lib_name() -> str:
     """Check the platform the code currently is running on and return the corresponding liblorecore file
