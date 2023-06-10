@@ -10,7 +10,6 @@ on:
 
 jobs:
   releaseBuild:
-    if: false
     uses: ./.github/workflows/_build.yml
     with:
       isRelease: true
