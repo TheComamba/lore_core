@@ -24,7 +24,7 @@ def get_lib_name() -> str:
         return "liblorecore.dylib"
     raise ValueError("Unsupported OS")
 
-def find_lib_path() -> Union[CDLL, WinDLL]:
+def find_lib_path() -> str:
     """Goes through all possible path locations and tries to find the lorecore library file
 
     Raises:
@@ -41,7 +41,7 @@ def find_lib_path() -> Union[CDLL, WinDLL]:
                 return path
     raise FileNotFoundError("Could not find library file")
 
-def try_loading_lib() -> Union[CDLL, WinDLL]:
+def try_loading_lib():
     """Tries to load the lorecore library file
 
     Raises:
