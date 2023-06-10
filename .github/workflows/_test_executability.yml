@@ -29,7 +29,7 @@ jobs:
         if: true
         run: |
           cd artifacts
-          python3 load_python.py
+          python3 load_lib.py
 
       # run in xvfb (X virtual framebuffer) on headless systems
       - name: Test Executability on Linux # not yet supported by iced, expected for v0.12.0
