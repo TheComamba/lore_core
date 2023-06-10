@@ -29,17 +29,22 @@ jobs:
           apt-get update
           apt-get install -y sudo build-essential cmake pkg-config libfontconfig1-dev
           ./scripts/install_build_dependencies_linux.sh
-      - name: Install dependencies for Windows
-        if: matrix.os == 'windows-latest'
-        run: .\scripts\install_build_dependencies_windows.bat
-      - name: Install dependencies for MacOS
-        if: matrix.os == 'macos-latest'
-        run: ./scripts/install_build_dependencies_macos.sh
 
-      - run: cargo build
+      - uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
+
+      - uses: actions-rs/cargo@v1
         if: ${{ !inputs.isRelease }}
-      - run: cargo build --release
+        with:
+            command: build
+
+      - uses: actions-rs/cargo@v1
         if: ${{ inputs.isRelease }}
+        with:
+            command: build
+            args: --release
 
       - name: Make artifacts folder
         run: mkdir artifacts
