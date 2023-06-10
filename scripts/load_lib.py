@@ -3,48 +3,54 @@ import os
 from ctypes import CDLL, WinDLL
 from typing import Union
 
-def get_lib_name(base_path: str) -> Union[CDLL, WinDLL]:
+def get_lib_name() -> str:
     """Check the platform the code currently is running on and return the corresponding liblorecore file
 
     Raises:
-        ValueError: If the platform is neither Windows, Lunux, nor Mac
+        ValueError: If the platform is neither Windows, Linux, nor Mac
 
     Returns:
         str: file name of the lorecore library
     """
     if sys.platform.startswith('win'):
-        # Windows-specific code
-        c_file_path = "lorecore.dll"
-        full_path = os.path.join(base_path, c_file_path)
-        return WinDLL(full_path)
+        return "lorecore.dll"
     if sys.platform.startswith('linux'):
-        # Linux-specific code
-        c_file_path = "liblorecore.so"
-        full_path = os.path.join(base_path, c_file_path)
-        return CDLL(full_path)
+        return "liblorecore.so"
     if sys.platform.startswith('darwin'):
-        # macOS-specific code
-        c_file_path = "liblorecore.dylib"
-        full_path = os.path.join(base_path, c_file_path)
-        return CDLL(full_path)
-    # Code for other or unknown operating systems
+        return "liblorecore.dylib"
     raise ValueError("Unsupported OS")
 
-def try_loading_lib() -> Union[CDLL, WinDLL]:
-    """Goes through all possible path locations and tries to find the liblorecore file
+def find_lib_path() -> Union[CDLL, WinDLL]:
+    """Goes through all possible path locations and tries to find the lorecore library file
 
     Raises:
         FileNotFoundError: If the file does not exist in any of the expected locations
 
     Returns:
-        CDLL: object containing all the C functions
+        str: path to the lorecore library file
     """
+    lib_name = get_lib_name()
     for start in ( "./", "../" ):
-        for path in ( "./", "artifacts/", "target/debug/", "target/release/" ):
-            base_path = os.path.join(start, path)
-            if os.path.isfile(base_path):
-                return get_lib_name(base_path)
+        for folder in ( "./", "artifacts/", "target/debug/", "target/release/" ):
+            path = os.path.join(start, folder, lib_name)
+            if os.path.isfile(path):
+                return path
     raise FileNotFoundError("Could not find library file")
+
+def try_loading_lib() -> Union[CDLL, WinDLL]:
+    """Tries to load the lorecore library file
+
+    Raises:
+        OSError: If the library file could not be loaded
+
+    Returns:
+        Union[CDLL, WinDLL]: The loaded library file
+    """
+
+    if sys.platform.startswith('win'):
+        WinDLL(find_lib_path())
+    else:
+        CDLL(find_lib_path())
 
 # def main():
 if __name__ == "__main__":
