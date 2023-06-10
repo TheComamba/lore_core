@@ -25,6 +25,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          sparse-checkout: changelogs
 
       - name: Fetch current changelog
         run: ./changelogs/get_current.sh
