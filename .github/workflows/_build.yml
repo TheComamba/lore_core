@@ -52,7 +52,6 @@ jobs:
       - name: Add Windows artifacts to folder
         if: matrix.os == 'windows-latest'
         run: |
-          dir target\release\
           cp target\*\loregui.exe artifacts
           cp target\*\lorecore.dll artifacts
       - name: Add MacOS artifacts to folder
