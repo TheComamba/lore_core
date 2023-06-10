@@ -25,7 +25,10 @@ jobs:
 
       - name: Install dependencies for Linux
         if: matrix.os == 'ubuntu-latest'
-        run: ./scripts/install_build_dependencies_linux.sh
+        run: |
+          apt-get update
+          apt-get install sudo
+          ./scripts/install_build_dependencies_linux.sh
       - name: Install dependencies for Windows
         if: matrix.os == 'windows-latest'
         run: .\scripts\install_build_dependencies_windows.bat
