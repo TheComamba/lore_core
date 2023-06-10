@@ -10,11 +10,11 @@ def get_lib_name(base_path: str) -> Union[CDLL, WinDLL]:
         ValueError: If the platform is neither Windows, Lunux, nor Mac
 
     Returns:
-        str: file name of the liblorecore
+        str: file name of the lorecore library
     """
     if sys.platform.startswith('win'):
         # Windows-specific code
-        c_file_path = "liblorecore.dll"
+        c_file_path = "lorecore.dll"
         full_path = os.path.join(base_path, c_file_path)
         return WinDLL(full_path)
     if sys.platform.startswith('linux'):
