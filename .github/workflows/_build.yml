@@ -27,7 +27,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           apt-get update
-          apt-get install -y sudo
+          apt-get install -y sudo build-essential cmake pkg-config libfontconfig1-dev
           ./scripts/install_build_dependencies_linux.sh
       - name: Install dependencies for Windows
         if: matrix.os == 'windows-latest'
