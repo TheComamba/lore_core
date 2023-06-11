@@ -4,34 +4,43 @@ use super::auxil::{
 };
 
 #[no_mangle]
-pub unsafe extern "C" fn write_entity_column(
+pub unsafe extern "C" fn write_entity_columns(
     db_path: *const libc::c_char,
-    column: *const CEntityColumn,
+    columns: *const CEntityColumn,
+    size: isize,
 ) -> *const libc::c_char {
-    match c_write_entity_column(db_path, &*column) {
-        Ok(()) => char_ptr(""),
-        Err(e) => char_ptr(&e.to_string()),
+    for i in 0..size {
+        if let Err(e) = c_write_entity_column(db_path, &*columns.offset(i)) {
+            return char_ptr(&e.to_string());
+        }
     }
+    char_ptr("")
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn write_history_item(
+pub unsafe extern "C" fn write_history_items(
     db_path: *const libc::c_char,
-    item: *const CHistoryItem,
+    items: *const CHistoryItem,
+    size: isize,
 ) -> *const libc::c_char {
-    match c_write_history_item(db_path, &*item) {
-        Ok(()) => char_ptr(""),
-        Err(e) => char_ptr(&e.to_string()),
+    for i in 0..size {
+        if let Err(e) = c_write_history_item(db_path, &*items.offset(i)) {
+            return char_ptr(&e.to_string());
+        }
     }
+    char_ptr("")
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn write_relationship(
+pub unsafe extern "C" fn write_relationships(
     db_path: *const libc::c_char,
-    relationship: *const CEntityRelationship,
+    relationships: *const CEntityRelationship,
+    size: isize,
 ) -> *const libc::c_char {
-    match c_write_relationship(db_path, &*relationship) {
-        Ok(()) => char_ptr(""),
-        Err(e) => char_ptr(&e.to_string()),
+    for i in 0..size {
+        if let Err(e) = c_write_relationship(db_path, &*relationships.offset(i)) {
+            return char_ptr(&e.to_string());
+        }
     }
+    char_ptr("")
 }
