@@ -1,13 +1,14 @@
-use super::auxil::{c_write_entity_column, c_write_history_item, c_write_relationship, char_ptr};
+use super::auxil::{
+    c_write_entity_column, c_write_history_item, c_write_relationship, char_ptr, CEntityColumn,
+    CEntityRelationship, CHistoryItem,
+};
 
 #[no_mangle]
 pub unsafe extern "C" fn write_entity_column(
     db_path: *const libc::c_char,
-    label: *const libc::c_char,
-    descriptor: *const libc::c_char,
-    description: *const libc::c_char,
+    column: CEntityColumn,
 ) -> *const libc::c_char {
-    match c_write_entity_column(db_path, label, descriptor, description) {
+    match c_write_entity_column(db_path, column) {
         Ok(()) => char_ptr(""),
         Err(e) => char_ptr(&e.to_string()),
     }
@@ -16,26 +17,9 @@ pub unsafe extern "C" fn write_entity_column(
 #[no_mangle]
 pub unsafe extern "C" fn write_history_item(
     db_path: *const libc::c_char,
-    label: *const libc::c_char,
-    content: *const libc::c_char,
-    is_concerns_others: bool,
-    is_secret: bool,
-    year: i32,
-    day: i32,
-    originator: *const libc::c_char,
-    year_format: *const libc::c_char,
+    item: CHistoryItem,
 ) -> *const libc::c_char {
-    match c_write_history_item(
-        db_path,
-        label,
-        content,
-        is_concerns_others,
-        is_secret,
-        year,
-        day,
-        originator,
-        year_format,
-    ) {
+    match c_write_history_item(db_path, item) {
         Ok(()) => char_ptr(""),
         Err(e) => char_ptr(&e.to_string()),
     }
@@ -44,11 +28,9 @@ pub unsafe extern "C" fn write_history_item(
 #[no_mangle]
 pub unsafe extern "C" fn write_relationship(
     db_path: *const libc::c_char,
-    parent: *const libc::c_char,
-    child: *const libc::c_char,
-    role: *const libc::c_char,
+    relationship: CEntityRelationship,
 ) -> *const libc::c_char {
-    match c_write_relationship(db_path, parent, child, role) {
+    match c_write_relationship(db_path, relationship) {
         Ok(()) => char_ptr(""),
         Err(e) => char_ptr(&e.to_string()),
     }

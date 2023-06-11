@@ -24,7 +24,10 @@ impl SqlGui {
         Ok(())
     }
 
-    pub(super) fn update_descriptor_view(&mut self, event: ColViewMes) -> Result<(), LoreCoreError> {
+    pub(super) fn update_descriptor_view(
+        &mut self,
+        event: ColViewMes,
+    ) -> Result<(), LoreCoreError> {
         let state = &mut self.entity_view_state;
         match event {
             ColViewMes::New => (),

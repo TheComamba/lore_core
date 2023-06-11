@@ -36,104 +36,92 @@ pub(super) fn char_ptr(message: &str) -> *const libc::c_char {
     CString::new(message).unwrap().into_raw()
 }
 
-fn to_entity_column(
-    label: *const libc::c_char,
-    descriptor: *const libc::c_char,
-    description: *const libc::c_char,
-) -> Result<EntityColumn, LoreCoreError> {
+#[repr(C)]
+pub struct CEntityColumn {
+    pub label: *const libc::c_char,
+    pub descriptor: *const libc::c_char,
+    pub description: *const libc::c_char,
+}
+
+#[repr(C)]
+pub struct CEntityRelationship {
+    pub parent: *const libc::c_char,
+    pub child: *const libc::c_char,
+    pub role: *const libc::c_char,
+}
+
+#[repr(C)]
+pub struct CHistoryItem {
+    pub label: *const libc::c_char,
+    pub content: *const libc::c_char,
+    pub is_concerns_others: bool,
+    pub is_secret: bool,
+    pub year: i32,
+    pub day: i32,
+    pub originator: *const libc::c_char,
+    pub year_format: *const libc::c_char,
+}
+
+fn to_entity_column(column: CEntityColumn) -> Result<EntityColumn, LoreCoreError> {
     Ok(EntityColumn {
-        label: char_pointer_to_string(label)?,
-        descriptor: char_pointer_to_string(descriptor)?,
-        description: char_pointer_to_string(description)?,
+        label: char_pointer_to_string(column.label)?,
+        descriptor: char_pointer_to_string(column.descriptor)?,
+        description: char_pointer_to_string(column.description)?,
     })
 }
 
 pub(super) fn c_write_entity_column(
     db_path: *const libc::c_char,
-    label: *const libc::c_char,
-    descriptor: *const libc::c_char,
-    description: *const libc::c_char,
+    column: CEntityColumn,
 ) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
-    let column = to_entity_column(label, descriptor, description)?;
+    let column = to_entity_column(column)?;
     let db = LoreDatabase::open(db_path)?;
     db.write_entity_column(column)?;
     Ok(())
 }
 
-fn to_history_item(
-    label: *const libc::c_char,
-    content: *const libc::c_char,
-    is_concerns_others: bool,
-    is_secret: bool,
-    year: i32,
-    day: i32,
-    originator: *const libc::c_char,
-    year_format: *const libc::c_char,
-) -> Result<HistoryItem, LoreCoreError> {
-    let day = if day > 0 { Some(day) } else { None };
+fn to_history_item(item: CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
     Ok(HistoryItem {
-        label: char_pointer_to_string(label)?,
-        content: char_pointer_to_string(content)?,
-        is_concerns_others,
-        is_secret,
-        year,
-        day,
-        originator: char_pointer_to_optional_string(originator)?,
-        year_format: char_pointer_to_optional_string(year_format)?,
+        label: char_pointer_to_string(item.label)?,
+        content: char_pointer_to_string(item.content)?,
+        is_concerns_others: item.is_concerns_others,
+        is_secret: item.is_secret,
+        year: item.year,
+        day: if item.day > 0 { Some(item.day) } else { None },
+        originator: char_pointer_to_optional_string(item.originator)?,
+        year_format: char_pointer_to_optional_string(item.year_format)?,
     })
 }
 
 pub(super) fn c_write_history_item(
     db_path: *const libc::c_char,
-    label: *const libc::c_char,
-    content: *const libc::c_char,
-    is_concerns_others: bool,
-    is_secret: bool,
-    year: i32,
-    day: i32,
-    originator: *const libc::c_char,
-    year_format: *const libc::c_char,
+    item: CHistoryItem,
 ) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
-    let item = to_history_item(
-        label,
-        content,
-        is_concerns_others,
-        is_secret,
-        year,
-        day,
-        originator,
-        year_format,
-    )?;
+    let item = to_history_item(item)?;
     let db = LoreDatabase::open(db_path)?;
     db.write_history_item(item)?;
     Ok(())
 }
 
-fn to_relationship(
-    parent: *const libc::c_char,
-    child: *const libc::c_char,
-    role: *const libc::c_char,
-) -> Result<EntityRelationship, LoreCoreError> {
+fn to_relationship(rel: CEntityRelationship) -> Result<EntityRelationship, LoreCoreError> {
     Ok(EntityRelationship {
-        parent: char_pointer_to_string(parent)?,
-        child: char_pointer_to_string(child)?,
-        role: char_pointer_to_optional_string(role)?,
+        parent: char_pointer_to_string(rel.parent)?,
+        child: char_pointer_to_string(rel.child)?,
+        role: char_pointer_to_optional_string(rel.role)?,
     })
 }
 
 pub(super) fn c_write_relationship(
     db_path: *const libc::c_char,
-    parent: *const libc::c_char,
-    child: *const libc::c_char,
-    role: *const libc::c_char,
+    rel: CEntityRelationship,
 ) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
-    let relationship = to_relationship(parent, child, role)?;
+    let relationship = to_relationship(rel)?;
     let db = LoreDatabase::open(db_path)?;
     db.write_relationship(relationship)?;
     Ok(())
