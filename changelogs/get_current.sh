@@ -1,9 +1,9 @@
 #!/bin/bash
-
 set -e
+cd $(git rev-parse --show-toplevel)
 
+dir=changelogs
 latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-dir=$(dirname $(find . -name $latest_tag.md))
 filepath=$dir/$latest_tag.md
 if [ -z "$filepath" ]; then
     echo "[No changelog found]" > $dir/current.md
