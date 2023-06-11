@@ -1,7 +1,3 @@
-use std::path::PathBuf;
-
-use crate::{errors::LoreCoreError, sql::lore_database::LoreDatabase};
-
 use super::{
     auxil::char_pointer_to_string,
     types::{
@@ -9,6 +5,8 @@ use super::{
         CHistoryItem,
     },
 };
+use crate::{errors::LoreCoreError, sql::lore_database::LoreDatabase};
+use std::path::PathBuf;
 
 pub(super) fn c_write_entity_column(
     db_path: *const libc::c_char,

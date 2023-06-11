@@ -19,6 +19,24 @@ pub unsafe extern "C" fn write_entity_columns(
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn read_entity_columns(
+    db_path: *const libc::c_char,
+    columns: *mut CEntityColumn,
+    size: *mut isize,
+) -> *const libc::c_char {
+    match super::read_database::c_read_entity_columns(db_path) {
+        Ok(cols) => {
+            *size = cols.len() as isize;
+            for i in 0..cols.len() {
+                *columns.offset(i as isize) = cols[i].to_owned();
+            }
+            char_ptr("")
+        }
+        Err(e) => char_ptr(&e.to_string()),
+    }
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn write_history_items(
     db_path: *const libc::c_char,
     items: *const CHistoryItem,

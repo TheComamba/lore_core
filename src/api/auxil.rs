@@ -1,6 +1,5 @@
-use std::ffi::{CStr, CString};
-
 use crate::errors::LoreCoreError;
+use std::ffi::{CStr, CString};
 
 pub(super) fn char_pointer_to_string(string: *const libc::c_char) -> Result<String, LoreCoreError> {
     let string: &str = unsafe {
@@ -11,6 +10,10 @@ pub(super) fn char_pointer_to_string(string: *const libc::c_char) -> Result<Stri
         })?
     };
     Ok(string.to_string())
+}
+
+pub(super) fn string_to_char_pointer(string: &str) -> *const libc::c_char {
+    CString::new(string).unwrap().into_raw()
 }
 
 pub(super) fn char_pointer_to_optional_string(

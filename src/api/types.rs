@@ -1,11 +1,11 @@
+use super::auxil::{char_pointer_to_optional_string, char_pointer_to_string};
 use crate::{
     errors::LoreCoreError,
     sql::{entity::EntityColumn, history::HistoryItem, relationships::EntityRelationship},
 };
 
-use super::auxil::{char_pointer_to_optional_string, char_pointer_to_string};
-
 #[repr(C)]
+#[derive(Clone)]
 pub struct CEntityColumn {
     pub label: *const libc::c_char,
     pub descriptor: *const libc::c_char,
@@ -13,6 +13,7 @@ pub struct CEntityColumn {
 }
 
 #[repr(C)]
+#[derive(Clone)]
 pub struct CEntityRelationship {
     pub parent: *const libc::c_char,
     pub child: *const libc::c_char,
@@ -20,6 +21,7 @@ pub struct CEntityRelationship {
 }
 
 #[repr(C)]
+#[derive(Clone)]
 pub struct CHistoryItem {
     pub label: *const libc::c_char,
     pub content: *const libc::c_char,
