@@ -1,6 +1,7 @@
-use super::auxil::{
-    c_write_entity_column, c_write_history_item, c_write_relationship, char_ptr, CEntityColumn,
-    CEntityRelationship, CHistoryItem,
+use super::{
+    auxil::char_ptr,
+    types::{CEntityColumn, CEntityRelationship, CHistoryItem},
+    write_database::{c_write_entity_column, c_write_history_item, c_write_relationship},
 };
 
 #[no_mangle]
