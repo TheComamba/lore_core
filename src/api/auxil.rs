@@ -62,7 +62,7 @@ pub struct CHistoryItem {
     pub year_format: *const libc::c_char,
 }
 
-fn to_entity_column(column: CEntityColumn) -> Result<EntityColumn, LoreCoreError> {
+fn to_entity_column(column: &CEntityColumn) -> Result<EntityColumn, LoreCoreError> {
     Ok(EntityColumn {
         label: char_pointer_to_string(column.label)?,
         descriptor: char_pointer_to_string(column.descriptor)?,
@@ -72,7 +72,7 @@ fn to_entity_column(column: CEntityColumn) -> Result<EntityColumn, LoreCoreError
 
 pub(super) fn c_write_entity_column(
     db_path: *const libc::c_char,
-    column: CEntityColumn,
+    column: &CEntityColumn,
 ) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
@@ -82,7 +82,7 @@ pub(super) fn c_write_entity_column(
     Ok(())
 }
 
-fn to_history_item(item: CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
+fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
     Ok(HistoryItem {
         label: char_pointer_to_string(item.label)?,
         content: char_pointer_to_string(item.content)?,
@@ -97,7 +97,7 @@ fn to_history_item(item: CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
 
 pub(super) fn c_write_history_item(
     db_path: *const libc::c_char,
-    item: CHistoryItem,
+    item: &CHistoryItem,
 ) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
@@ -107,7 +107,7 @@ pub(super) fn c_write_history_item(
     Ok(())
 }
 
-fn to_relationship(rel: CEntityRelationship) -> Result<EntityRelationship, LoreCoreError> {
+fn to_relationship(rel: &CEntityRelationship) -> Result<EntityRelationship, LoreCoreError> {
     Ok(EntityRelationship {
         parent: char_pointer_to_string(rel.parent)?,
         child: char_pointer_to_string(rel.child)?,
@@ -117,7 +117,7 @@ fn to_relationship(rel: CEntityRelationship) -> Result<EntityRelationship, LoreC
 
 pub(super) fn c_write_relationship(
     db_path: *const libc::c_char,
-    rel: CEntityRelationship,
+    rel: &CEntityRelationship,
 ) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);

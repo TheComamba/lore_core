@@ -21,8 +21,8 @@ typedef struct CEntityRelationship {
   const char *role;
 } CEntityRelationship;
 
-const char *write_entity_column(const char *db_path, struct CEntityColumn column);
+const char *write_entity_column(const char *db_path, const struct CEntityColumn *column);
 
-const char *write_history_item(const char *db_path, struct CHistoryItem item);
+const char *write_history_item(const char *db_path, const struct CHistoryItem *item);
 
-const char *write_relationship(const char *db_path, struct CEntityRelationship relationship);
+const char *write_relationship(const char *db_path, const struct CEntityRelationship *relationship);

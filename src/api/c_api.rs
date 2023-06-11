@@ -6,9 +6,9 @@ use super::auxil::{
 #[no_mangle]
 pub unsafe extern "C" fn write_entity_column(
     db_path: *const libc::c_char,
-    column: CEntityColumn,
+    column: *const CEntityColumn,
 ) -> *const libc::c_char {
-    match c_write_entity_column(db_path, column) {
+    match c_write_entity_column(db_path, &*column) {
         Ok(()) => char_ptr(""),
         Err(e) => char_ptr(&e.to_string()),
     }
@@ -17,9 +17,9 @@ pub unsafe extern "C" fn write_entity_column(
 #[no_mangle]
 pub unsafe extern "C" fn write_history_item(
     db_path: *const libc::c_char,
-    item: CHistoryItem,
+    item: *const CHistoryItem,
 ) -> *const libc::c_char {
-    match c_write_history_item(db_path, item) {
+    match c_write_history_item(db_path, &*item) {
         Ok(()) => char_ptr(""),
         Err(e) => char_ptr(&e.to_string()),
     }
@@ -28,9 +28,9 @@ pub unsafe extern "C" fn write_history_item(
 #[no_mangle]
 pub unsafe extern "C" fn write_relationship(
     db_path: *const libc::c_char,
-    relationship: CEntityRelationship,
+    relationship: *const CEntityRelationship,
 ) -> *const libc::c_char {
-    match c_write_relationship(db_path, relationship) {
+    match c_write_relationship(db_path, &*relationship) {
         Ok(()) => char_ptr(""),
         Err(e) => char_ptr(&e.to_string()),
     }
