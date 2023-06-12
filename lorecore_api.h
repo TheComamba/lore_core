@@ -25,7 +25,9 @@ const char *write_entity_columns(const char *db_path,
                                  const struct CEntityColumn *columns,
                                  intptr_t size);
 
-const char *read_entity_columns(const char *db_path, struct CEntityColumn *columns, intptr_t *size);
+const char *get_number_of_entity_columns(const char *db_path, intptr_t *size);
+
+const char *read_entity_columns(const char *db_path, struct CEntityColumn *columns);
 
 const char *write_history_items(const char *db_path,
                                 const struct CHistoryItem *items,
