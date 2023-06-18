@@ -99,7 +99,7 @@ impl EntityViewState {
         Ok(())
     }
 
-    fn new_entity(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
+    pub(super) fn new_entity(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
         let label = self.label_view_state.search_text.clone();
         if label.is_empty() {
             return Err(LoreCoreError::InputError(
@@ -114,7 +114,7 @@ impl EntityViewState {
             description,
         };
         match db {
-            Some(db) => db.write_entity_column(new_col)?,
+            Some(db) => db.write_entity_columns(vec![new_col])?,
             None => {
                 return Err(LoreCoreError::InputError(
                     "No database loaded to which to add new entity.".to_string(),
@@ -147,7 +147,7 @@ impl EntityViewState {
             description,
         };
         match db {
-            Some(db) => db.write_entity_column(new_col)?,
+            Some(db) => db.write_entity_columns(vec![new_col])?,
             None => {
                 return Err(LoreCoreError::InputError(
                     "No database loaded to which to add descriptor.".to_string(),

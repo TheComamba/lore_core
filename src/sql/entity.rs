@@ -16,16 +16,18 @@ pub struct EntityColumn {
 }
 
 impl LoreDatabase {
-    pub fn write_entity_column(&self, col: EntityColumn) -> Result<(), LoreCoreError> {
+    pub fn write_entity_columns(&self, cols: Vec<EntityColumn>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::insert_into(entities::table)
-            .values(&col)
-            .execute(&mut connection)
-            .map_err(|e| {
-                LoreCoreError::SqlError(
-                    "Writing column to database failed: ".to_string() + &e.to_string(),
-                )
-            })?;
+        for col in cols.into_iter() {
+            diesel::insert_into(entities::table)
+                .values(&col)
+                .execute(&mut connection)
+                .map_err(|e| {
+                    LoreCoreError::SqlError(
+                        "Writing column to database failed: ".to_string() + &e.to_string(),
+                    )
+                })?;
+        }
         Ok(())
     }
 

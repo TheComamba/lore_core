@@ -16,7 +16,7 @@ pub(super) fn c_write_entity_column(
     let db_path = PathBuf::from(db_path);
     let column = to_entity_column(column)?;
     let db = LoreDatabase::open(db_path)?;
-    db.write_entity_column(column)?;
+    db.write_entity_columns(vec![column])?;
     Ok(())
 }
 
