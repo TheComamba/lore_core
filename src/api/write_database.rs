@@ -40,6 +40,6 @@ pub(super) fn c_write_relationship(
     let db_path = PathBuf::from(db_path);
     let relationship = to_relationship(rel)?;
     let db = LoreDatabase::open(db_path)?;
-    db.write_relationship(relationship)?;
+    db.write_relationships(vec![relationship])?;
     Ok(())
 }

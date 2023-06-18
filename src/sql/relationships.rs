@@ -14,16 +14,18 @@ pub struct EntityRelationship {
 }
 
 impl LoreDatabase {
-    pub fn write_relationship(&self, rel: EntityRelationship) -> Result<(), LoreCoreError> {
+    pub fn write_relationships(&self, rels: Vec<EntityRelationship>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::insert_into(relationships::table)
-            .values(&rel)
-            .execute(&mut connection)
-            .map_err(|e| {
-                LoreCoreError::SqlError(
-                    "Writing relationship to database failed: ".to_string() + &e.to_string(),
-                )
-            })?;
+        for rel in rels.into_iter() {
+            diesel::insert_into(relationships::table)
+                .values(&rel)
+                .execute(&mut connection)
+                .map_err(|e| {
+                    LoreCoreError::SqlError(
+                        "Writing relationship to database failed: ".to_string() + &e.to_string(),
+                    )
+                })?;
+        }
         Ok(())
     }
 
