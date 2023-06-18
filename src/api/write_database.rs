@@ -28,7 +28,7 @@ pub(super) fn c_write_history_item(
     let db_path = PathBuf::from(db_path);
     let item = to_history_item(item)?;
     let db = LoreDatabase::open(db_path)?;
-    db.write_history_item(item)?;
+    db.write_history_items(vec![item])?;
     Ok(())
 }
 

@@ -18,16 +18,18 @@ pub struct HistoryItem {
 }
 
 impl LoreDatabase {
-    pub fn write_history_item(&self, col: HistoryItem) -> Result<(), LoreCoreError> {
+    pub fn write_history_items(&self, cols: Vec<HistoryItem>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::insert_into(history_items::table)
-            .values(&col)
-            .execute(&mut connection)
-            .map_err(|e| {
-                LoreCoreError::SqlError(
-                    "Writing history item to database failed: ".to_string() + &e.to_string(),
-                )
-            })?;
+        for col in cols.into_iter() {
+            diesel::insert_into(history_items::table)
+                .values(&col)
+                .execute(&mut connection)
+                .map_err(|e| {
+                    LoreCoreError::SqlError(
+                        "Writing history item to database failed: ".to_string() + &e.to_string(),
+                    )
+                })?;
+        }
         Ok(())
     }
 
