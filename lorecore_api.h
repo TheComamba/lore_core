@@ -33,6 +33,14 @@ const char *write_history_items(const char *db_path,
                                 const struct CHistoryItem *items,
                                 intptr_t size);
 
+const char *get_number_of_history_items(const char *db_path, intptr_t *size);
+
+const char *read_history_items(const char *db_path, struct CHistoryItem *items);
+
 const char *write_relationships(const char *db_path,
                                 const struct CEntityRelationship *relationships,
                                 intptr_t size);
+
+const char *get_number_of_relationships(const char *db_path, intptr_t *size);
+
+const char *read_relationships(const char *db_path, struct CEntityRelationship *relationships);

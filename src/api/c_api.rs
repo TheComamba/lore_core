@@ -35,12 +35,12 @@ pub unsafe extern "C" fn get_number_of_entity_columns(
 #[no_mangle]
 pub unsafe extern "C" fn read_entity_columns(
     db_path: *const libc::c_char,
-    columns: *mut CEntityColumn
+    columns: *mut CEntityColumn,
 ) -> *const libc::c_char {
     match super::read_database::c_read_entity_columns(db_path) {
-        Ok(cols) => {
-            for i in 0..cols.len() {
-                *columns.offset(i as isize) = cols[i].to_owned();
+        Ok(database_entries) => {
+            for i in 0..database_entries.len() {
+                *columns.offset(i as isize) = database_entries[i].to_owned();
             }
             char_ptr("")
         }
@@ -63,6 +63,36 @@ pub unsafe extern "C" fn write_history_items(
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn get_number_of_history_items(
+    db_path: *const libc::c_char,
+    size: *mut isize,
+) -> *const libc::c_char {
+    match super::read_database::c_read_history_items(db_path) {
+        Ok(items) => {
+            *size = items.len() as isize;
+            char_ptr("")
+        }
+        Err(e) => char_ptr(&e.to_string()),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn read_history_items(
+    db_path: *const libc::c_char,
+    items: *mut CHistoryItem,
+) -> *const libc::c_char {
+    match super::read_database::c_read_history_items(db_path) {
+        Ok(database_entries) => {
+            for i in 0..database_entries.len() {
+                *items.offset(i as isize) = database_entries[i].to_owned();
+            }
+            char_ptr("")
+        }
+        Err(e) => char_ptr(&e.to_string()),
+    }
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn write_relationships(
     db_path: *const libc::c_char,
     relationships: *const CEntityRelationship,
@@ -74,4 +104,34 @@ pub unsafe extern "C" fn write_relationships(
         }
     }
     char_ptr("")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn get_number_of_relationships(
+    db_path: *const libc::c_char,
+    size: *mut isize,
+) -> *const libc::c_char {
+    match super::read_database::c_read_relationships(db_path) {
+        Ok(relationships) => {
+            *size = relationships.len() as isize;
+            char_ptr("")
+        }
+        Err(e) => char_ptr(&e.to_string()),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn read_relationships(
+    db_path: *const libc::c_char,
+    relationships: *mut CEntityRelationship,
+) -> *const libc::c_char {
+    match super::read_database::c_read_relationships(db_path) {
+        Ok(database_entries) => {
+            for i in 0..database_entries.len() {
+                *relationships.offset(i as isize) = database_entries[i].to_owned();
+            }
+            char_ptr("")
+        }
+        Err(e) => char_ptr(&e.to_string()),
+    }
 }

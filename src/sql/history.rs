@@ -33,14 +33,17 @@ impl LoreDatabase {
         Ok(())
     }
 
-    pub fn get_all_years(&self) -> Result<Vec<i32>, LoreCoreError> {
+    pub fn get_all_history_items(&self) -> Result<Vec<HistoryItem>, LoreCoreError> {
         let mut connection = self.db_connection()?;
-        let years = history_items::table
+        let items = history_items::table
             .load::<HistoryItem>(&mut connection)
-            .map_err(|e| sql_loading_error_no_params("history items", "all years", e))?
-            .into_iter()
-            .map(|c| c.year)
-            .collect::<Vec<_>>();
+            .map_err(|e| sql_loading_error_no_params("history items", "all years", e))?;
+        Ok(items)
+    }
+
+    pub fn get_all_years(&self) -> Result<Vec<i32>, LoreCoreError> {
+        let items = self.get_all_history_items()?;
+        let years = items.into_iter().map(|item| item.year).collect();
         Ok(years)
     }
 

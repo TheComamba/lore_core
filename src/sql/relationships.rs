@@ -1,5 +1,5 @@
 use super::{lore_database::LoreDatabase, schema::relationships};
-use crate::errors::{sql_loading_error, LoreCoreError};
+use crate::errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreError};
 use ::diesel::prelude::*;
 use diesel::Insertable;
 use diesel::{QueryDsl, Queryable, RunQueryDsl};
@@ -27,6 +27,14 @@ impl LoreDatabase {
                 })?;
         }
         Ok(())
+    }
+
+    pub fn get_relationships(&self) -> Result<Vec<EntityRelationship>, LoreCoreError> {
+        let mut connection = self.db_connection()?;
+        let rels = relationships::table
+            .load::<EntityRelationship>(&mut connection)
+            .map_err(|e| sql_loading_error_no_params("relationships", "all", e))?;
+        Ok(rels)
     }
 
     pub fn get_parents(&self, child: &Option<&String>) -> Result<Vec<String>, LoreCoreError> {

@@ -12,10 +12,6 @@ pub(super) fn char_pointer_to_string(string: *const libc::c_char) -> Result<Stri
     Ok(string.to_string())
 }
 
-pub(super) fn string_to_char_pointer(string: &str) -> *const libc::c_char {
-    CString::new(string).unwrap().into_raw()
-}
-
 pub(super) fn char_pointer_to_optional_string(
     string: *const libc::c_char,
 ) -> Result<Option<String>, LoreCoreError> {
@@ -25,6 +21,17 @@ pub(super) fn char_pointer_to_optional_string(
     } else {
         Some(string)
     })
+}
+
+pub(super) fn string_to_char_pointer(string: &str) -> *const libc::c_char {
+    CString::new(string).unwrap().into_raw()
+}
+
+pub(super) fn optional_string_to_char_pointer(string: &Option<String>) -> *const libc::c_char {
+    match string {
+        Some(string) => string_to_char_pointer(string),
+        None => string_to_char_pointer(""),
+    }
 }
 
 pub(super) fn char_ptr(message: &str) -> *const libc::c_char {
