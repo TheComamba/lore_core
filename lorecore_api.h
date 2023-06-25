@@ -7,8 +7,8 @@ typedef struct CEntityColumn {
 typedef struct CHistoryItem {
   const char *label;
   const char *content;
-  bool is_concerns_others;
-  bool is_secret;
+  uint8_t is_concerns_others;
+  uint8_t is_secret;
   int32_t year;
   int32_t day;
   const char *originator;

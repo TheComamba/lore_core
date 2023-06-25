@@ -25,8 +25,8 @@ pub struct CEntityRelationship {
 pub struct CHistoryItem {
     pub label: *const libc::c_char,
     pub content: *const libc::c_char,
-    pub is_concerns_others: bool,
-    pub is_secret: bool,
+    pub is_concerns_others: u8,
+    pub is_secret: u8,
     pub year: i32,
     pub day: i32,
     pub originator: *const libc::c_char,
@@ -45,8 +45,8 @@ pub(super) fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCo
     Ok(HistoryItem {
         label: char_pointer_to_string(item.label)?,
         content: char_pointer_to_string(item.content)?,
-        is_concerns_others: item.is_concerns_others,
-        is_secret: item.is_secret,
+        is_concerns_others: item.is_concerns_others != 0,
+        is_secret: item.is_secret != 0,
         year: item.year,
         day: if item.day > 0 { Some(item.day) } else { None },
         originator: char_pointer_to_optional_string(item.originator)?,

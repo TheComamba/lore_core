@@ -31,8 +31,8 @@ pub(super) fn c_read_history_items(
     for col in history_columns {
         items.push(CHistoryItem {
             content: string_to_char_pointer(&col.content),
-            is_concerns_others: col.is_concerns_others,
-            is_secret: col.is_secret,
+            is_concerns_others: col.is_concerns_others as u8,
+            is_secret: col.is_secret as u8,
             label: string_to_char_pointer(&col.label),
             day: if let Some(day) = col.day { day } else { 0 },
             year: col.year,
