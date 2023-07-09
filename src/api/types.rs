@@ -30,7 +30,6 @@ pub struct CHistoryItem {
     pub year: i32,
     pub day: i32,
     pub originator: *const libc::c_char,
-    pub year_format: *const libc::c_char,
 }
 
 pub(super) fn to_entity_column(column: &CEntityColumn) -> Result<EntityColumn, LoreCoreError> {
@@ -50,7 +49,6 @@ pub(super) fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCo
         year: item.year,
         day: if item.day > 0 { Some(item.day) } else { None },
         originator: char_pointer_to_optional_string(item.originator)?,
-        year_format: char_pointer_to_optional_string(item.year_format)?,
     })
 }
 

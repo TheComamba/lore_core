@@ -37,7 +37,6 @@ pub(super) fn c_read_history_items(
             day: if let Some(day) = col.day { day } else { 0 },
             year: col.year,
             originator: optional_string_to_char_pointer(&col.originator),
-            year_format: optional_string_to_char_pointer(&col.year_format),
         });
     }
     Ok(items)

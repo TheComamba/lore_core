@@ -12,7 +12,6 @@ typedef struct CHistoryItem {
   int32_t year;
   int32_t day;
   const char *originator;
-  const char *year_format;
 } CHistoryItem;
 
 typedef struct CEntityRelationship {
