@@ -14,7 +14,6 @@ pub struct HistoryItem {
     pub year: i32,
     pub day: Option<i32>,
     pub originator: Option<String>,
-    pub year_format: Option<String>,
 }
 
 impl LoreDatabase {

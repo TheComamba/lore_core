@@ -6,6 +6,5 @@ CREATE TABLE history_items (
   year INTEGER NOT NULL,
   day INTEGER,
   originator TEXT,
-  year_format TEXT,
   PRIMARY KEY (label)
 );
