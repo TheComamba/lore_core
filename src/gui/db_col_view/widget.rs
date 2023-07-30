@@ -1,11 +1,11 @@
 use super::{state::DbColViewState, ColViewMes};
 use crate::gui::{app::message_handling::GuiMes, style::header};
+use iced::widget::{component, Component};
 use iced::{
     widget::{button, Column, Container, Text, TextInput},
     Element, Length, Renderer,
 };
 use iced_aw::{style::SelectionListStyles, SelectionList};
-use iced_lazy::{component, Component};
 
 pub(crate) struct DbColView<'a, M> {
     title: &'a str,

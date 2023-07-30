@@ -4,11 +4,11 @@ use crate::gui::{
     db_col_view::{widget::DbColView, ColViewMes},
     style::header,
 };
+use iced::widget::{component, Component};
 use iced::{
     widget::{Column, Row, Text},
     Alignment, Element, Length, Renderer,
 };
-use iced_lazy::{component, Component};
 
 impl<'a> Component<GuiMes, Renderer> for EntityView<'a> {
     type State = ();
