@@ -1,6 +1,7 @@
 use super::{state::DbColViewState, ColViewMes};
 use crate::gui::{app::message_handling::GuiMes, style::header};
 use iced::widget::{component, Component};
+use iced::Font;
 use iced::{
     widget::{button, Column, Container, Text, TextInput},
     Element, Length, Renderer,
@@ -58,6 +59,8 @@ where
             20.0,
             0.0,
             SelectionListStyles::Default,
+            None,
+            Font::default(),
         );
         Container::new(selection_list).height(Length::Fill).into()
     }
