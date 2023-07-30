@@ -1,10 +1,10 @@
 use super::HistoryView;
 use crate::gui::{app::message_handling::GuiMes, db_col_view::widget::DbColView, style::header};
+use iced::widget::{component, Component};
 use iced::{
     widget::{Column, Row, Text},
     Element, Length, Renderer,
 };
-use iced_lazy::{component, Component};
 
 impl<'a> Component<GuiMes, Renderer> for HistoryView<'a> {
     type State = ();

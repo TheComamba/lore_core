@@ -15,7 +15,7 @@ impl SqlGui {
         match event {
             ColViewMes::New => self.dialog = Some(Box::new(NewEntityDialog::new())),
             ColViewMes::SearchFieldUpd(text) => state.label_view_state.search_text = text,
-            ColViewMes::Selected(label) => {
+            ColViewMes::Selected((_index, label)) => {
                 state.label_view_state.set_selected(label);
                 state.descriptor_view_state.set_selected_none();
                 state.update_descriptors(&self.lore_database)?;
@@ -24,12 +24,15 @@ impl SqlGui {
         Ok(())
     }
 
-    pub(super) fn update_descriptor_view(&mut self, event: ColViewMes) -> Result<(), LoreCoreError> {
+    pub(super) fn update_descriptor_view(
+        &mut self,
+        event: ColViewMes,
+    ) -> Result<(), LoreCoreError> {
         let state = &mut self.entity_view_state;
         match event {
             ColViewMes::New => (),
             ColViewMes::SearchFieldUpd(text) => state.descriptor_view_state.search_text = text,
-            ColViewMes::Selected(descriptor) => {
+            ColViewMes::Selected((_index, descriptor)) => {
                 state.descriptor_view_state.set_selected(descriptor);
                 state.update_description(&self.lore_database)?;
             }
