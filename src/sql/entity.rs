@@ -16,27 +16,32 @@ pub struct EntityColumn {
 }
 
 impl LoreDatabase {
-    pub fn write_entity_column(&self, col: EntityColumn) -> Result<(), LoreCoreError> {
+    pub fn write_entity_columns(&self, cols: Vec<EntityColumn>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::insert_into(entities::table)
-            .values(&col)
-            .execute(&mut connection)
-            .map_err(|e| {
-                LoreCoreError::SqlError(
-                    "Writing column to database failed: ".to_string() + &e.to_string(),
-                )
-            })?;
+        for col in cols.into_iter() {
+            diesel::insert_into(entities::table)
+                .values(&col)
+                .execute(&mut connection)
+                .map_err(|e| {
+                    LoreCoreError::SqlError(
+                        "Writing column to database failed: ".to_string() + &e.to_string(),
+                    )
+                })?;
+        }
         Ok(())
     }
 
-    pub fn get_all_entity_labels(&self) -> Result<Vec<String>, LoreCoreError> {
+    pub fn get_all_entity_columns(&self) -> Result<Vec<EntityColumn>, LoreCoreError> {
         let mut connection = self.db_connection()?;
-        let labels = entities::table
+        let cols = entities::table
             .load::<EntityColumn>(&mut connection)
-            .map_err(|e| sql_loading_error_no_params("entities", "all labels", e))?
-            .into_iter()
-            .map(|c| c.label)
-            .collect::<Vec<_>>();
+            .map_err(|e| sql_loading_error_no_params("entities", "all", e))?;
+        Ok(cols)
+    }
+
+    pub fn get_all_entity_labels(&self) -> Result<Vec<String>, LoreCoreError> {
+        let columns = self.get_all_entity_columns()?;
+        let labels = columns.into_iter().map(|c| c.label).collect();
         Ok(labels)
     }
 

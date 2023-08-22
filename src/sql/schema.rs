@@ -17,7 +17,6 @@ diesel::table! {
         year -> Integer,
         day -> Nullable<Integer>,
         originator -> Nullable<Text>,
-        year_format -> Nullable<Text>,
     }
 }
 

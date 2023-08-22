@@ -15,6 +15,7 @@ pub(crate) enum GuiMes {
     ParentViewUpd(ColViewMes),
     ChildViewUpd(ColViewMes),
     DialogClosed,
+    EntitySubmit,
 }
 
 impl SqlGui {
@@ -31,6 +32,7 @@ impl SqlGui {
             GuiMes::ParentViewUpd(event) => self.update_parent_view(event)?,
             GuiMes::ChildViewUpd(event) => self.update_child_view(event)?,
             GuiMes::DialogClosed => self.dialog = None,
+            GuiMes::EntitySubmit => self.entity_view_state.new_entity(&self.lore_database)?,
         }
         Ok(())
     }

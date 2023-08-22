@@ -14,31 +14,35 @@ pub struct HistoryItem {
     pub year: i32,
     pub day: Option<i32>,
     pub originator: Option<String>,
-    pub year_format: Option<String>,
 }
 
 impl LoreDatabase {
-    pub fn write_history_item(&self, col: HistoryItem) -> Result<(), LoreCoreError> {
+    pub fn write_history_items(&self, cols: Vec<HistoryItem>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::insert_into(history_items::table)
-            .values(&col)
-            .execute(&mut connection)
-            .map_err(|e| {
-                LoreCoreError::SqlError(
-                    "Writing history item to database failed: ".to_string() + &e.to_string(),
-                )
-            })?;
+        for col in cols.into_iter() {
+            diesel::insert_into(history_items::table)
+                .values(&col)
+                .execute(&mut connection)
+                .map_err(|e| {
+                    LoreCoreError::SqlError(
+                        "Writing history item to database failed: ".to_string() + &e.to_string(),
+                    )
+                })?;
+        }
         Ok(())
     }
 
-    pub fn get_all_years(&self) -> Result<Vec<i32>, LoreCoreError> {
+    pub fn get_all_history_items(&self) -> Result<Vec<HistoryItem>, LoreCoreError> {
         let mut connection = self.db_connection()?;
-        let years = history_items::table
+        let items = history_items::table
             .load::<HistoryItem>(&mut connection)
-            .map_err(|e| sql_loading_error_no_params("history items", "all years", e))?
-            .into_iter()
-            .map(|c| c.year)
-            .collect::<Vec<_>>();
+            .map_err(|e| sql_loading_error_no_params("history items", "all years", e))?;
+        Ok(items)
+    }
+
+    pub fn get_all_years(&self) -> Result<Vec<i32>, LoreCoreError> {
+        let items = self.get_all_history_items()?;
+        let years = items.into_iter().map(|item| item.year).collect();
         Ok(years)
     }
 

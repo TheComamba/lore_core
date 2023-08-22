@@ -1,5 +1,5 @@
 use super::{lore_database::LoreDatabase, schema::relationships};
-use crate::errors::{sql_loading_error, LoreCoreError};
+use crate::errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreError};
 use ::diesel::prelude::*;
 use diesel::Insertable;
 use diesel::{QueryDsl, Queryable, RunQueryDsl};
@@ -14,17 +14,27 @@ pub struct EntityRelationship {
 }
 
 impl LoreDatabase {
-    pub fn write_relationship(&self, rel: EntityRelationship) -> Result<(), LoreCoreError> {
+    pub fn write_relationships(&self, rels: Vec<EntityRelationship>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::insert_into(relationships::table)
-            .values(&rel)
-            .execute(&mut connection)
-            .map_err(|e| {
-                LoreCoreError::SqlError(
-                    "Writing relationship to database failed: ".to_string() + &e.to_string(),
-                )
-            })?;
+        for rel in rels.into_iter() {
+            diesel::insert_into(relationships::table)
+                .values(&rel)
+                .execute(&mut connection)
+                .map_err(|e| {
+                    LoreCoreError::SqlError(
+                        "Writing relationship to database failed: ".to_string() + &e.to_string(),
+                    )
+                })?;
+        }
         Ok(())
+    }
+
+    pub fn get_relationships(&self) -> Result<Vec<EntityRelationship>, LoreCoreError> {
+        let mut connection = self.db_connection()?;
+        let rels = relationships::table
+            .load::<EntityRelationship>(&mut connection)
+            .map_err(|e| sql_loading_error_no_params("relationships", "all", e))?;
+        Ok(rels)
     }
 
     pub fn get_parents(&self, child: &Option<&String>) -> Result<Vec<String>, LoreCoreError> {

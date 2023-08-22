@@ -1,55 +1,137 @@
-use super::auxil::{c_write_entity_column, c_write_history_item, c_write_relationship, char_ptr};
+use super::{
+    auxil::char_ptr,
+    types::{CEntityColumn, CEntityRelationship, CHistoryItem},
+    write_database::{c_write_entity_column, c_write_history_item, c_write_relationship},
+};
 
 #[no_mangle]
-pub unsafe extern "C" fn write_entity_column(
+pub unsafe extern "C" fn write_entity_columns(
     db_path: *const libc::c_char,
-    label: *const libc::c_char,
-    descriptor: *const libc::c_char,
-    description: *const libc::c_char,
+    columns: *const CEntityColumn,
+    size: isize,
 ) -> *const libc::c_char {
-    match c_write_entity_column(db_path, label, descriptor, description) {
-        Ok(()) => char_ptr(""),
+    for i in 0..size {
+        if let Err(e) = c_write_entity_column(db_path, &*columns.offset(i)) {
+            return char_ptr(&e.to_string());
+        }
+    }
+    char_ptr("")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn get_number_of_entity_columns(
+    db_path: *const libc::c_char,
+    size: *mut isize,
+) -> *const libc::c_char {
+    match super::read_database::c_read_entity_columns(db_path) {
+        Ok(cols) => {
+            *size = cols.len() as isize;
+            char_ptr("")
+        }
         Err(e) => char_ptr(&e.to_string()),
     }
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn write_history_item(
+pub unsafe extern "C" fn read_entity_columns(
     db_path: *const libc::c_char,
-    label: *const libc::c_char,
-    content: *const libc::c_char,
-    is_concerns_others: bool,
-    is_secret: bool,
-    year: i32,
-    day: i32,
-    originator: *const libc::c_char,
-    year_format: *const libc::c_char,
+    columns: *mut CEntityColumn,
 ) -> *const libc::c_char {
-    match c_write_history_item(
-        db_path,
-        label,
-        content,
-        is_concerns_others,
-        is_secret,
-        year,
-        day,
-        originator,
-        year_format,
-    ) {
-        Ok(()) => char_ptr(""),
+    match super::read_database::c_read_entity_columns(db_path) {
+        Ok(database_entries) => {
+            for i in 0..database_entries.len() {
+                *columns.offset(i as isize) = database_entries[i].to_owned();
+            }
+            char_ptr("")
+        }
         Err(e) => char_ptr(&e.to_string()),
     }
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn write_relationship(
+pub unsafe extern "C" fn write_history_items(
     db_path: *const libc::c_char,
-    parent: *const libc::c_char,
-    child: *const libc::c_char,
-    role: *const libc::c_char,
+    items: *const CHistoryItem,
+    size: isize,
 ) -> *const libc::c_char {
-    match c_write_relationship(db_path, parent, child, role) {
-        Ok(()) => char_ptr(""),
+    for i in 0..size {
+        if let Err(e) = c_write_history_item(db_path, &*items.offset(i)) {
+            return char_ptr(&e.to_string());
+        }
+    }
+    char_ptr("")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn get_number_of_history_items(
+    db_path: *const libc::c_char,
+    size: *mut isize,
+) -> *const libc::c_char {
+    match super::read_database::c_read_history_items(db_path) {
+        Ok(items) => {
+            *size = items.len() as isize;
+            char_ptr("")
+        }
+        Err(e) => char_ptr(&e.to_string()),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn read_history_items(
+    db_path: *const libc::c_char,
+    items: *mut CHistoryItem,
+) -> *const libc::c_char {
+    match super::read_database::c_read_history_items(db_path) {
+        Ok(database_entries) => {
+            for i in 0..database_entries.len() {
+                *items.offset(i as isize) = database_entries[i].to_owned();
+            }
+            char_ptr("")
+        }
+        Err(e) => char_ptr(&e.to_string()),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn write_relationships(
+    db_path: *const libc::c_char,
+    relationships: *const CEntityRelationship,
+    size: isize,
+) -> *const libc::c_char {
+    for i in 0..size {
+        if let Err(e) = c_write_relationship(db_path, &*relationships.offset(i)) {
+            return char_ptr(&e.to_string());
+        }
+    }
+    char_ptr("")
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn get_number_of_relationships(
+    db_path: *const libc::c_char,
+    size: *mut isize,
+) -> *const libc::c_char {
+    match super::read_database::c_read_relationships(db_path) {
+        Ok(relationships) => {
+            *size = relationships.len() as isize;
+            char_ptr("")
+        }
+        Err(e) => char_ptr(&e.to_string()),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn read_relationships(
+    db_path: *const libc::c_char,
+    relationships: *mut CEntityRelationship,
+) -> *const libc::c_char {
+    match super::read_database::c_read_relationships(db_path) {
+        Ok(database_entries) => {
+            for i in 0..database_entries.len() {
+                *relationships.offset(i as isize) = database_entries[i].to_owned();
+            }
+            char_ptr("")
+        }
         Err(e) => char_ptr(&e.to_string()),
     }
 }

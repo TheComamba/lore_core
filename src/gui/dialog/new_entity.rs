@@ -46,7 +46,7 @@ impl Component<GuiMes, Renderer> for NewEntityDialog {
                 self.ent_type = ent_type;
                 None
             }
-            NewEntityMes::Submit => Some(GuiMes::DialogClosed),
+            NewEntityMes::Submit => Some(GuiMes::EntitySubmit),
         }
     }
 
