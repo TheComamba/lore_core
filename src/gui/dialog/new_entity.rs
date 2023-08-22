@@ -1,10 +1,10 @@
 use super::Dialog;
 use crate::gui::app::message_handling::GuiMes;
+use iced::widget::{component, Component};
 use iced::{
     widget::{Button, Column, Text, TextInput},
     Element, Renderer,
 };
-use iced_lazy::{component, Component};
 
 #[derive(Debug, Clone)]
 pub(crate) struct NewEntityDialog {

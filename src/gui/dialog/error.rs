@@ -1,11 +1,11 @@
 use super::Dialog;
 use crate::gui::app::message_handling::GuiMes;
+use iced::widget::{component, Component};
 use iced::{
     widget::{Button, Column, Text},
     Element, Renderer,
 };
 use iced_aw::style::CardStyles;
-use iced_lazy::{component, Component};
 use lorecore::errors::LoreCoreError;
 
 #[derive(Debug, Clone)]
