@@ -1,3 +1,4 @@
+name: Check if changelog was updated
 on:
   pull_request:
     branches: ["main"]
