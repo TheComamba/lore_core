@@ -1,0 +1,34 @@
+name: Run Tests
+on: [push]
+
+jobs:
+    build:
+      strategy:
+        matrix:
+          os: [ubuntu-latest, windows-latest, macos-latest]
+      runs-on: ${{ matrix.os }}
+      steps:
+        - uses: actions/checkout@v3
+  
+        - name: Install dependencies for Linux
+          if: matrix.os == 'ubuntu-latest'
+          run: |
+            apt-get update
+            apt-get install -y sudo curl build-essential cmake pkg-config libfontconfig1-dev
+            ./scripts/install_build_dependencies_linux.sh
+  
+        - uses: actions-rs/toolchain@v1
+          with:
+              toolchain: stable
+              override: true
+  
+        - uses: actions-rs/cargo@v1
+          if: ${{ github.ref_name != 'main' }}
+          with:
+              command: test
+  
+        - uses: actions-rs/cargo@v1
+          if: ${{ github.ref_name == 'main' }}
+          with:
+              command: test
+              args: --release
