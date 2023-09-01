@@ -2,9 +2,10 @@ use lorecore::errors::LoreCoreError;
 
 #[derive(Debug, Clone)]
 pub(crate) struct DbColViewState {
-    pub(crate) search_text: String,
+    search_text: String,
     entries: Vec<String>,
     selected_entry: Option<String>,
+    visible_entries: Vec<String>,
 }
 
 impl DbColViewState {
@@ -13,6 +14,7 @@ impl DbColViewState {
             search_text: "".to_string(),
             entries: vec![],
             selected_entry: None,
+            visible_entries: vec![],
         }
     }
 
@@ -51,8 +53,21 @@ impl DbColViewState {
         &self.selected_entry
     }
 
-    pub(crate) fn get_visible_entries(&self) -> Vec<String> {
-        match self.search_text.is_empty() {
+    pub(crate) fn set_search_text(&mut self, text: String) {
+        self.search_text = text;
+        self.set_visible_entries();
+    }
+
+    pub(crate) fn get_search_text(&self) -> &String {
+        &self.search_text
+    }
+
+    pub(crate) fn get_visible_entries(&self) -> &Vec<String> {
+        &self.visible_entries
+    }
+
+    fn set_visible_entries(&mut self) {
+        self.visible_entries = match self.search_text.is_empty() {
             true => self.entries.clone(),
             false => {
                 let mut visible = vec![String::new()];

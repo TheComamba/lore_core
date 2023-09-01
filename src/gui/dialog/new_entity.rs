@@ -27,7 +27,7 @@ impl Dialog for NewEntityDialog {
     }
 
     fn body<'a>(&self) -> Element<'a, GuiMes> {
-        component(self.clone()).into()
+        component(self.clone())
     }
 }
 

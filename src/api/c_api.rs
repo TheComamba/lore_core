@@ -39,8 +39,8 @@ pub unsafe extern "C" fn read_entity_columns(
 ) -> *const libc::c_char {
     match super::read_database::c_read_entity_columns(db_path) {
         Ok(database_entries) => {
-            for i in 0..database_entries.len() {
-                *columns.offset(i as isize) = database_entries[i].to_owned();
+            for (i, _) in database_entries.iter().enumerate() {
+                *columns.add(i) = database_entries[i].to_owned();
             }
             char_ptr("")
         }
@@ -83,8 +83,8 @@ pub unsafe extern "C" fn read_history_items(
 ) -> *const libc::c_char {
     match super::read_database::c_read_history_items(db_path) {
         Ok(database_entries) => {
-            for i in 0..database_entries.len() {
-                *items.offset(i as isize) = database_entries[i].to_owned();
+            for (i, _) in database_entries.iter().enumerate() {
+                *items.add(i) = database_entries[i].to_owned();
             }
             char_ptr("")
         }
@@ -127,8 +127,8 @@ pub unsafe extern "C" fn read_relationships(
 ) -> *const libc::c_char {
     match super::read_database::c_read_relationships(db_path) {
         Ok(database_entries) => {
-            for i in 0..database_entries.len() {
-                *relationships.offset(i as isize) = database_entries[i].to_owned();
+            for (i, _) in database_entries.iter().enumerate() {
+                *relationships.add(i) = database_entries[i].to_owned();
             }
             char_ptr("")
         }
