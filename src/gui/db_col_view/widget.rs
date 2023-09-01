@@ -47,7 +47,7 @@ where
     }
 
     fn search_field(&self) -> TextInput<ColViewMes> {
-        TextInput::new("Type to search...", &self.state.search_text)
+        TextInput::new("Type to search...", self.state.get_search_text())
             .on_input(ColViewMes::SearchFieldUpd)
             .width(Length::Fill)
     }

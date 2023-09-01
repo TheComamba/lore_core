@@ -14,8 +14,8 @@ impl SqlGui {
         let state = &mut self.entity_view_state;
         match event {
             ColViewMes::New => self.dialog = Some(Box::new(NewEntityDialog::new())),
-            ColViewMes::SearchFieldUpd(text) => state.label_view_state.search_text = text,
-            ColViewMes::Selected((_index, label)) => {
+            ColViewMes::SearchFieldUpd(text) => state.label_view_state.set_search_text(text),
+            ColViewMes::Selected(_index, label) => {
                 state.label_view_state.set_selected(label);
                 state.descriptor_view_state.set_selected_none();
                 state.update_descriptors(&self.lore_database)?;
@@ -31,8 +31,8 @@ impl SqlGui {
         let state = &mut self.entity_view_state;
         match event {
             ColViewMes::New => (),
-            ColViewMes::SearchFieldUpd(text) => state.descriptor_view_state.search_text = text,
-            ColViewMes::Selected((_index, descriptor)) => {
+            ColViewMes::SearchFieldUpd(text) => state.descriptor_view_state.set_search_text(text),
+            ColViewMes::Selected(_index, descriptor) => {
                 state.descriptor_view_state.set_selected(descriptor);
                 state.update_description(&self.lore_database)?;
             }
@@ -100,7 +100,7 @@ impl EntityViewState {
     }
 
     pub(super) fn new_entity(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
-        let label = self.label_view_state.search_text.clone();
+        let label = self.label_view_state.get_search_text().clone();
         if label.is_empty() {
             return Err(LoreCoreError::InputError(
                 "Cannot create entity with empty label.".to_string(),
@@ -134,7 +134,7 @@ impl EntityViewState {
                 ));
             }
         };
-        let descriptor = self.descriptor_view_state.search_text.clone();
+        let descriptor = self.descriptor_view_state.get_search_text().clone();
         if descriptor.is_empty() {
             return Err(LoreCoreError::InputError(
                 "Cannot create empty descriptor.".to_string(),
