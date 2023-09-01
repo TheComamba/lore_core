@@ -7,7 +7,7 @@ impl SqlGui {
         let state = &mut self.relationship_view_state;
         match event {
             ColViewMes::New => (),
-            ColViewMes::SearchFieldUpd(text) => state.parent_view_state.search_text = text,
+            ColViewMes::SearchFieldUpd(text) => state.parent_view_state.set_search_text(text),
             ColViewMes::Selected(_index, parent) => {
                 state.parent_view_state.set_selected(parent);
                 state.update_children(&self.lore_database)?;
@@ -21,7 +21,7 @@ impl SqlGui {
         let state = &mut self.relationship_view_state;
         match event {
             ColViewMes::New => (),
-            ColViewMes::SearchFieldUpd(text) => state.child_view_state.search_text = text,
+            ColViewMes::SearchFieldUpd(text) => state.child_view_state.set_search_text(text),
             ColViewMes::Selected(_index, child) => {
                 state.child_view_state.set_selected(child);
                 state.update_parents(&self.lore_database)?;

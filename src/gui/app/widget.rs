@@ -47,9 +47,12 @@ impl Sandbox for SqlGui {
     }
 
     fn view(&self) -> iced::Element<'_, Self::Message> {
-        Modal::new(self.main_view(), self.dialog.as_ref().map(|d| d.to_element()))
-            .on_esc(GuiMes::DialogClosed)
-            .into()
+        Modal::new(
+            self.main_view(),
+            self.dialog.as_ref().map(|d| d.to_element()),
+        )
+        .on_esc(GuiMes::DialogClosed)
+        .into()
     }
 }
 
