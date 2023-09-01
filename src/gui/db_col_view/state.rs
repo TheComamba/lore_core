@@ -51,14 +51,14 @@ impl DbColViewState {
         &self.selected_entry
     }
 
-    pub(crate) fn get_visible_entries(&self) -> Vec<String> {
+    pub(crate) fn get_visible_entries(&self) -> Vec<&String> {
         match self.search_text.is_empty() {
-            true => self.entries.clone(),
+            true => self.entries.iter().map(|s| s).collect(),
             false => {
-                let mut visible = vec![String::new()];
+                let mut visible = vec![&String::new()];
                 for entry in self.entries.iter() {
                     if entry.contains(&self.search_text) {
-                        visible.push(entry.clone());
+                        visible.push(entry);
                     }
                 }
                 visible
