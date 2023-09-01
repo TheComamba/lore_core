@@ -2,13 +2,13 @@ name: Regular Build
 
 on:
   schedule:
-    - cron: "0 0 * * 5" # every Friday at 00:00 UTC
+    - cron: "0 0 * * *" # every day at 00:00 UTC
 
 jobs:
   releaseBuild:
     uses: ./.github/workflows/_build.yml
     with:
-      isRelease: false
+      isRelease: true
 
   testExecutability:
     needs: [releaseBuild]
