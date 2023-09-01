@@ -5,5 +5,5 @@ pub(super) mod widget;
 pub(crate) enum ColViewMes {
     New,
     SearchFieldUpd(String),
-    Selected((usize, String)),
+    Selected(usize, String),
 }

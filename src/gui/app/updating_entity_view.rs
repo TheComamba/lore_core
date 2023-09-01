@@ -15,7 +15,7 @@ impl SqlGui {
         match event {
             ColViewMes::New => self.dialog = Some(Box::new(NewEntityDialog::new())),
             ColViewMes::SearchFieldUpd(text) => state.label_view_state.search_text = text,
-            ColViewMes::Selected((_index, label)) => {
+            ColViewMes::Selected(_index, label) => {
                 state.label_view_state.set_selected(label);
                 state.descriptor_view_state.set_selected_none();
                 state.update_descriptors(&self.lore_database)?;
@@ -32,7 +32,7 @@ impl SqlGui {
         match event {
             ColViewMes::New => (),
             ColViewMes::SearchFieldUpd(text) => state.descriptor_view_state.search_text = text,
-            ColViewMes::Selected((_index, descriptor)) => {
+            ColViewMes::Selected(_index, descriptor) => {
                 state.descriptor_view_state.set_selected(descriptor);
                 state.update_description(&self.lore_database)?;
             }

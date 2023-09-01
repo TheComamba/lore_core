@@ -8,7 +8,7 @@ impl SqlGui {
         match event {
             ColViewMes::New => (),
             ColViewMes::SearchFieldUpd(text) => state.parent_view_state.search_text = text,
-            ColViewMes::Selected((_index, parent)) => {
+            ColViewMes::Selected(_index, parent) => {
                 state.parent_view_state.set_selected(parent);
                 state.update_children(&self.lore_database)?;
                 state.update_role(&self.lore_database)?;
@@ -22,7 +22,7 @@ impl SqlGui {
         match event {
             ColViewMes::New => (),
             ColViewMes::SearchFieldUpd(text) => state.child_view_state.search_text = text,
-            ColViewMes::Selected((_index, child)) => {
+            ColViewMes::Selected(_index, child) => {
                 state.child_view_state.set_selected(child);
                 state.update_parents(&self.lore_database)?;
                 state.update_role(&self.lore_database)?;

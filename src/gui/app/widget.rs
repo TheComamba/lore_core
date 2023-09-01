@@ -47,7 +47,7 @@ impl Sandbox for SqlGui {
     }
 
     fn view(&self) -> iced::Element<'_, Self::Message> {
-        Modal::new(self.dialog.is_some(), self.main_view(), self.dialog())
+        Modal::new(self.main_view(), self.dialog.as_ref().map(|d| d.to_element()))
             .on_esc(GuiMes::DialogClosed)
             .into()
     }
@@ -108,13 +108,5 @@ impl SqlGui {
             .padding(5)
             .spacing(5)
             .into()
-    }
-
-    fn dialog(&self) -> Element<'_, GuiMes> {
-        if let Some(dialog) = self.dialog.as_ref() {
-            dialog.to_element()
-        } else {
-            Row::new().into()
-        }
     }
 }
