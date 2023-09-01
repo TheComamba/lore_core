@@ -1,5 +1,5 @@
 use iced::widget::{text, Text};
 
-pub(super) fn header<'a>(content: &'a str) -> Text {
+pub(super) fn header(content: &str) -> Text {
     text(content).size(25)
 }

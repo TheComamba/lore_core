@@ -92,7 +92,7 @@ impl HistoryViewState {
                 let days = db
                     .get_all_days(year)?
                     .iter()
-                    .map(|d| Self::optional_int_to_string(d))
+                    .map(Self::optional_int_to_string)
                     .collect();
                 self.day_view_state.set_entries(days);
             }

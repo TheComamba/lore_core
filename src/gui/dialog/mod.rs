@@ -20,10 +20,9 @@ pub(crate) trait Dialog {
     fn to_element<'a>(&self) -> Element<'a, GuiMes> {
         let header: Text<'a, Renderer> = Text::new(self.header());
         let body = self.body();
-        let card =
-            Card::new::<Element<'a, GuiMes>, Element<'a, GuiMes>>(header.into(), body.into())
-                .style(self.card_style())
-                .on_close(GuiMes::DialogClosed);
+        let card = Card::new::<Element<'a, GuiMes>, Element<'a, GuiMes>>(header.into(), body)
+            .style(self.card_style())
+            .on_close(GuiMes::DialogClosed);
         Container::new(Scrollable::new(card)).padding(100).into()
     }
 }
