@@ -3,7 +3,7 @@ use crate::errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreErro
 use ::diesel::prelude::*;
 use diesel::Insertable;
 
-#[derive(Insertable, Queryable)]
+#[derive(Insertable, Queryable, PartialEq, Clone)]
 #[diesel(table_name = history_items)]
 #[repr(C)]
 pub struct HistoryItem {
