@@ -48,12 +48,12 @@ jobs:
         with:
             toolchain: stable
 
-      - uses: actions-rs/cargo@v1
+      - uses: clechasseur/rs-cargo@v1
         if: ${{ !inputs.isRelease }}
         with:
             command: build
 
-      - uses: actions-rs/cargo@v1
+      - uses: clechasseur/rs-cargo@v1
         if: ${{ inputs.isRelease }}
         with:
             command: build
