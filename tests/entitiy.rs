@@ -10,7 +10,7 @@ fn writing_single_entity_column() {
     let entity = EntityColumn {
         label: "testlabel".to_string(),
         descriptor: "testdescriptor".to_string(),
-        description: "testdescription".to_string(),
+        description: Some("testdescription".to_string()),
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
     let entity_out = db.get_all_entity_columns().unwrap();
@@ -33,7 +33,7 @@ fn write_many_entity_columns() {
             entities.push(EntityColumn {
                 label: label.clone(),
                 descriptor: descriptor.clone(),
-                description: label.clone() + descriptor,
+                description: Some(label.clone() + descriptor),
             });
         }
     }
@@ -56,7 +56,7 @@ fn write_entity_with_empty_description() {
     let entity = EntityColumn {
         label: "testlabel".to_string(),
         descriptor: "testdescriptor".to_string(),
-        description: "".to_string(),
+        description: None,
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
     let entity_out = db.get_all_entity_columns().unwrap();

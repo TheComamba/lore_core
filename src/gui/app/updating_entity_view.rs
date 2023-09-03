@@ -51,7 +51,7 @@ impl EntityViewState {
     fn reset_selections(&mut self) {
         self.label_view_state.set_selected_none();
         self.descriptor_view_state.set_selected_none();
-        self.current_description = String::new();
+        self.current_description = None;
     }
 
     fn update_labels(&mut self, db: &Option<LoreDatabase>) -> Result<(), LoreCoreError> {
@@ -81,20 +81,20 @@ impl EntityViewState {
         let label = match self.label_view_state.get_selected() {
             Some(label) => label,
             None => {
-                self.current_description = "".to_string();
+                self.current_description = None;
                 return Ok(());
             }
         };
         let descriptor = match self.descriptor_view_state.get_selected() {
             Some(descriptor) => descriptor,
             None => {
-                self.current_description = "".to_string();
+                self.current_description = None;
                 return Ok(());
             }
         };
         match db {
             Some(db) => self.current_description = db.get_description(label, descriptor)?,
-            None => self.current_description = String::new(),
+            None => self.current_description = None,
         }
         Ok(())
     }
@@ -107,7 +107,7 @@ impl EntityViewState {
             ));
         }
         let descriptor = "PLACEHOLDER".to_string();
-        let description = String::new();
+        let description = None;
         let new_col = EntityColumn {
             label,
             descriptor,
@@ -140,7 +140,7 @@ impl EntityViewState {
                 "Cannot create empty descriptor.".to_string(),
             ));
         }
-        let description = String::new();
+        let description = None;
         let new_col = EntityColumn {
             label,
             descriptor,

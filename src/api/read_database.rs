@@ -15,7 +15,7 @@ pub(super) fn c_read_entity_columns(
         columns.push(CEntityColumn {
             label: string_to_char_pointer(&col.label),
             descriptor: string_to_char_pointer(&col.descriptor),
-            description: string_to_char_pointer(&col.description),
+            description: optional_string_to_char_pointer(&col.description),
         });
     }
     Ok(columns)

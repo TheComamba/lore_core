@@ -36,7 +36,10 @@ impl<'a> Component<GuiMes, Renderer> for EntityView<'a> {
             .push(
                 Column::new()
                     .push(header("Description"))
-                    .push(Text::new(&self.state.current_description))
+                    .push(Text::new(match &self.state.current_description {
+                        Some(description) => description,
+                        None => "",
+                    }))
                     .padding(5)
                     .spacing(5)
                     .width(Length::Fill),
