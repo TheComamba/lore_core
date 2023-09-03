@@ -6,7 +6,7 @@ use crate::{
 use ::diesel::prelude::*;
 use diesel::{Insertable, RunQueryDsl};
 
-#[derive(Insertable, Queryable, PartialEq, Clone)]
+#[derive(Insertable, Queryable, PartialEq, Clone, Debug)]
 #[diesel(table_name = entities)]
 #[repr(C)]
 pub struct EntityColumn {
