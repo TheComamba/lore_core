@@ -11,12 +11,10 @@ diesel::table! {
 diesel::table! {
     history_items (label) {
         label -> Text,
-        content -> Text,
-        is_concerns_others -> Bool,
-        is_secret -> Bool,
         year -> Integer,
         day -> Nullable<Integer>,
-        originator -> Nullable<Text>,
+        content -> Text,
+        properties -> Nullable<Text>,
     }
 }
 
@@ -28,8 +26,4 @@ diesel::table! {
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(
-    entities,
-    history_items,
-    relationships,
-);
+diesel::allow_tables_to_appear_in_same_query!(entities, history_items, relationships,);

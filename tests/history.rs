@@ -13,9 +13,7 @@ fn write_single_history_item() {
         day: Some(1),
         label: "testlabel".to_string(),
         content: "testcontent".to_string(),
-        is_concerns_others: false,
-        is_secret: false,
-        originator: None,
+        properties: None,
     };
     db.write_history_items(vec![item.clone()]).unwrap();
     let item_out = db.get_all_history_items().unwrap();
@@ -32,31 +30,21 @@ fn write_many_history_items() {
 
     let contents = vec!["testcontent1".to_string(), "testcontent2".to_string()];
     let days = vec![Some(1), None];
-    let is_concerns_others = vec![true, false];
-    let is_secret = vec![true, false];
-    let originators = vec![Some("testoriginator1".to_string()), None];
+    let properties = vec![Some("{\"is_secret\": true}".to_string()), None];
     let mut items: Vec<HistoryItem> = Vec::new();
     for content in contents.iter() {
-        for concerns_others in is_concerns_others.iter() {
-            for secret in is_secret.iter() {
-                for originator in originators.iter() {
-                    for day in days.iter() {
-                        let unique_label = day.map(|d| d.to_string()).unwrap_or("".to_string())
-                            + content
-                            + &concerns_others.to_string()
-                            + &secret.to_string()
-                            + &originator.clone().map(|o| o).unwrap_or("".to_string());
-                        items.push(HistoryItem {
-                            year: 2020,
-                            day: day.clone(),
-                            label: unique_label,
-                            content: content.clone(),
-                            is_concerns_others: concerns_others.clone(),
-                            is_secret: secret.clone(),
-                            originator: originator.clone(),
-                        });
-                    }
-                }
+        for property in properties.iter() {
+            for day in days.iter() {
+                let unique_label = day.map(|d| d.to_string()).unwrap_or("".to_string())
+                    + content
+                    + &property.clone().map(|o| o).unwrap_or("".to_string());
+                items.push(HistoryItem {
+                    year: 2020,
+                    day: day.clone(),
+                    label: unique_label,
+                    content: content.clone(),
+                    properties: property.clone(),
+                });
             }
         }
     }

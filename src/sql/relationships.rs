@@ -4,7 +4,7 @@ use ::diesel::prelude::*;
 use diesel::Insertable;
 use diesel::{QueryDsl, Queryable, RunQueryDsl};
 
-#[derive(Insertable, Queryable, PartialEq, Clone)]
+#[derive(Insertable, Queryable, PartialEq, Clone, Debug)]
 #[diesel(table_name = relationships)]
 #[repr(C)]
 pub struct EntityRelationship {

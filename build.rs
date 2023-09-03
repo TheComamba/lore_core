@@ -25,4 +25,9 @@ fn main() {
     std::fs::write("src/sql/schema.rs", schema.stdout).expect("Failed to write schema.rs");
     // Delete dummy.db
     std::fs::remove_file("dummy.db").expect("Failed to delete dummy.db");
+
+    // Call cargo fmt
+    let mut cmd = Command::new("cargo");
+    cmd.arg("fmt");
+    cmd.output().expect("Failed to execute cargo fmt");
 }

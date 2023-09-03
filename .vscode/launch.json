@@ -7,18 +7,14 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in library 'lorecore'",
+            "name": "Debug library unit tests",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
                     "--lib",
-                    "--package=lorecore"
-                ],
-                "filter": {
-                    "name": "lorecore",
-                    "kind": "lib"
-                }
+                    "--package=loregui"
+                ]
             },
             "args": [],
             "cwd": "${workspaceFolder}"
@@ -26,17 +22,12 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'lorecore'",
+            "name": "Debug executable",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=lorecore",
-                    "--package=lorecore"
-                ],
-                "filter": {
-                    "name": "lorecore",
-                    "kind": "bin"
-                }
+                    "--package=loregui"
+                ]
             },
             "args": [],
             "cwd": "${workspaceFolder}"
@@ -44,17 +35,32 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'lorecore'",
+            "name": "Debug executable unit tests",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=lorecore",
-                    "--package=lorecore"
+                    "--bins",
+                    "--package=loregui"
+                ]
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug specific test",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=c_api",
+                    "--package=loregui"
                 ],
                 "filter": {
-                    "name": "lorecore",
-                    "kind": "bin"
+                    "name": "c_api",
+                    "kind": "test"
                 }
             },
             "args": [],

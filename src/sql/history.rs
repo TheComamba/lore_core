@@ -3,17 +3,15 @@ use crate::errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreErro
 use ::diesel::prelude::*;
 use diesel::Insertable;
 
-#[derive(Insertable, Queryable, PartialEq, Clone)]
+#[derive(Insertable, Queryable, PartialEq, Clone, Debug)]
 #[diesel(table_name = history_items)]
 #[repr(C)]
 pub struct HistoryItem {
     pub label: String,
-    pub content: String,
-    pub is_concerns_others: bool,
-    pub is_secret: bool,
     pub year: i32,
     pub day: Option<i32>,
-    pub originator: Option<String>,
+    pub content: String,
+    pub properties: Option<String>,
 }
 
 impl LoreDatabase {
