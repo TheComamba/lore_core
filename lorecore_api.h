@@ -6,12 +6,10 @@ typedef struct CEntityColumn {
 
 typedef struct CHistoryItem {
   const char *label;
-  const char *content;
-  uint8_t is_concerns_others;
-  uint8_t is_secret;
   int32_t year;
   int32_t day;
-  const char *originator;
+  const char *content;
+  const char *properties;
 } CHistoryItem;
 
 typedef struct CEntityRelationship {

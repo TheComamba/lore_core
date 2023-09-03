@@ -8,12 +8,10 @@ use diesel::Insertable;
 #[repr(C)]
 pub struct HistoryItem {
     pub label: String,
-    pub content: String,
-    pub is_concerns_others: bool,
-    pub is_secret: bool,
     pub year: i32,
     pub day: Option<i32>,
-    pub originator: Option<String>,
+    pub content: String,
+    pub properties: Option<String>,
 }
 
 impl LoreDatabase {
