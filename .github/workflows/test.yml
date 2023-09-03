@@ -14,9 +14,18 @@ jobs:
         - name: Install dependencies for Linux
           if: matrix.os == 'ubuntu-latest'
           run: |
-            sudo apt-get update
-            sudo apt-get install -y curl build-essential cmake pkg-config libfontconfig1-dev
+            apt-get update
+            apt-get install -y sudo curl build-essential cmake pkg-config libfontconfig1-dev cargo
             ./scripts/install_build_dependencies_linux.sh
+        - name: Install dependencies for Windows
+          if: matrix.os == 'windows-latest'
+          run: |
+            .\scripts\install_build_dependencies_windows.bat
+        - name: Install dependencies for MacOS
+          if: matrix.os == 'macos-latest'
+          run: |
+            chmod +x ./scripts/install_build_dependencies_macos.sh
+            ./scripts/install_build_dependencies_macos.sh
   
         - uses: dtolnay/rust-toolchain@stable
           with:
