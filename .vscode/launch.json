@@ -46,6 +46,25 @@
             },
             "args": [],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug specific test",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=c_api",
+                    "--package=loregui"
+                ],
+                "filter": {
+                    "name": "c_api",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
