@@ -15,6 +15,7 @@ env:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
@@ -26,6 +27,11 @@ jobs:
     container: ${{ matrix.container }}
     steps:
       - uses: actions/checkout@v3
+
+      - uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
+            override: true
 
       - name: Install dependencies for Linux
         if: matrix.os == 'ubuntu-latest'
@@ -41,11 +47,6 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: |
           ./scripts/install_build_dependencies_macos.sh
-
-      - uses: actions-rs/toolchain@v1
-        with:
-            toolchain: stable
-            override: true
 
       - uses: actions-rs/cargo@v1
         if: ${{ !inputs.isRelease }}
