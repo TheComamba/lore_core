@@ -11,7 +11,7 @@ pub(super) struct EntityView<'a> {
 pub(super) struct EntityViewState {
     pub(super) label_view_state: DbColViewState,
     pub(super) descriptor_view_state: DbColViewState,
-    pub(super) current_description: String,
+    pub(super) current_description: Option<String>,
 }
 
 impl<'a> EntityView<'a> {
@@ -28,7 +28,7 @@ impl EntityViewState {
         Self {
             label_view_state: DbColViewState::new(),
             descriptor_view_state: DbColViewState::new(),
-            current_description: String::new(),
+            current_description: None,
         }
     }
 }

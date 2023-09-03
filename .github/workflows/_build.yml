@@ -15,6 +15,7 @@ env:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
@@ -31,20 +32,28 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           apt-get update
-          apt-get install -y sudo curl build-essential cmake pkg-config libfontconfig1-dev
+          apt-get install -y sudo curl build-essential cmake pkg-config libfontconfig1-dev cargo
           ./scripts/install_build_dependencies_linux.sh
+      - name: Install dependencies for Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          .\scripts\install_build_dependencies_windows.bat
+      - name: Install dependencies for MacOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          chmod +x ./scripts/install_build_dependencies_macos.sh
+          ./scripts/install_build_dependencies_macos.sh
 
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
             toolchain: stable
-            override: true
 
-      - uses: actions-rs/cargo@v1
+      - uses: clechasseur/rs-cargo@v1
         if: ${{ !inputs.isRelease }}
         with:
             command: build
 
-      - uses: actions-rs/cargo@v1
+      - uses: clechasseur/rs-cargo@v1
         if: ${{ inputs.isRelease }}
         with:
             command: build

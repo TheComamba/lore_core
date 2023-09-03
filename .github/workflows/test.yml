@@ -1,5 +1,8 @@
 name: Run Tests
-on: [push]
+on: 
+  push:
+  schedule:
+    - cron: "0 0 * * 6" # every saturday at 00:00 UTC
 
 jobs:
     build:
@@ -15,20 +18,28 @@ jobs:
           if: matrix.os == 'ubuntu-latest'
           run: |
             sudo apt-get update
-            sudo apt-get install -y curl build-essential cmake pkg-config libfontconfig1-dev
+            sudo apt-get install -y sudo curl build-essential cmake pkg-config libfontconfig1-dev cargo
             ./scripts/install_build_dependencies_linux.sh
+        - name: Install dependencies for Windows
+          if: matrix.os == 'windows-latest'
+          run: |
+            .\scripts\install_build_dependencies_windows.bat
+        - name: Install dependencies for MacOS
+          if: matrix.os == 'macos-latest'
+          run: |
+            chmod +x ./scripts/install_build_dependencies_macos.sh
+            ./scripts/install_build_dependencies_macos.sh
   
-        - uses: actions-rs/toolchain@v1
+        - uses: dtolnay/rust-toolchain@stable
           with:
               toolchain: stable
-              override: true
   
-        - uses: actions-rs/cargo@v1
+        - uses: clechasseur/rs-cargo@v1
           if: ${{ github.ref_name != 'main' }}
           with:
               command: test
   
-        - uses: actions-rs/cargo@v1
+        - uses: clechasseur/rs-cargo@v1
           if: ${{ github.ref_name == 'main' }}
           with:
               command: test

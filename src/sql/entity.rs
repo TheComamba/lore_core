@@ -12,7 +12,7 @@ use diesel::{Insertable, RunQueryDsl};
 pub struct EntityColumn {
     pub label: String,
     pub descriptor: String,
-    pub description: String,
+    pub description: Option<String>,
 }
 
 impl LoreDatabase {
@@ -64,7 +64,7 @@ impl LoreDatabase {
         &self,
         label: &String,
         descriptor: &String,
-    ) -> Result<String, LoreCoreError> {
+    ) -> Result<Option<String>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let descriptions = entities::table
             .filter(entities::label.eq(label))

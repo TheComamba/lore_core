@@ -4,7 +4,7 @@ diesel::table! {
     entities (label, descriptor) {
         label -> Text,
         descriptor -> Text,
-        description -> Text,
+        description -> Nullable<Text>,
     }
 }
 
@@ -21,11 +21,15 @@ diesel::table! {
 }
 
 diesel::table! {
-    relationships (parent, child) {
+    relationships (parent, child, role) {
         parent -> Text,
         child -> Text,
         role -> Nullable<Text>,
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(entities, history_items, relationships,);
+diesel::allow_tables_to_appear_in_same_query!(
+    entities,
+    history_items,
+    relationships,
+);

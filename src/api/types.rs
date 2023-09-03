@@ -36,7 +36,7 @@ pub(super) fn to_entity_column(column: &CEntityColumn) -> Result<EntityColumn, L
     Ok(EntityColumn {
         label: char_pointer_to_string(column.label)?,
         descriptor: char_pointer_to_string(column.descriptor)?,
-        description: char_pointer_to_string(column.description)?,
+        description: char_pointer_to_optional_string(column.description)?,
     })
 }
 
