@@ -7,7 +7,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug library tests",
+            "name": "Debug library unit tests",
             "cargo": {
                 "args": [
                     "test",
@@ -22,11 +22,10 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable 'loregui'",
+            "name": "Debug executable",
             "cargo": {
                 "args": [
-                    "run",
-                    "--bin=loregui",
+                    "build",
                     "--package=loregui"
                 ]
             },
@@ -36,11 +35,12 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable-tests",
+            "name": "Debug executable unit tests",
             "cargo": {
                 "args": [
                     "test",
-                    "--bin=loregui",
+                    "--no-run",
+                    "--bins",
                     "--package=loregui"
                 ]
             },
