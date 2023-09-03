@@ -33,6 +33,14 @@ jobs:
           apt-get update
           apt-get install -y sudo curl build-essential cmake pkg-config libfontconfig1-dev
           ./scripts/install_build_dependencies_linux.sh
+      - name: Install dependencies for Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          ./scripts/install_build_dependencies_windows.sh
+      - name: Install dependencies for MacOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          ./scripts/install_build_dependencies_macos.sh
 
       - uses: actions-rs/toolchain@v1
         with:
