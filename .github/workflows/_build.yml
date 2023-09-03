@@ -44,10 +44,9 @@ jobs:
           chmod +x ./scripts/install_build_dependencies_macos.sh
           ./scripts/install_build_dependencies_macos.sh
 
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable@v1
         with:
             toolchain: stable
-            override: true
 
       - uses: actions-rs/cargo@v1
         if: ${{ !inputs.isRelease }}
