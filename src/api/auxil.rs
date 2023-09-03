@@ -2,6 +2,11 @@ use crate::errors::LoreCoreError;
 use std::ffi::{CStr, CString};
 
 pub fn char_pointer_to_string(string: *const libc::c_char) -> Result<String, LoreCoreError> {
+    if string.is_null() {
+        return Err(LoreCoreError::InputError(
+            "Characterpointer is null.".to_string(),
+        ));
+    }
     let string: &str = unsafe {
         CStr::from_ptr(string).to_str().map_err(|e| {
             LoreCoreError::InputError(
