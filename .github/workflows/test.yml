@@ -18,7 +18,7 @@ jobs:
             sudo apt-get install -y curl build-essential cmake pkg-config libfontconfig1-dev
             ./scripts/install_build_dependencies_linux.sh
   
-        - uses: dtolnay/rust-toolchain@stable@v1
+        - uses: dtolnay/rust-toolchain@stable
           with:
               toolchain: stable
   

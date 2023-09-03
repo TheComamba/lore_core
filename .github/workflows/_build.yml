@@ -44,7 +44,7 @@ jobs:
           chmod +x ./scripts/install_build_dependencies_macos.sh
           ./scripts/install_build_dependencies_macos.sh
 
-      - uses: dtolnay/rust-toolchain@stable@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
             toolchain: stable
 
