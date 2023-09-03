@@ -10,7 +10,7 @@ pub fn char_pointer_to_string(string: *const libc::c_char) -> Result<String, Lor
     let string: &str = unsafe {
         CStr::from_ptr(string).to_str().map_err(|e| {
             LoreCoreError::InputError(
-                "Could not convert characterpointer to string.".to_string() + &e.to_string(),
+                "Could not convert characterpointer to string: ".to_string() + &e.to_string(),
             )
         })?
     };
