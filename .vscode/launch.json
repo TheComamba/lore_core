@@ -22,34 +22,6 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug executable",
-            "cargo": {
-                "args": [
-                    "build",
-                    "--package=loregui"
-                ]
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug executable unit tests",
-            "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--bins",
-                    "--package=loregui"
-                ]
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
             "name": "Debug specific test",
             "cargo": {
                 "args": [
