@@ -10,7 +10,7 @@ jobs:
     with:
       isRelease: true
 
-  testExecutability:
+  testLoadability:
     needs: [releaseBuild]
-    uses: ./.github/workflows/_test_executability.yml
+    uses: ./.github/workflows/_test_loadability.yml
     

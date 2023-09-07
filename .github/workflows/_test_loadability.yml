@@ -1,0 +1,27 @@
+name: Test Loadability
+
+on: [workflow_call]
+
+env:
+  RUST_BACKTRACE: 1
+
+jobs:
+  testLoadability:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    name: Test Loadability
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: LoreCoreLibrary_${{ matrix.os }}
+          path: artifacts
+
+      - name: Test Library Include on Linux
+        run: |
+          cd artifacts
+          python3 load_lib.py
