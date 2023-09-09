@@ -3,6 +3,14 @@ extern crate cbindgen;
 use std::{env, process::Command};
 
 fn main() {
+    println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=src/api/c_api.rs");
+    println!("cargo:rerun-if-changed=migrations/");
+
+    if env!("CARGO_PKG_NAME") != "lorecore" {
+        return;
+    }
+
     let crate_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
 
     // Generate C header file
