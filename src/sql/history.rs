@@ -93,9 +93,7 @@ impl LoreDatabase {
         let items = history_items::table
             .filter(history_items::label.eq(label))
             .load::<HistoryItem>(&mut connection)
-            .map_err(|e| {
-                sql_loading_error("history item", "content", vec![("label", &Some(label))], e)
-            })?;
+            .map_err(|e| sql_loading_error("history item", "content", vec![("label", label)], e))?;
         if items.len() > 1 {
             Err(LoreCoreError::SqlError(
                 "More than one entry found for label '".to_string() + label + "'.",

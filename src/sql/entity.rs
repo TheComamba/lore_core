@@ -52,12 +52,7 @@ impl LoreDatabase {
         let mut labels: Vec<_> = query
             .load::<EntityColumn>(&mut connection)
             .map_err(|e| {
-                sql_loading_error(
-                    "entities",
-                    "labels",
-                    vec![("search_text", &Some(search_text))],
-                    e,
-                )
+                sql_loading_error("entities", "labels", vec![("search_text", &search_text)], e)
             })?
             .into_iter()
             .map(|c| c.label)
@@ -83,10 +78,7 @@ impl LoreDatabase {
                 sql_loading_error(
                     "entities",
                     "descriptors",
-                    vec![
-                        ("label", &Some(label)),
-                        ("search_text", &Some(&search_text.to_string())),
-                    ],
+                    vec![("label", label), ("search_text", &search_text.to_string())],
                     e,
                 )
             })?
@@ -111,7 +103,7 @@ impl LoreDatabase {
                 sql_loading_error(
                     "entities",
                     "description",
-                    vec![("label", &Some(label)), ("descriptor", &Some(descriptor))],
+                    vec![("label", label), ("descriptor", descriptor)],
                     e,
                 )
             })?;

@@ -1,3 +1,5 @@
+use std::fmt::{Debug, Display};
+
 #[derive(Debug, Clone)]
 pub enum LoreCoreError {
     FileError(String),
@@ -13,7 +15,7 @@ impl ToString for LoreCoreError {
 
 pub(super) fn sql_loading_error_no_params<E>(loadee: &str, target: &str, err: E) -> LoreCoreError
 where
-    E: ToString,
+    E: Display,
 {
     sql_loading_error::<String, E>(loadee, target, vec![], err)
 }
@@ -21,28 +23,24 @@ where
 pub(super) fn sql_loading_error<T, E>(
     loadee: &str,
     target: &str,
-    params: Vec<(&str, &Option<T>)>,
+    params: Vec<(&str, &T)>,
     err: E,
 ) -> LoreCoreError
 where
-    T: ToString,
-    E: ToString,
+    T: Debug,
+    E: Display,
 {
     let mut message = "Loading ".to_string() + loadee + " to get " + target;
-    let mut is_any_param_printed = false;
-    for (name, value) in params {
-        if let Some(value) = value {
-            if !is_any_param_printed {
-                message += " for parameters ";
-                is_any_param_printed = true;
-            } else {
-                message += ", "
-            }
-            message += name;
-            message += "='";
-            message += &value.to_string();
-            message += "'";
+    for (i, (name, value)) in params.iter().enumerate() {
+        if i == 0 {
+            message += " for parameters ";
+        } else {
+            message += ", "
         }
+        message += name;
+        message += "='";
+        message += &format!("{:?}", value);
+        message += "'";
     }
     message += " failed: ";
     message += &err.to_string();

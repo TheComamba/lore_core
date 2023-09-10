@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct SqlSearchText {
     search_text: Option<String>,
 }

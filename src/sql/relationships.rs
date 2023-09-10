@@ -83,7 +83,7 @@ impl LoreDatabase {
                 sql_loading_error(
                     "relationship",
                     "role",
-                    vec![("parent", &Some(parent)), ("child", &Some(child))],
+                    vec![("parent", parent), ("child", child)],
                     e,
                 )
             })?;
