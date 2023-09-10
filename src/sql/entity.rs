@@ -68,14 +68,12 @@ impl LoreDatabase {
 
     pub fn get_descriptors(
         &self,
-        label: &Option<&String>,
+        label: &String,
         search_text: SqlSearchText,
     ) -> Result<Vec<String>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = entities::table.into_boxed();
-        if let Some(label) = label {
-            query = query.filter(entities::label.eq(label));
-        }
+        query = query.filter(entities::label.eq(label));
         if search_text.is_some() {
             query = query.filter(entities::descriptor.like(search_text.to_string()));
         }
@@ -86,7 +84,7 @@ impl LoreDatabase {
                     "entities",
                     "descriptors",
                     vec![
-                        ("label", label),
+                        ("label", &Some(label)),
                         ("search_text", &Some(&search_text.to_string())),
                     ],
                     e,

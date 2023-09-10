@@ -139,37 +139,7 @@ fn get_labels_with_filter() {
 }
 
 #[test]
-fn get_all_descriptors() {
-    let temp_path = NamedTempFile::new().unwrap().into_temp_path();
-    let path_in: PathBuf = temp_path.as_os_str().into();
-    let db = LoreDatabase::open(path_in.clone()).unwrap();
-
-    let labels = vec!["testlabel1".to_string(), "testlabel2".to_string()];
-    let descriptors = vec!["testdescriptor1".to_string(), "testdescriptor2".to_string()];
-    let mut entities: Vec<EntityColumn> = Vec::new();
-    for label in labels.iter() {
-        for descriptor in descriptors.iter() {
-            entities.push(EntityColumn {
-                label: label.clone(),
-                descriptor: descriptor.clone(),
-                description: Some(label.clone() + descriptor),
-            });
-        }
-    }
-
-    db.write_entity_columns(entities.clone()).unwrap();
-
-    let descriptors_out = db.get_descriptors(&None, SqlSearchText::empty()).unwrap();
-    assert!(descriptors.len() == descriptors_out.len());
-    for descriptor in descriptors.iter() {
-        assert!(descriptors_out.contains(descriptor));
-    }
-
-    temp_path.close().unwrap();
-}
-
-#[test]
-fn get_descriptors_with_filter() {
+fn get_descriptors() {
     let temp_path = NamedTempFile::new().unwrap().into_temp_path();
     let path_in: PathBuf = temp_path.as_os_str().into();
     let db = LoreDatabase::open(path_in.clone()).unwrap();
@@ -193,27 +163,24 @@ fn get_descriptors_with_filter() {
     db.write_entity_columns(entities.clone()).unwrap();
 
     let no_descriptors_out = db
-        .get_descriptors(&Some(&labels[0]), SqlSearchText::new("fununu"))
+        .get_descriptors(&labels[0], SqlSearchText::new("fununu"))
         .unwrap();
     assert!(no_descriptors_out.len() == 0);
 
     let descriptor1_out = db
-        .get_descriptors(&Some(&labels[0]), SqlSearchText::new("riptor1"))
+        .get_descriptors(&labels[0], SqlSearchText::new("riptor1"))
         .unwrap();
     assert!(descriptor1_out.len() == 1);
-    assert!(descriptor1_out[0] == "testdescriptor1");
+    assert!(descriptor1_out[0] == descriptors[0]);
 
     let descriptor2_out = db
-        .get_descriptors(&Some(&labels[0]), SqlSearchText::new("riptor2"))
+        .get_descriptors(&labels[0], SqlSearchText::new("riptor2"))
         .unwrap();
     assert!(descriptor2_out.len() == 1);
-    assert!(descriptor2_out[0] == "testdescriptor2");
+    assert!(descriptor2_out[0] == descriptors[1]);
 
     let all_descriptors_out = db
-        .get_descriptors(
-            &Some(&"testlabel1".to_string()),
-            SqlSearchText::new("cript"),
-        )
+        .get_descriptors(&labels[0], SqlSearchText::new("cript"))
         .unwrap();
     assert!(all_descriptors_out.len() == descriptors.len());
     for descriptor in descriptors.iter() {
