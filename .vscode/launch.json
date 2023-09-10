@@ -13,7 +13,7 @@
                     "test",
                     "--no-run",
                     "--lib",
-                    "--package=loregui"
+                    "--package=lorecore"
                 ]
             },
             "args": [],
@@ -22,16 +22,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug specific test",
+            "name": "Debug specific test file",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--test=c_api",
-                    "--package=loregui"
+                    "--test=entity",
+                    "--package=lorecore"
                 ],
                 "filter": {
-                    "name": "c_api",
+                    "name": "entity",
                     "kind": "test"
                 }
             },
