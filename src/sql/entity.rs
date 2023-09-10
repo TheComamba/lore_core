@@ -39,7 +39,10 @@ impl LoreDatabase {
         Ok(cols)
     }
 
-    pub fn get_all_entity_labels(&self) -> Result<Vec<String>, LoreCoreError> {
+    pub fn get_entity_labels(
+        &self,
+        search_text: Option<&String>,
+    ) -> Result<Vec<String>, LoreCoreError> {
         let columns = self.get_all_entity_columns()?;
         let labels = columns.into_iter().map(|c| c.label).collect();
         Ok(labels)
