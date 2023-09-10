@@ -27,11 +27,11 @@
                 "args": [
                     "test",
                     "--no-run",
-                    "--test=entity",
+                    "--test=history",
                     "--package=lorecore"
                 ],
                 "filter": {
-                    "name": "entity",
+                    "name": "history",
                     "kind": "test"
                 }
             },

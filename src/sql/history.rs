@@ -40,7 +40,8 @@ impl LoreDatabase {
 
     pub fn get_all_years(&self) -> Result<Vec<i32>, LoreCoreError> {
         let items = self.get_all_history_items()?;
-        let years = items.into_iter().map(|item| item.year).collect();
+        let mut years: Vec<_> = items.into_iter().map(|item| item.year).collect();
+        years.dedup();
         Ok(years)
     }
 
@@ -48,12 +49,13 @@ impl LoreDatabase {
         let mut connection = self.db_connection()?;
         let mut query = history_items::table.into_boxed();
         query = query.filter(history_items::year.eq(year));
-        let days = query
+        let mut days: Vec<_> = query
             .load::<HistoryItem>(&mut connection)
             .map_err(|e| sql_loading_error("history items", "days", vec![("year", &year)], e))?
             .into_iter()
             .map(|item| item.day)
-            .collect::<Vec<_>>();
+            .collect();
+        days.dedup();
         Ok(days)
     }
 
@@ -68,7 +70,7 @@ impl LoreDatabase {
         if let Some(day) = day {
             query = query.filter(history_items::day.eq(day));
         }
-        let labels = query
+        let labels: Vec<_> = query
             .load::<HistoryItem>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
@@ -80,7 +82,7 @@ impl LoreDatabase {
             })?
             .into_iter()
             .map(|c| c.label)
-            .collect::<Vec<_>>();
+            .collect();
         Ok(labels)
     }
 
