@@ -67,14 +67,16 @@ fn write_entity_with_empty_description() {
     temp_path.close().unwrap();
 }
 
-#[test]
-fn get_all_labels() {
+fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<String>, Vec<String>) {
     let temp_path = NamedTempFile::new().unwrap().into_temp_path();
     let path_in: PathBuf = temp_path.as_os_str().into();
     let db = LoreDatabase::open(path_in.clone()).unwrap();
 
-    let labels = vec!["testlabel1".to_string(), "testlabel2".to_string()];
-    let descriptors = vec!["testdescriptor1".to_string(), "testdescriptor2".to_string()];
+    let labels = vec!["testlabel1".to_string(), "testlabel2and_stuff".to_string()];
+    let descriptors = vec![
+        "testdescriptor1".to_string(),
+        "testdescriptor2and_stuff".to_string(),
+    ];
     let mut entities: Vec<EntityColumn> = Vec::new();
     for label in labels.iter() {
         for descriptor in descriptors.iter() {
@@ -87,6 +89,12 @@ fn get_all_labels() {
     }
 
     db.write_entity_columns(entities.clone()).unwrap();
+    (temp_path, db, labels, descriptors)
+}
+
+#[test]
+fn get_all_labels() {
+    let (temp_path, db, labels, _descriptors) = create_example();
 
     let labels_out = db.get_entity_labels(SqlSearchText::empty()).unwrap();
     assert!(labels.len() == labels_out.len());
@@ -99,24 +107,7 @@ fn get_all_labels() {
 
 #[test]
 fn get_labels_with_filter() {
-    let temp_path = NamedTempFile::new().unwrap().into_temp_path();
-    let path_in: PathBuf = temp_path.as_os_str().into();
-    let db = LoreDatabase::open(path_in.clone()).unwrap();
-
-    let labels = vec!["testlabel1".to_string(), "testlabel2and_stuff".to_string()];
-    let descriptors = vec!["testdescriptor1".to_string(), "testdescriptor2".to_string()];
-    let mut entities: Vec<EntityColumn> = Vec::new();
-    for label in labels.iter() {
-        for descriptor in descriptors.iter() {
-            entities.push(EntityColumn {
-                label: label.clone(),
-                descriptor: descriptor.clone(),
-                description: Some(label.clone() + descriptor),
-            });
-        }
-    }
-
-    db.write_entity_columns(entities.clone()).unwrap();
+    let (temp_path, db, labels, _descriptors) = create_example();
 
     let no_result = db.get_entity_labels(SqlSearchText::new("fununu")).unwrap();
     assert!(no_result.len() == 0);
@@ -140,27 +131,7 @@ fn get_labels_with_filter() {
 
 #[test]
 fn get_descriptors() {
-    let temp_path = NamedTempFile::new().unwrap().into_temp_path();
-    let path_in: PathBuf = temp_path.as_os_str().into();
-    let db = LoreDatabase::open(path_in.clone()).unwrap();
-
-    let labels = vec!["testlabel1".to_string(), "testlabel2".to_string()];
-    let descriptors = vec![
-        "testdescriptor1".to_string(),
-        "testdescriptor2and_stuff".to_string(),
-    ];
-    let mut entities: Vec<EntityColumn> = Vec::new();
-    for label in labels.iter() {
-        for descriptor in descriptors.iter() {
-            entities.push(EntityColumn {
-                label: label.clone(),
-                descriptor: descriptor.clone(),
-                description: Some(label.clone() + descriptor),
-            });
-        }
-    }
-
-    db.write_entity_columns(entities.clone()).unwrap();
+    let (temp_path, db, labels, descriptors) = create_example();
 
     let no_descriptors_out = db
         .get_descriptors(&labels[0], SqlSearchText::new("fununu"))
