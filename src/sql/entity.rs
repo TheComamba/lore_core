@@ -33,9 +33,10 @@ impl LoreDatabase {
 
     pub fn get_all_entity_columns(&self) -> Result<Vec<EntityColumn>, LoreCoreError> {
         let mut connection = self.db_connection()?;
-        let cols = entities::table
+        let mut cols = entities::table
             .load::<EntityColumn>(&mut connection)
             .map_err(|e| sql_loading_error_no_params("entities", "all", e))?;
+        cols.dedup();
         Ok(cols)
     }
 
@@ -48,7 +49,7 @@ impl LoreDatabase {
         if search_text.is_some() {
             query = query.filter(entities::label.like(search_text.to_string()));
         }
-        let labels = query
+        let mut labels: Vec<_> = query
             .load::<EntityColumn>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
@@ -61,6 +62,7 @@ impl LoreDatabase {
             .into_iter()
             .map(|c| c.label)
             .collect();
+        labels.dedup();
         Ok(labels)
     }
 
@@ -77,7 +79,7 @@ impl LoreDatabase {
         if search_text.is_some() {
             query = query.filter(entities::descriptor.like(search_text.to_string()));
         }
-        let descriptors = query
+        let mut descriptors: Vec<_> = query
             .load::<EntityColumn>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
@@ -93,6 +95,7 @@ impl LoreDatabase {
             .into_iter()
             .map(|c| c.descriptor)
             .collect();
+        descriptors.dedup();
         Ok(descriptors)
     }
 
