@@ -1,4 +1,4 @@
-use super::lore_database::LoreDatabase;
+use super::{lore_database::LoreDatabase, search_text::SqlSearchText};
 use crate::{
     errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreError},
     sql::schema::entities,
@@ -33,30 +33,59 @@ impl LoreDatabase {
 
     pub fn get_all_entity_columns(&self) -> Result<Vec<EntityColumn>, LoreCoreError> {
         let mut connection = self.db_connection()?;
-        let cols = entities::table
+        let mut cols = entities::table
             .load::<EntityColumn>(&mut connection)
             .map_err(|e| sql_loading_error_no_params("entities", "all", e))?;
+        cols.dedup();
         Ok(cols)
     }
 
-    pub fn get_all_entity_labels(&self) -> Result<Vec<String>, LoreCoreError> {
-        let columns = self.get_all_entity_columns()?;
-        let labels = columns.into_iter().map(|c| c.label).collect();
+    pub fn get_entity_labels(
+        &self,
+        search_text: SqlSearchText,
+    ) -> Result<Vec<String>, LoreCoreError> {
+        let mut connection = self.db_connection()?;
+        let mut query = entities::table.into_boxed();
+        if search_text.is_some() {
+            query = query.filter(entities::label.like(search_text.to_string()));
+        }
+        let mut labels: Vec<_> = query
+            .load::<EntityColumn>(&mut connection)
+            .map_err(|e| {
+                sql_loading_error("entities", "labels", vec![("search_text", &search_text)], e)
+            })?
+            .into_iter()
+            .map(|c| c.label)
+            .collect();
+        labels.dedup();
         Ok(labels)
     }
 
-    pub fn get_descriptors(&self, label: &Option<&String>) -> Result<Vec<String>, LoreCoreError> {
+    pub fn get_descriptors(
+        &self,
+        label: &String,
+        search_text: SqlSearchText,
+    ) -> Result<Vec<String>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = entities::table.into_boxed();
-        if let Some(label) = label {
-            query = query.filter(entities::label.eq(label));
+        query = query.filter(entities::label.eq(label));
+        if search_text.is_some() {
+            query = query.filter(entities::descriptor.like(search_text.to_string()));
         }
-        let descriptors = query
+        let mut descriptors: Vec<_> = query
             .load::<EntityColumn>(&mut connection)
-            .map_err(|e| sql_loading_error("entities", "descriptors", vec![("label", label)], e))?
+            .map_err(|e| {
+                sql_loading_error(
+                    "entities",
+                    "descriptors",
+                    vec![("label", label), ("search_text", &search_text.to_string())],
+                    e,
+                )
+            })?
             .into_iter()
             .map(|c| c.descriptor)
             .collect();
+        descriptors.dedup();
         Ok(descriptors)
     }
 
@@ -74,7 +103,7 @@ impl LoreDatabase {
                 sql_loading_error(
                     "entities",
                     "description",
-                    vec![("label", &Some(label)), ("descriptor", &Some(descriptor))],
+                    vec![("label", label), ("descriptor", descriptor)],
                     e,
                 )
             })?;
