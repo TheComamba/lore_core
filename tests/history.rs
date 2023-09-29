@@ -44,7 +44,7 @@ fn create_example() -> (
             for content in contents.iter() {
                 for property in properties.iter() {
                     let unique_label = year.to_string()
-                        + &day.map(|d| d.to_string()).unwrap_or("".to_string())
+                        + &day.map(|d| "-".to_string() + &d.to_string()).unwrap_or("".to_string())
                         + content
                         + &property.clone().map(|o| o).unwrap_or("".to_string());
                     items.push(HistoryItem {
@@ -98,5 +98,13 @@ fn get_days() {
             assert!(days_out.contains(day));
         }
     }
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_labels() {
+    let (temp_path, db, items, _, _, _) = create_example();
+
+    todo!();
     temp_path.close().unwrap();
 }
