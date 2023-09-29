@@ -44,7 +44,9 @@ fn create_example() -> (
             for content in contents.iter() {
                 for property in properties.iter() {
                     let unique_label = year.to_string()
-                        + &day.map(|d| "-".to_string() + &d.to_string()).unwrap_or("".to_string())
+                        + &day
+                            .map(|d| "-".to_string() + &d.to_string())
+                            .unwrap_or("".to_string())
                         + content
                         + &property.clone().map(|o| o).unwrap_or("".to_string());
                     items.push(HistoryItem {
