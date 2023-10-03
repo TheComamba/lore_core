@@ -7,7 +7,7 @@ use diesel::Insertable;
 #[diesel(table_name = history_items)]
 #[repr(C)]
 pub struct HistoryItem {
-    pub label: String,
+    pub timestamp: i64,
     pub year: i32,
     pub day: Option<i32>,
     pub content: String,

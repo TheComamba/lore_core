@@ -10,7 +10,7 @@ diesel::table! {
 
 diesel::table! {
     history_items (timestamp) {
-        timestamp -> Integer,
+        timestamp -> BigInt,
         year -> Integer,
         day -> Nullable<Integer>,
         content -> Text,
