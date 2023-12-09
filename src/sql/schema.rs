@@ -9,8 +9,8 @@ diesel::table! {
 }
 
 diesel::table! {
-    history_items (label) {
-        label -> Text,
+    history_items (timestamp) {
+        timestamp -> BigInt,
         year -> Integer,
         day -> Nullable<Integer>,
         content -> Text,

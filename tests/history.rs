@@ -1,5 +1,6 @@
 use lorecore::sql::history::HistoryItem;
 use lorecore::sql::lore_database::LoreDatabase;
+use lorecore::timestamp::current_timestamp;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
 
@@ -11,7 +12,7 @@ fn write_single_history_item() {
     let item = HistoryItem {
         year: 2020,
         day: Some(1),
-        label: "testlabel".to_string(),
+        timestamp: current_timestamp(),
         content: "testcontent".to_string(),
         properties: None,
     };
@@ -43,14 +44,10 @@ fn create_example() -> (
         for day in days.iter() {
             for content in contents.iter() {
                 for property in properties.iter() {
-                    let unique_label = year.to_string()
-                        + &day.map(|d| d.to_string()).unwrap_or("".to_string())
-                        + content
-                        + &property.clone().map(|o| o).unwrap_or("".to_string());
                     items.push(HistoryItem {
                         year: *year,
                         day: day.clone(),
-                        label: unique_label,
+                        timestamp: current_timestamp(),
                         content: content.clone(),
                         properties: property.clone(),
                     });
@@ -99,4 +96,19 @@ fn get_days() {
         }
     }
     temp_path.close().unwrap();
+}
+
+#[test]
+fn timestamps_are_distinct() {
+    let mut timestamps = vec![];
+    for _ in 0..1000 {
+        timestamps.push(current_timestamp());
+    }
+    for (i, t_i) in timestamps.iter().enumerate() {
+        for (j, t_j) in timestamps.iter().enumerate() {
+            if i != j {
+                assert!(t_i != t_j);
+            }
+        }
+    }
 }

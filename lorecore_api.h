@@ -5,7 +5,7 @@ typedef struct CEntityColumn {
 } CEntityColumn;
 
 typedef struct CHistoryItem {
-  const char *label;
+  int64_t timestamp;
   int32_t year;
   int32_t day;
   const char *content;
@@ -41,3 +41,5 @@ const char *write_relationships(const char *db_path,
 const char *get_number_of_relationships(const char *db_path, intptr_t *size);
 
 const char *read_relationships(const char *db_path, struct CEntityRelationship *relationships);
+
+int64_t get_current_timestamp(void);
