@@ -1,4 +1,7 @@
-use super::{lore_database::LoreDatabase, schema::history_items};
+use super::{
+    lore_database::LoreDatabase,
+    schema::history_items::{self},
+};
 use crate::errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreError};
 use ::diesel::prelude::*;
 use diesel::Insertable;
@@ -59,50 +62,32 @@ impl LoreDatabase {
         Ok(days)
     }
 
-    pub fn get_history_labels(
-        &self,
-        year: i32,
-        day: Option<i32>,
-    ) -> Result<Vec<String>, LoreCoreError> {
+    pub fn get_history_item_content(&self, timestamp: i64) -> Result<String, LoreCoreError> {
         let mut connection = self.db_connection()?;
-        let mut query = history_items::table.into_boxed();
-        query = query.filter(history_items::year.eq(year));
-        if let Some(day) = day {
-            query = query.filter(history_items::day.eq(day));
-        }
-        let labels: Vec<_> = query
+        let items = history_items::table
+            .filter(history_items::timestamp.eq(timestamp))
             .load::<HistoryItem>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
-                    "history items",
-                    "labels",
-                    vec![("year", &Some(year)), ("day", &day)],
+                    "history item",
+                    "content",
+                    vec![("timestamp", &timestamp)],
                     e,
                 )
-            })?
-            .into_iter()
-            .map(|c| c.label)
-            .collect();
-        Ok(labels)
-    }
-
-    pub fn get_history_item_content(&self, label: &String) -> Result<String, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let items = history_items::table
-            .filter(history_items::label.eq(label))
-            .load::<HistoryItem>(&mut connection)
-            .map_err(|e| sql_loading_error("history item", "content", vec![("label", label)], e))?;
+            })?;
         if items.len() > 1 {
-            Err(LoreCoreError::SqlError(
-                "More than one entry found for label '".to_string() + label + "'.",
-            ))
+            Err(LoreCoreError::SqlError(format!(
+                "More than one entry found for timestamp {}",
+                timestamp
+            )))
         } else {
             let content = match items.first() {
                 Some(item) => item.content.to_owned(),
                 None => {
-                    return Err(LoreCoreError::SqlError(
-                        "No content found for label '".to_string() + label + "'.",
-                    ))
+                    return Err(LoreCoreError::SqlError(format!(
+                        "No content found for timestamp {}",
+                        timestamp
+                    )))
                 }
             };
             Ok(content)

@@ -26,7 +26,7 @@ pub struct CEntityRelationship {
 #[repr(C)]
 #[derive(Clone)]
 pub struct CHistoryItem {
-    pub label: *const libc::c_char,
+    pub timestamp: i64,
     pub year: i32,
     pub day: i32,
     pub content: *const libc::c_char,
@@ -51,7 +51,7 @@ pub(super) fn to_entity_column(column: &CEntityColumn) -> Result<EntityColumn, L
 
 pub(super) fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, LoreCoreError> {
     Ok(CHistoryItem {
-        label: string_to_char_pointer(&item.label),
+        timestamp: item.timestamp,
         year: item.year,
         day: if let Some(day) = item.day { day } else { 0 },
         content: string_to_char_pointer(&item.content),
@@ -61,7 +61,7 @@ pub(super) fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, Lore
 
 pub(super) fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
     Ok(HistoryItem {
-        label: char_pointer_to_string(item.label)?,
+        timestamp: item.timestamp,
         year: item.year,
         day: if item.day > 0 { Some(item.day) } else { None },
         content: char_pointer_to_string(item.content)?,
@@ -91,6 +91,8 @@ pub(super) fn to_relationship(
 
 #[cfg(test)]
 mod tests {
+    use crate::timestamp::current_timestamp;
+
     use super::*;
 
     #[test]
@@ -133,7 +135,7 @@ mod tests {
                 for content in &contents {
                     for property in &properties {
                         let item_before = HistoryItem {
-                            label: format!("_{}-{}", year, day.unwrap_or(0)),
+                            timestamp: current_timestamp(),
                             year,
                             day: *day,
                             content: content.to_string(),

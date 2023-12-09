@@ -5,7 +5,7 @@ typedef struct CEntityColumn {
 } CEntityColumn;
 
 typedef struct CHistoryItem {
-  const char *label;
+  int64_t timestamp;
   int32_t year;
   int32_t day;
   const char *content;
