@@ -99,9 +99,16 @@ fn get_days() {
 }
 
 #[test]
-fn get_timestamps() {
-    let (temp_path, db, items, _, _, _) = create_example();
-
-    todo!();
-    temp_path.close().unwrap();
+fn timestamps_are_distinct() {
+    let mut timestamps = vec![];
+    for _ in 0..1000 {
+        timestamps.push(current_timestamp());
+    }
+    for (i, t_i) in timestamps.iter().enumerate() {
+        for (j, t_j) in timestamps.iter().enumerate() {
+            if i != j {
+                assert!(t_i != t_j);
+            }
+        }
+    }
 }
