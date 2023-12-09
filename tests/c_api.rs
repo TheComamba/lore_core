@@ -1,10 +1,9 @@
-use lorecore::{
-    api::{
-        auxil::{char_pointer_to_string, string_to_char_pointer},
-        c_api::{write_entity_columns, write_history_items, write_relationships},
-        types::{CEntityColumn, CEntityRelationship, CHistoryItem},
+use lorecore::api::{
+    auxil::{char_pointer_to_string, string_to_char_pointer},
+    c_api::{
+        get_current_timestamp, write_entity_columns, write_history_items, write_relationships,
     },
-    timestamp::current_timestamp,
+    types::{CEntityColumn, CEntityRelationship, CHistoryItem},
 };
 use tempfile::NamedTempFile;
 
@@ -34,7 +33,7 @@ fn write_history_item() {
     let db_path = temp_path.as_os_str();
     let db_path_ptr = string_to_char_pointer(&db_path.to_str().unwrap());
     let item = CHistoryItem {
-        timestamp: current_timestamp(),
+        timestamp: get_current_timestamp(),
         year: 2020,
         day: 14,
         content: string_to_char_pointer("testcontent"),

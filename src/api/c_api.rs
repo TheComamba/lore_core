@@ -1,3 +1,5 @@
+use crate::timestamp::current_timestamp;
+
 use super::{
     auxil::char_ptr,
     types::{CEntityColumn, CEntityRelationship, CHistoryItem},
@@ -134,4 +136,9 @@ pub unsafe extern "C" fn read_relationships(
         }
         Err(e) => char_ptr(&e.to_string()),
     }
+}
+
+#[no_mangle]
+pub extern "C" fn get_current_timestamp() -> i64 {
+    current_timestamp()
 }
