@@ -1,5 +1,6 @@
-use lorecore::sql::history::HistoryItem;
+use lorecore::sql::history::{get_contents, get_days, get_years, HistoryItem};
 use lorecore::sql::lore_database::LoreDatabase;
+use lorecore::sql::search_text::HistoryItemSearchParams;
 use lorecore::timestamp::current_timestamp;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
@@ -17,7 +18,9 @@ fn write_single_history_item() {
         properties: None,
     };
     db.write_history_items(vec![item.clone()]).unwrap();
-    let item_out = db.get_all_history_items().unwrap();
+    let item_out = db
+        .get_history_items(HistoryItemSearchParams::empty())
+        .unwrap();
     assert!(item_out.len() == 1);
     assert!(item == item_out[0]);
     temp_path.close().unwrap();
@@ -60,11 +63,38 @@ fn create_example() -> (
     (temp_path, db, items, years, days, contents)
 }
 
+fn check_output(
+    items: &Vec<HistoryItem>,
+    years: &Vec<i32>,
+    days: &Vec<Option<i32>>,
+    contents: &Vec<String>,
+) {
+    let years_out = get_years(items);
+    assert!(years.len() == years_out.len());
+    for year in years.iter() {
+        assert!(years_out.contains(year));
+    }
+
+    let days_out = get_days(items);
+    assert!(days.len() == days_out.len());
+    for day in days.iter() {
+        assert!(days_out.contains(day));
+    }
+
+    let contents_out = get_contents(items);
+    assert!(contents.len() == contents_out.len());
+    for content in contents.iter() {
+        assert!(contents_out.contains(content));
+    }
+}
+
 #[test]
 fn write_many_history_items() {
     let (temp_path, db, items, _, _, _) = create_example();
 
-    let items_out = db.get_all_history_items().unwrap();
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::empty())
+        .unwrap();
     assert!(items.len() == items_out.len());
     for item in items.iter() {
         assert!(items_out.contains(item));
@@ -73,27 +103,79 @@ fn write_many_history_items() {
 }
 
 #[test]
-fn get_all_years() {
-    let (temp_path, db, _, years, _, _) = create_example();
+fn get_all_history_items() {
+    let (temp_path, db, _items, years, days, contents) = create_example();
 
-    let years_out = db.get_all_years().unwrap();
-    assert!(years.len() == years_out.len());
-    for year in years.iter() {
-        assert!(years_out.contains(year));
-    }
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::empty())
+        .unwrap();
+    check_output(&items_out, &years, &days, &contents);
+
     temp_path.close().unwrap();
 }
 
 #[test]
-fn get_days() {
-    let (temp_path, db, _, years, days, _) = create_example();
+fn get_history_items_by_year() {
+    let (temp_path, db, _items, years, days, contents) = create_example();
 
-    for year in years.iter() {
-        let days_out = db.get_days(*year).unwrap();
-        assert!(days.len() == days_out.len());
-        for day in days.iter() {
-            assert!(days_out.contains(day));
-        }
-    }
+    let year = years[0];
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::new(Some(year), None))
+        .unwrap();
+    check_output(&items_out, &vec![year], &days, &contents);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_history_items_by_day() {
+    let (temp_path, db, _items, years, days, contents) = create_example();
+
+    let day = days[0];
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::new(None, day))
+        .unwrap();
+    check_output(&items_out, &years, &vec![day], &contents);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_history_items_by_year_and_day() {
+    let (temp_path, db, _items, years, days, contents) = create_example();
+
+    let year = years[0];
+    let day = days[0];
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::new(Some(year), day))
+        .unwrap();
+    check_output(&items_out, &vec![year], &vec![day], &contents);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn search_for_non_existing_year() {
+    let (temp_path, db, _items, _, _, _) = create_example();
+
+    let year = 65537;
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::new(Some(year), None))
+        .unwrap();
+    assert!(items_out.len() == 0);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn search_for_non_existing_day() {
+    let (temp_path, db, _items, _, _, _) = create_example();
+
+    let day = Some(65537);
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::new(None, day))
+        .unwrap();
+    assert!(items_out.len() == 0);
+
     temp_path.close().unwrap();
 }

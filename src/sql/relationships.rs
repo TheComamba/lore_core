@@ -45,7 +45,7 @@ impl LoreDatabase {
         }
         let parents = query
             .load::<EntityRelationship>(&mut connection)
-            .map_err(|e| sql_loading_error("relationships", "parents", vec![("child", child)], e))?
+            .map_err(|e| sql_loading_error("relationships", vec![("child", child)], e))?
             .into_iter()
             .map(|r| r.parent)
             .collect::<Vec<_>>();
@@ -60,9 +60,7 @@ impl LoreDatabase {
         }
         let children = query
             .load::<EntityRelationship>(&mut connection)
-            .map_err(|e| {
-                sql_loading_error("relationships", "children", vec![("parent", parent)], e)
-            })?
+            .map_err(|e| sql_loading_error("relationships", vec![("parent", parent)], e))?
             .into_iter()
             .map(|r| r.child)
             .collect::<Vec<_>>();
@@ -82,7 +80,6 @@ impl LoreDatabase {
             .map_err(|e| {
                 sql_loading_error(
                     "relationship",
-                    "role",
                     vec![("parent", parent), ("child", child)],
                     e,
                 )

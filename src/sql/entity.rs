@@ -56,7 +56,6 @@ impl LoreDatabase {
         let cols = query.load::<EntityColumn>(&mut connection).map_err(|e| {
             sql_loading_error(
                 "entities",
-                "columns",
                 vec![("label", &label), ("descriptor", &descriptor)],
                 e,
             )
@@ -65,22 +64,16 @@ impl LoreDatabase {
     }
 }
 
-pub fn get_labels(entity_columns: &Vec<EntityColumn>) -> Vec<String> {
-    let mut cols = entity_columns
-        .iter()
-        .map(|c| c.label.clone())
-        .collect::<Vec<String>>();
-    cols.sort();
-    cols.dedup();
-    cols
+pub fn get_labels(cols: &Vec<EntityColumn>) -> Vec<String> {
+    let mut labels: Vec<_> = cols.iter().map(|c| c.label.clone()).collect();
+    labels.sort();
+    labels.dedup();
+    labels
 }
 
-pub fn get_descriptors(entity_columns: &Vec<EntityColumn>) -> Vec<String> {
-    let mut cols = entity_columns
-        .iter()
-        .map(|c| c.descriptor.clone())
-        .collect::<Vec<String>>();
-    cols.sort();
-    cols.dedup();
-    cols
+pub fn get_descriptors(cols: &Vec<EntityColumn>) -> Vec<String> {
+    let mut descriptors: Vec<_> = cols.iter().map(|c| c.descriptor.clone()).collect();
+    descriptors.sort();
+    descriptors.dedup();
+    descriptors
 }

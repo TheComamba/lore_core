@@ -7,7 +7,10 @@ use super::{
 };
 use crate::{
     errors::LoreCoreError,
-    sql::{lore_database::LoreDatabase, search_text::EntityColumnSearchParams},
+    sql::{
+        lore_database::LoreDatabase,
+        search_text::{EntityColumnSearchParams, HistoryItemSearchParams},
+    },
 };
 
 pub(super) unsafe fn c_read_entity_columns(
@@ -29,7 +32,7 @@ pub(super) unsafe fn c_read_history_items(
     let db_path = char_pointer_to_string(db_path)?;
     let db = LoreDatabase::open(db_path.into())?;
     let mut items = Vec::new();
-    let history_columns = db.get_all_history_items()?;
+    let history_columns = db.get_history_items(HistoryItemSearchParams::empty())?;
     for col in history_columns {
         items.push(to_c_history_item(&col)?);
     }
