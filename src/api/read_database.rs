@@ -5,7 +5,10 @@ use super::{
         CEntityRelationship, CHistoryItem,
     },
 };
-use crate::{errors::LoreCoreError, sql::lore_database::LoreDatabase};
+use crate::{
+    errors::LoreCoreError,
+    sql::{lore_database::LoreDatabase, search_text::EntityColumnSearchParams},
+};
 
 pub(super) unsafe fn c_read_entity_columns(
     db_path: *const libc::c_char,
@@ -13,7 +16,7 @@ pub(super) unsafe fn c_read_entity_columns(
     let db_path = char_pointer_to_string(db_path)?;
     let db = LoreDatabase::open(db_path.into())?;
     let mut columns = Vec::new();
-    let database_entity_columns = db.get_entity_columns()?;
+    let database_entity_columns = db.get_entity_columns(EntityColumnSearchParams::empty())?;
     for col in database_entity_columns {
         columns.push(to_c_entity_column(&col)?);
     }

@@ -1,4 +1,4 @@
-use super::{lore_database::LoreDatabase, search_text::SqlSearchText};
+use super::{lore_database::LoreDatabase, search_text::EntityColumnSearchParams};
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
     sql::schema::entities,
@@ -33,11 +33,11 @@ impl LoreDatabase {
 
     pub fn get_entity_columns(
         &self,
-        label: SqlSearchText,
-        descriptor: SqlSearchText,
+        search_params: EntityColumnSearchParams,
     ) -> Result<Vec<EntityColumn>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = entities::table.into_boxed();
+        let label = search_params.label;
         if label.is_some() {
             if label.is_exact {
                 query = query.filter(entities::label.eq(label.to_string()));
@@ -45,6 +45,7 @@ impl LoreDatabase {
                 query = query.filter(entities::label.like(label.to_string()));
             }
         }
+        let descriptor = search_params.descriptor;
         if descriptor.is_some() {
             if descriptor.is_exact {
                 query = query.filter(entities::descriptor.eq(descriptor.to_string()));
@@ -52,7 +53,7 @@ impl LoreDatabase {
                 query = query.filter(entities::descriptor.like(descriptor.to_string()));
             }
         }
-        let mut cols = query.load::<EntityColumn>(&mut connection).map_err(|e| {
+        let cols = query.load::<EntityColumn>(&mut connection).map_err(|e| {
             sql_loading_error(
                 "entities",
                 "columns",
@@ -60,7 +61,26 @@ impl LoreDatabase {
                 e,
             )
         })?;
-        cols.dedup();
         Ok(cols)
     }
+}
+
+pub fn get_labels(entity_columns: &Vec<EntityColumn>) -> Vec<String> {
+    let mut cols = entity_columns
+        .iter()
+        .map(|c| c.label.clone())
+        .collect::<Vec<String>>();
+    cols.sort();
+    cols.dedup();
+    cols
+}
+
+pub fn get_descriptors(entity_columns: &Vec<EntityColumn>) -> Vec<String> {
+    let mut cols = entity_columns
+        .iter()
+        .map(|c| c.descriptor.clone())
+        .collect::<Vec<String>>();
+    cols.sort();
+    cols.dedup();
+    cols
 }

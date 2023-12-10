@@ -1,5 +1,7 @@
 use lorecore::sql::{
-    entity::EntityColumn, lore_database::LoreDatabase, search_text::SqlSearchText,
+    entity::{get_descriptors, get_labels, EntityColumn},
+    lore_database::LoreDatabase,
+    search_text::EntityColumnSearchParams,
 };
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
@@ -15,7 +17,9 @@ fn writing_single_entity_column() {
         description: Some("testdescription".to_string()),
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
-    let entity_out = db.get_entity_columns().unwrap();
+    let entity_out = db
+        .get_entity_columns(EntityColumnSearchParams::empty())
+        .unwrap();
     assert!(entity_out.len() == 1);
     assert!(entity == entity_out[0]);
     temp_path.close().unwrap();
@@ -42,7 +46,9 @@ fn write_many_entity_columns() {
 
     db.write_entity_columns(entities.clone()).unwrap();
 
-    let entities_out = db.get_entity_columns().unwrap();
+    let entities_out = db
+        .get_entity_columns(EntityColumnSearchParams::empty())
+        .unwrap();
     assert!(entities.len() == entities_out.len());
     for entity in entities.iter() {
         assert!(entities_out.contains(entity));
@@ -61,7 +67,9 @@ fn write_entity_with_empty_description() {
         description: None,
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
-    let entity_out = db.get_entity_columns().unwrap();
+    let entity_out = db
+        .get_entity_columns(EntityColumnSearchParams::empty())
+        .unwrap();
     assert!(entity_out.len() == 1);
     assert!(entity == entity_out[0]);
     temp_path.close().unwrap();
@@ -92,71 +100,90 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<String>, Vec<Strin
     (temp_path, db, labels, descriptors)
 }
 
-#[test]
-fn get_all_labels() {
-    let (temp_path, db, labels, _descriptors) = create_example();
-
-    let labels_out = db.get_entity_labels(SqlSearchText::empty()).unwrap();
-    assert!(labels.len() == labels_out.len());
-    for label in labels.iter() {
+fn check_output(
+    out: Vec<EntityColumn>,
+    expected_labels: &Vec<String>,
+    expected_descriptors: &Vec<String>,
+) {
+    let labels_out = get_labels(&out);
+    let descriptors_out = get_descriptors(&out);
+    assert!(out.len() == expected_labels.len() * expected_descriptors.len());
+    assert!(labels_out.len() == expected_labels.len());
+    assert!(descriptors_out.len() == expected_descriptors.len());
+    for label in expected_labels.iter() {
         assert!(labels_out.contains(label));
     }
-
-    temp_path.close().unwrap();
-}
-
-#[test]
-fn get_labels_with_filter() {
-    let (temp_path, db, labels, _descriptors) = create_example();
-
-    let no_result = db.get_entity_labels(SqlSearchText::new("fununu")).unwrap();
-    assert!(no_result.len() == 0);
-
-    let label1_out = db.get_entity_labels(SqlSearchText::new("bel1")).unwrap();
-    assert!(label1_out.len() == 1);
-    assert!(label1_out[0] == labels[0]);
-
-    let label2_out = db.get_entity_labels(SqlSearchText::new("bel2")).unwrap();
-    assert!(label2_out.len() == 1);
-    assert!(label2_out[0] == labels[1]);
-
-    let all_labels_out = db.get_entity_labels(SqlSearchText::new("bel")).unwrap();
-    assert!(all_labels_out.len() == 2);
-    for label in labels.iter() {
-        assert!(all_labels_out.contains(label));
+    for descriptor in expected_descriptors.iter() {
+        assert!(descriptors_out.contains(descriptor));
     }
-
-    temp_path.close().unwrap();
+    for label in expected_labels.iter() {
+        for descriptor in expected_descriptors.iter() {
+            let description = label.clone() + descriptor;
+            assert!(out
+                .iter()
+                .any(|c| c.description == Some(description.to_owned())))
+        }
+    }
 }
 
 #[test]
-fn get_descriptors() {
+fn get_all_entity_columns() {
     let (temp_path, db, labels, descriptors) = create_example();
 
-    let no_descriptors_out = db
-        .get_descriptors(&labels[0], SqlSearchText::new("fununu"))
+    let out = db
+        .get_entity_columns(EntityColumnSearchParams::empty())
         .unwrap();
-    assert!(no_descriptors_out.len() == 0);
-
-    let descriptor1_out = db
-        .get_descriptors(&labels[0], SqlSearchText::new("riptor1"))
-        .unwrap();
-    assert!(descriptor1_out.len() == 1);
-    assert!(descriptor1_out[0] == descriptors[0]);
-
-    let descriptor2_out = db
-        .get_descriptors(&labels[0], SqlSearchText::new("riptor2"))
-        .unwrap();
-    assert!(descriptor2_out.len() == 1);
-    assert!(descriptor2_out[0] == descriptors[1]);
-
-    let all_descriptors_out = db
-        .get_descriptors(&labels[0], SqlSearchText::new("cript"))
-        .unwrap();
-    assert!(all_descriptors_out.len() == descriptors.len());
-    for descriptor in descriptors.iter() {
-        assert!(all_descriptors_out.contains(descriptor));
-    }
+    check_output(out, &labels, &descriptors);
 
     temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_label_filter() {
+    let (temp_path, db, labels, descriptors) = create_example();
+
+    let no_result = db
+        .get_entity_columns(EntityColumnSearchParams::new(Some(("fununu", false)), None))
+        .unwrap();
+    check_output(no_result, &vec![], &vec![]);
+
+    let label1_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(Some(("bel1", false)), None))
+        .unwrap();
+    check_output(label1_out, &vec![labels[0].clone()], &descriptors);
+
+    let all_labels_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(Some(("bel", false)), None))
+        .unwrap();
+    check_output(all_labels_out, &labels, &descriptors);
+
+    let label1_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            Some(("testlabel1", false)),
+            None,
+        ))
+        .unwrap();
+    check_output(label1_out, &vec![labels[0].clone()], &descriptors);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_exact_label_filter() {
+    todo!();
+}
+
+#[test]
+fn get_entities_with_descriptor_filter() {
+    todo!();
+}
+
+#[test]
+fn get_entities_with_exact_descriptor_filter() {
+    todo!();
+}
+
+#[test]
+fn get_entities_with_label_and_descriptor_filter() {
+    todo!();
 }
