@@ -40,17 +40,17 @@ impl LoreDatabase {
         let label = search_params.label;
         if label.is_some() {
             if label.is_exact {
-                query = query.filter(entities::label.eq(label.to_string()));
+                query = query.filter(entities::label.eq(label.exact_text()));
             } else {
-                query = query.filter(entities::label.like(label.to_string()));
+                query = query.filter(entities::label.like(label.search_pattern()));
             }
         }
         let descriptor = search_params.descriptor;
         if descriptor.is_some() {
             if descriptor.is_exact {
-                query = query.filter(entities::descriptor.eq(descriptor.to_string()));
+                query = query.filter(entities::descriptor.eq(descriptor.exact_text()));
             } else {
-                query = query.filter(entities::descriptor.like(descriptor.to_string()));
+                query = query.filter(entities::descriptor.like(descriptor.search_pattern()));
             }
         }
         let cols = query.load::<EntityColumn>(&mut connection).map_err(|e| {

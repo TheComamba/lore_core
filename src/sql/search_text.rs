@@ -1,34 +1,38 @@
 #[derive(Debug)]
 pub(crate) struct SqlSearchText {
-    search_text: Option<String>,
+    text: Option<String>,
     pub(crate) is_exact: bool,
 }
 
 impl SqlSearchText {
     pub(crate) fn new(search_text: &str, is_exact: bool) -> Self {
-        let search_text = "%".to_string() + &search_text.replace('*', "%") + "%";
         Self {
-            search_text: Some(search_text),
+            text: Some(search_text.to_string()),
             is_exact,
         }
     }
 
     pub(crate) fn empty() -> Self {
         Self {
-            search_text: None,
+            text: None,
             is_exact: false,
         }
     }
 
     pub(crate) fn is_some(&self) -> bool {
-        self.search_text.is_some()
+        self.text.is_some()
     }
-}
 
-impl ToString for SqlSearchText {
-    fn to_string(&self) -> String {
-        match &self.search_text {
-            Some(search_text) => search_text.clone(),
+    pub(crate) fn exact_text(&self) -> String {
+        match &self.text {
+            Some(text) => text.to_string(),
+            None => "".to_string(),
+        }
+    }
+
+    pub(crate) fn search_pattern(&self) -> String {
+        match &self.text {
+            Some(text) => "%".to_string() + &text.replace('*', "%") + "%",
             None => "%".to_string(),
         }
     }

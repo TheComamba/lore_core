@@ -170,20 +170,146 @@ fn get_entities_with_label_filter() {
 
 #[test]
 fn get_entities_with_exact_label_filter() {
-    todo!();
+    let (temp_path, db, labels, descriptors) = create_example();
+
+    let no_result = db
+        .get_entity_columns(EntityColumnSearchParams::new(Some(("fununu", true)), None))
+        .unwrap();
+    check_output(no_result, &vec![], &vec![]);
+
+    let all_labels_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(Some(("bel", true)), None))
+        .unwrap();
+    check_output(all_labels_out, &vec![], &vec![]);
+
+    let label1_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            Some(("testlabel1", true)),
+            None,
+        ))
+        .unwrap();
+    check_output(label1_out, &vec![labels[0].clone()], &descriptors);
+
+    temp_path.close().unwrap();
 }
 
 #[test]
 fn get_entities_with_descriptor_filter() {
-    todo!();
+    let (temp_path, db, labels, descriptors) = create_example();
+
+    let no_result = db
+        .get_entity_columns(EntityColumnSearchParams::new(None, Some(("fununu", false))))
+        .unwrap();
+    check_output(no_result, &vec![], &vec![]);
+
+    let descriptor1_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            None,
+            Some(("riptor1", false)),
+        ))
+        .unwrap();
+    check_output(descriptor1_out, &labels, &vec![descriptors[0].clone()]);
+
+    let all_descriptors_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(None, Some(("riptor", false))))
+        .unwrap();
+    check_output(all_descriptors_out, &labels, &descriptors);
+
+    let descriptor1_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            None,
+            Some(("testdescriptor1", false)),
+        ))
+        .unwrap();
+    check_output(descriptor1_out, &labels, &vec![descriptors[0].clone()]);
+
+    temp_path.close().unwrap();
 }
 
 #[test]
 fn get_entities_with_exact_descriptor_filter() {
-    todo!();
+    let (temp_path, db, labels, descriptors) = create_example();
+
+    let no_result = db
+        .get_entity_columns(EntityColumnSearchParams::new(None, Some(("fununu", true))))
+        .unwrap();
+    check_output(no_result, &vec![], &vec![]);
+
+    let all_descriptors_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(None, Some(("riptor", true))))
+        .unwrap();
+    check_output(all_descriptors_out, &vec![], &vec![]);
+
+    let descriptor1_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            None,
+            Some(("testdescriptor1", true)),
+        ))
+        .unwrap();
+    check_output(descriptor1_out, &labels, &vec![descriptors[0].clone()]);
+
+    temp_path.close().unwrap();
 }
 
 #[test]
 fn get_entities_with_label_and_descriptor_filter() {
-    todo!();
+    let (temp_path, db, labels, descriptors) = create_example();
+
+    let no_result = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            Some(("bel", false)),
+            Some(("fununu", false)),
+        ))
+        .unwrap();
+    check_output(no_result, &vec![], &vec![]);
+
+    let no_result = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            Some(("fununu", false)),
+            Some(("riptor", false)),
+        ))
+        .unwrap();
+    check_output(no_result, &vec![], &vec![]);
+
+    let label1_descriptor1_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            Some(("bel1", false)),
+            Some(("riptor1", false)),
+        ))
+        .unwrap();
+    check_output(
+        label1_descriptor1_out,
+        &vec![labels[0].clone()],
+        &vec![descriptors[0].clone()],
+    );
+
+    let label1_descriptor1_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            Some(("testlabel1", true)),
+            Some(("testdescriptor1", true)),
+        ))
+        .unwrap();
+    check_output(
+        label1_descriptor1_out,
+        &vec![labels[0].clone()],
+        &vec![descriptors[0].clone()],
+    );
+
+    let label1_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            Some(("testlabel1", true)),
+            Some(("riptor", false)),
+        ))
+        .unwrap();
+    check_output(label1_out, &vec![labels[0].clone()], &descriptors);
+
+    let descriptor1_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            Some(("bel", false)),
+            Some(("testdescriptor1", true)),
+        ))
+        .unwrap();
+    check_output(descriptor1_out, &labels, &vec![descriptors[0].clone()]);
+
+    temp_path.close().unwrap();
 }
