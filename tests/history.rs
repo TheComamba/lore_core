@@ -104,6 +104,7 @@ fn timestamps_are_distinct() {
     for _ in 0..1000 {
         timestamps.push(current_timestamp());
     }
+    println!("{:?}", timestamps);
     for (i, t_i) in timestamps.iter().enumerate() {
         for (j, t_j) in timestamps.iter().enumerate() {
             if i != j {
