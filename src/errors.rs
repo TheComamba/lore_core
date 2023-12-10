@@ -13,13 +13,6 @@ impl ToString for LoreCoreError {
     }
 }
 
-pub(super) fn sql_loading_error_no_params<E>(loadee: &str, target: &str, err: E) -> LoreCoreError
-where
-    E: Display,
-{
-    sql_loading_error::<String, E>(loadee, vec![], err)
-}
-
 pub(super) fn sql_loading_error<T, E>(
     loadee: &str,
     params: Vec<(&str, &T)>,
