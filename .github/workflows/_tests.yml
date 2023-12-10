@@ -2,7 +2,7 @@ name: Tests
 on: [workflow_call]
 
 jobs:
-    build:
+    buildAndTest:
       strategy:
         fail-fast: false
         matrix:

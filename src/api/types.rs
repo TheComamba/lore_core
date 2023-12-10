@@ -41,7 +41,9 @@ pub(super) fn to_c_entity_column(column: &EntityColumn) -> Result<CEntityColumn,
     })
 }
 
-pub(super) fn to_entity_column(column: &CEntityColumn) -> Result<EntityColumn, LoreCoreError> {
+pub(super) unsafe fn to_entity_column(
+    column: &CEntityColumn,
+) -> Result<EntityColumn, LoreCoreError> {
     Ok(EntityColumn {
         label: char_pointer_to_string(column.label)?,
         descriptor: char_pointer_to_string(column.descriptor)?,
@@ -59,7 +61,7 @@ pub(super) fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, Lore
     })
 }
 
-pub(super) fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
+pub(super) unsafe fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
     Ok(HistoryItem {
         timestamp: item.timestamp,
         year: item.year,
@@ -79,7 +81,7 @@ pub(super) fn to_c_relationship(
     })
 }
 
-pub(super) fn to_relationship(
+pub(super) unsafe fn to_relationship(
     rel: &CEntityRelationship,
 ) -> Result<EntityRelationship, LoreCoreError> {
     Ok(EntityRelationship {
@@ -113,7 +115,7 @@ mod tests {
                         description: description.clone(),
                     };
                     let c_column = to_c_entity_column(&column_before).unwrap();
-                    let column_after = to_entity_column(&c_column).unwrap();
+                    let column_after = unsafe { to_entity_column(&c_column).unwrap() };
                     assert_eq!(column_before, column_after);
                 }
             }
@@ -142,7 +144,7 @@ mod tests {
                             properties: property.clone(),
                         };
                         let c_item = to_c_history_item(&item_before).unwrap();
-                        let item_after = to_history_item(&c_item).unwrap();
+                        let item_after = unsafe { to_history_item(&c_item).unwrap() };
                         assert_eq!(item_before, item_after);
                     }
                 }
@@ -168,7 +170,7 @@ mod tests {
                         role: role.clone(),
                     };
                     let c_rel = to_c_relationship(&rel_before).unwrap();
-                    let rel_after = to_relationship(&c_rel).unwrap();
+                    let rel_after = unsafe { to_relationship(&c_rel).unwrap() };
                     assert_eq!(rel_before, rel_after);
                 }
             }
