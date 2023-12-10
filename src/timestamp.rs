@@ -39,40 +39,61 @@ mod tests {
     use super::*;
 
     #[test]
-    fn ns_since_start_are_distinct_and_ascending() {
+    fn ns_since_start_are_distinct() {
         let mut timestamps = vec![];
         for _ in 0..1000 {
             timestamps.push(ns_since_start());
         }
-        println!("{:?}", timestamps);
         for (i, t_i) in timestamps.iter().enumerate() {
             for (j, t_j) in timestamps.iter().enumerate() {
                 if i != j {
+                    println!("i={}, j={}, t_i={}, t_j={}", i, j, t_i, t_j);
                     assert!(t_i != t_j);
-                }
-                if i < j {
-                    assert!(t_i < t_j);
                 }
             }
         }
     }
 
     #[test]
-    fn timestamps_are_distinct_and_ascending() {
+    fn ns_since_start_are_ascending() {
+        let mut timestamps = vec![];
+        for _ in 0..1000 {
+            timestamps.push(ns_since_start());
+        }
+        for i in 1..timestamps.len() {
+            let t_im1 = timestamps[i - 1];
+            let t_i = timestamps[i];
+            println!("i={}, t_(i-1)={}, t_i={}", i, t_im1, t_i);
+            assert!(t_im1 < t_i);
+        }
+    }
+
+    #[test]
+    fn timestamps_are_distinct() {
         let mut timestamps = vec![];
         for _ in 0..1000 {
             timestamps.push(current_timestamp());
         }
-        println!("{:?}", timestamps);
         for (i, t_i) in timestamps.iter().enumerate() {
             for (j, t_j) in timestamps.iter().enumerate() {
                 if i != j {
                     assert!(t_i != t_j);
                 }
-                if i < j {
-                    assert!(t_i < t_j);
-                }
             }
+        }
+    }
+
+    #[test]
+    fn timestamps_are_ascending() {
+        let mut timestamps = vec![];
+        for _ in 0..1000 {
+            timestamps.push(current_timestamp());
+        }
+        for i in 1..timestamps.len() {
+            let t_im1 = timestamps[i - 1];
+            let t_i = timestamps[i];
+            println!("i={}, t_(i-1)={}, t_i={}", i, t_im1, t_i);
+            assert!(t_im1 < t_i);
         }
     }
 }
