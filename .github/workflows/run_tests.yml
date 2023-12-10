@@ -1,0 +1,6 @@
+name: Run Tests
+on: [push]
+
+jobs:
+  runTests:
+    uses: ./.github/workflows/_tests.yml

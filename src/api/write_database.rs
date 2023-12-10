@@ -8,7 +8,7 @@ use super::{
 use crate::{errors::LoreCoreError, sql::lore_database::LoreDatabase};
 use std::path::PathBuf;
 
-pub(super) fn c_write_entity_column(
+pub(super) unsafe fn c_write_entity_column(
     db_path: *const libc::c_char,
     column: &CEntityColumn,
 ) -> Result<(), LoreCoreError> {
@@ -20,7 +20,7 @@ pub(super) fn c_write_entity_column(
     Ok(())
 }
 
-pub(super) fn c_write_history_item(
+pub(super) unsafe fn c_write_history_item(
     db_path: *const libc::c_char,
     item: &CHistoryItem,
 ) -> Result<(), LoreCoreError> {
@@ -32,7 +32,7 @@ pub(super) fn c_write_history_item(
     Ok(())
 }
 
-pub(super) fn c_write_relationship(
+pub(super) unsafe fn c_write_relationship(
     db_path: *const libc::c_char,
     rel: &CEntityRelationship,
 ) -> Result<(), LoreCoreError> {

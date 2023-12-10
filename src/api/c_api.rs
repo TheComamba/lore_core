@@ -6,6 +6,10 @@ use super::{
     write_database::{c_write_entity_column, c_write_history_item, c_write_relationship},
 };
 
+/// # Safety
+///
+/// `db_path` must be a valid C string.
+/// `columns` must be a valid pointer to an array of `CEntityColumn`s.
 #[no_mangle]
 pub unsafe extern "C" fn write_entity_columns(
     db_path: *const libc::c_char,
@@ -20,6 +24,10 @@ pub unsafe extern "C" fn write_entity_columns(
     char_ptr("")
 }
 
+/// # Safety
+///
+/// `db_path` must be a valid C string.
+/// `size` must be a valid pointer to allocated memory of `isize`.
 #[no_mangle]
 pub unsafe extern "C" fn get_number_of_entity_columns(
     db_path: *const libc::c_char,
@@ -34,6 +42,10 @@ pub unsafe extern "C" fn get_number_of_entity_columns(
     }
 }
 
+/// # Safety
+///
+/// `db_path` must be a valid C string.
+/// `columns` must be a valid pointer to an array of `CEntityColumn`s.
 #[no_mangle]
 pub unsafe extern "C" fn read_entity_columns(
     db_path: *const libc::c_char,
@@ -50,6 +62,10 @@ pub unsafe extern "C" fn read_entity_columns(
     }
 }
 
+/// # Safety
+///
+/// `db_path` must be a valid C string.
+/// `items` must be a valid pointer to an array of `CHistoryItem`s.
 #[no_mangle]
 pub unsafe extern "C" fn write_history_items(
     db_path: *const libc::c_char,
@@ -64,6 +80,10 @@ pub unsafe extern "C" fn write_history_items(
     char_ptr("")
 }
 
+/// # Safety
+///
+/// `db_path` must be a valid C string.
+/// `size` must be a valid pointer to allocated memory of `isize`.
 #[no_mangle]
 pub unsafe extern "C" fn get_number_of_history_items(
     db_path: *const libc::c_char,
@@ -78,6 +98,10 @@ pub unsafe extern "C" fn get_number_of_history_items(
     }
 }
 
+/// # Safety
+///
+/// `db_path` must be a valid C string.
+/// `items` must be a valid pointer to an array of `CHistoryItem`s.
 #[no_mangle]
 pub unsafe extern "C" fn read_history_items(
     db_path: *const libc::c_char,
@@ -94,6 +118,10 @@ pub unsafe extern "C" fn read_history_items(
     }
 }
 
+/// # Safety
+///
+/// `db_path` must be a valid C string.
+/// `relationships` must be a valid pointer to an array of `CEntityRelationship`s.
 #[no_mangle]
 pub unsafe extern "C" fn write_relationships(
     db_path: *const libc::c_char,
@@ -108,6 +136,10 @@ pub unsafe extern "C" fn write_relationships(
     char_ptr("")
 }
 
+/// # Safety
+///
+/// `db_path` must be a valid C string.
+/// `size` must be a valid pointer to allocated memory of `isize`.
 #[no_mangle]
 pub unsafe extern "C" fn get_number_of_relationships(
     db_path: *const libc::c_char,
@@ -122,6 +154,10 @@ pub unsafe extern "C" fn get_number_of_relationships(
     }
 }
 
+/// # Safety
+///
+/// `db_path` must be a valid C string.
+/// `relationships` must be a valid pointer to an array of `CEntityRelationship`s.
 #[no_mangle]
 pub unsafe extern "C" fn read_relationships(
     db_path: *const libc::c_char,
