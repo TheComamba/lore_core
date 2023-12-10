@@ -5,7 +5,7 @@ pub struct SqlSearchText {
 
 impl SqlSearchText {
     pub fn new(search_text: &str) -> Self {
-        let search_text = "%".to_string() + &search_text.replace("*", "%") + "%";
+        let search_text = "%".to_string() + &search_text.replace('*', "%") + "%";
         Self {
             search_text: Some(search_text),
         }
