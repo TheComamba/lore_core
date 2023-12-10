@@ -1,6 +1,9 @@
 use crate::errors::LoreCoreError;
 use std::ffi::{CStr, CString};
 
+/// # Safety
+///
+/// `string` must be a valid C string.
 pub unsafe fn char_pointer_to_string(string: *const libc::c_char) -> Result<String, LoreCoreError> {
     if string.is_null() {
         return Err(LoreCoreError::InputError(
