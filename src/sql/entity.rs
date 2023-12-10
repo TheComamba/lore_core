@@ -1,6 +1,6 @@
 use super::{lore_database::LoreDatabase, search_text::SqlSearchText};
 use crate::{
-    errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreError},
+    errors::{sql_loading_error, LoreCoreError},
     sql::schema::entities,
 };
 use ::diesel::prelude::*;
@@ -31,104 +31,36 @@ impl LoreDatabase {
         Ok(())
     }
 
-    pub fn get_all_entity_columns(&self) -> Result<Vec<EntityColumn>, LoreCoreError> {
+    pub fn get_entity_columns(
+        &self,
+        label: SqlSearchText,
+        descriptor: SqlSearchText,
+    ) -> Result<Vec<EntityColumn>, LoreCoreError> {
         let mut connection = self.db_connection()?;
-        let mut cols = entities::table
-            .load::<EntityColumn>(&mut connection)
-            .map_err(|e| sql_loading_error_no_params("entities", "all", e))?;
+        let mut query = entities::table.into_boxed();
+        if label.is_some() {
+            if label.is_exact {
+                query = query.filter(entities::label.eq(label.to_string()));
+            } else {
+                query = query.filter(entities::label.like(label.to_string()));
+            }
+        }
+        if descriptor.is_some() {
+            if descriptor.is_exact {
+                query = query.filter(entities::descriptor.eq(descriptor.to_string()));
+            } else {
+                query = query.filter(entities::descriptor.like(descriptor.to_string()));
+            }
+        }
+        let mut cols = query.load::<EntityColumn>(&mut connection).map_err(|e| {
+            sql_loading_error(
+                "entities",
+                "columns",
+                vec![("label", &label), ("descriptor", &descriptor)],
+                e,
+            )
+        })?;
         cols.dedup();
         Ok(cols)
-    }
-
-    pub fn get_entity_labels(
-        &self,
-        search_text: SqlSearchText,
-    ) -> Result<Vec<String>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let mut query = entities::table.into_boxed();
-        if search_text.is_some() {
-            query = query.filter(entities::label.like(search_text.to_string()));
-        }
-        let mut labels: Vec<_> = query
-            .load::<EntityColumn>(&mut connection)
-            .map_err(|e| {
-                sql_loading_error("entities", "labels", vec![("search_text", &search_text)], e)
-            })?
-            .into_iter()
-            .map(|c| c.label)
-            .collect();
-        labels.dedup();
-        Ok(labels)
-    }
-
-    pub fn get_descriptors(
-        &self,
-        label: &String,
-        search_text: SqlSearchText,
-    ) -> Result<Vec<String>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let mut query = entities::table.into_boxed();
-        query = query.filter(entities::label.eq(label));
-        if search_text.is_some() {
-            query = query.filter(entities::descriptor.like(search_text.to_string()));
-        }
-        let mut descriptors: Vec<_> = query
-            .load::<EntityColumn>(&mut connection)
-            .map_err(|e| {
-                sql_loading_error(
-                    "entities",
-                    "descriptors",
-                    vec![("label", label), ("search_text", &search_text.to_string())],
-                    e,
-                )
-            })?
-            .into_iter()
-            .map(|c| c.descriptor)
-            .collect();
-        descriptors.dedup();
-        Ok(descriptors)
-    }
-
-    pub fn get_description(
-        &self,
-        label: &String,
-        descriptor: &String,
-    ) -> Result<Option<String>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let descriptions = entities::table
-            .filter(entities::label.eq(label))
-            .filter(entities::descriptor.eq(descriptor))
-            .load::<EntityColumn>(&mut connection)
-            .map_err(|e| {
-                sql_loading_error(
-                    "entities",
-                    "description",
-                    vec![("label", label), ("descriptor", descriptor)],
-                    e,
-                )
-            })?;
-        if descriptions.len() > 1 {
-            Err(LoreCoreError::SqlError(
-                "More than one description found for label '".to_string()
-                    + label
-                    + "' and descriptor '"
-                    + descriptor
-                    + "'.",
-            ))
-        } else {
-            let description = match descriptions.first() {
-                Some(col) => col.description.to_owned(),
-                None => {
-                    return Err(LoreCoreError::SqlError(
-                        "No description found for label '".to_string()
-                            + label
-                            + "' and descriptor '"
-                            + descriptor
-                            + "'.",
-                    ))
-                }
-            };
-            Ok(description)
-        }
     }
 }

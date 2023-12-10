@@ -15,7 +15,7 @@ fn writing_single_entity_column() {
         description: Some("testdescription".to_string()),
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
-    let entity_out = db.get_all_entity_columns().unwrap();
+    let entity_out = db.get_entity_columns().unwrap();
     assert!(entity_out.len() == 1);
     assert!(entity == entity_out[0]);
     temp_path.close().unwrap();
@@ -42,7 +42,7 @@ fn write_many_entity_columns() {
 
     db.write_entity_columns(entities.clone()).unwrap();
 
-    let entities_out = db.get_all_entity_columns().unwrap();
+    let entities_out = db.get_entity_columns().unwrap();
     assert!(entities.len() == entities_out.len());
     for entity in entities.iter() {
         assert!(entities_out.contains(entity));
@@ -61,7 +61,7 @@ fn write_entity_with_empty_description() {
         description: None,
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
-    let entity_out = db.get_all_entity_columns().unwrap();
+    let entity_out = db.get_entity_columns().unwrap();
     assert!(entity_out.len() == 1);
     assert!(entity == entity_out[0]);
     temp_path.close().unwrap();
