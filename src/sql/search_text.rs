@@ -85,3 +85,32 @@ impl HistoryItemSearchParams {
         }
     }
 }
+
+#[derive(Debug)]
+pub struct RelationshipSearchParams {
+    pub(crate) parent: SqlSearchText,
+    pub(crate) child: SqlSearchText,
+}
+
+impl RelationshipSearchParams {
+    pub fn new(parent: Option<(&str, bool)>, child: Option<(&str, bool)>) -> Self {
+        let parent = if let Some(parent) = parent {
+            SqlSearchText::new(parent.0, parent.1)
+        } else {
+            SqlSearchText::empty()
+        };
+        let child = if let Some(child) = child {
+            SqlSearchText::new(child.0, child.1)
+        } else {
+            SqlSearchText::empty()
+        };
+        Self { parent, child }
+    }
+
+    pub fn empty() -> Self {
+        Self {
+            parent: SqlSearchText::empty(),
+            child: SqlSearchText::empty(),
+        }
+    }
+}

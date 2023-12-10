@@ -1,5 +1,6 @@
+use super::search_text::RelationshipSearchParams;
 use super::{lore_database::LoreDatabase, schema::relationships};
-use crate::errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreError};
+use crate::errors::{sql_loading_error, LoreCoreError};
 use ::diesel::prelude::*;
 use diesel::Insertable;
 use diesel::{QueryDsl, Queryable, RunQueryDsl};
@@ -29,83 +30,58 @@ impl LoreDatabase {
         Ok(())
     }
 
-    pub fn get_relationships(&self) -> Result<Vec<EntityRelationship>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let rels = relationships::table
-            .load::<EntityRelationship>(&mut connection)
-            .map_err(|e| sql_loading_error_no_params("relationships", "all", e))?;
-        Ok(rels)
-    }
-
-    pub fn get_parents(&self, child: &Option<&String>) -> Result<Vec<String>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let mut query = relationships::table.into_boxed();
-        if let Some(child) = child {
-            query = query.filter(relationships::child.eq(child));
-        }
-        let parents = query
-            .load::<EntityRelationship>(&mut connection)
-            .map_err(|e| sql_loading_error("relationships", vec![("child", child)], e))?
-            .into_iter()
-            .map(|r| r.parent)
-            .collect::<Vec<_>>();
-        Ok(parents)
-    }
-
-    pub fn get_children(&self, parent: &Option<&String>) -> Result<Vec<String>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let mut query = relationships::table.into_boxed();
-        if let Some(parent) = parent {
-            query = query.filter(relationships::parent.eq(parent))
-        }
-        let children = query
-            .load::<EntityRelationship>(&mut connection)
-            .map_err(|e| sql_loading_error("relationships", vec![("parent", parent)], e))?
-            .into_iter()
-            .map(|r| r.child)
-            .collect::<Vec<_>>();
-        Ok(children)
-    }
-
-    pub fn get_relationship_role(
+    pub fn get_relationships(
         &self,
-        parent: &String,
-        child: &String,
-    ) -> Result<Option<String>, LoreCoreError> {
+        search_params: RelationshipSearchParams,
+    ) -> Result<Vec<EntityRelationship>, LoreCoreError> {
         let mut connection = self.db_connection()?;
-        let relationships = relationships::table
-            .filter(relationships::parent.eq(parent))
-            .filter(relationships::child.eq(child))
+        let mut query = relationships::table.into_boxed();
+        let parent = search_params.parent;
+        if parent.is_some() {
+            if parent.is_exact {
+                query = query.filter(relationships::parent.eq(parent.exact_text()));
+            } else {
+                query = query.filter(relationships::parent.like(parent.search_pattern()));
+            }
+        }
+        let child = search_params.child;
+        if child.is_some() {
+            if child.is_exact {
+                query = query.filter(relationships::child.eq(child.exact_text()));
+            } else {
+                query = query.filter(relationships::child.like(child.search_pattern()));
+            }
+        }
+        let rels = query
             .load::<EntityRelationship>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
-                    "relationship",
-                    vec![("parent", parent), ("child", child)],
+                    "relationships",
+                    vec![("parent", &parent), ("child", &child)],
                     e,
                 )
             })?;
-        if relationships.len() > 1 {
-            Err(LoreCoreError::SqlError(
-                "More than one entry found for parent '".to_string()
-                    + parent
-                    + "' and child '"
-                    + child
-                    + "'.",
-            ))
-        } else {
-            let role = match relationships.first() {
-                Some(relationship) => relationship.role.to_owned(),
-                None => {
-                    return Err(LoreCoreError::SqlError(
-                        "No content found for parent '".to_string()
-                            + parent
-                            + "' and child '"
-                            + child
-                            + "'.",
-                    ))
-                }
-            };
-            Ok(role)
-        }
+        Ok(rels)
     }
+}
+
+pub fn get_parents(rels: &Vec<EntityRelationship>) -> Vec<String> {
+    let mut parents: Vec<_> = rels.iter().map(|rel| rel.parent.clone()).collect();
+    parents.sort();
+    parents.dedup();
+    parents
+}
+
+pub fn get_children(rels: &Vec<EntityRelationship>) -> Vec<String> {
+    let mut children: Vec<_> = rels.iter().map(|rel| rel.child.clone()).collect();
+    children.sort();
+    children.dedup();
+    children
+}
+
+pub fn get_roles(rels: &Vec<EntityRelationship>) -> Vec<Option<String>> {
+    let mut roles: Vec<_> = rels.iter().map(|rel| rel.role.clone()).collect();
+    roles.sort();
+    roles.dedup();
+    roles
 }

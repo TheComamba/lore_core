@@ -9,7 +9,9 @@ use crate::{
     errors::LoreCoreError,
     sql::{
         lore_database::LoreDatabase,
-        search_text::{EntityColumnSearchParams, HistoryItemSearchParams},
+        search_text::{
+            EntityColumnSearchParams, HistoryItemSearchParams, RelationshipSearchParams,
+        },
     },
 };
 
@@ -45,7 +47,7 @@ pub(super) unsafe fn c_read_relationships(
     let db_path = char_pointer_to_string(db_path)?;
     let db = LoreDatabase::open(db_path.into())?;
     let mut relationships = Vec::new();
-    let relationship_columns = db.get_relationships()?;
+    let relationship_columns = db.get_relationships(RelationshipSearchParams::empty())?;
     for col in relationship_columns {
         relationships.push(to_c_relationship(&col)?);
     }
