@@ -7,6 +7,7 @@ fn main() {
     println!("cargo:rerun-if-changed=src/api/c_api.rs");
     println!("cargo:rerun-if-changed=migrations/");
 
+    #[allow(clippy::eq_op)]
     if env!("CARGO_PKG_NAME") != "lorecore" {
         return;
     }
