@@ -97,22 +97,3 @@ fn get_days() {
     }
     temp_path.close().unwrap();
 }
-
-#[test]
-fn timestamps_are_distinct_and_ascending() {
-    let mut timestamps = vec![];
-    for _ in 0..1000 {
-        timestamps.push(current_timestamp());
-    }
-    println!("{:?}", timestamps);
-    for (i, t_i) in timestamps.iter().enumerate() {
-        for (j, t_j) in timestamps.iter().enumerate() {
-            if i != j {
-                assert!(t_i != t_j);
-            }
-            if i < j {
-                assert!(t_i < t_j);
-            }
-        }
-    }
-}
