@@ -1,10 +1,5 @@
-name: Run Tests
-on:
-  push:
-    branches:
-      - '*'
-  schedule:
-    - cron: "0 0 * * 6" # every saturday at 00:00 UTC
+name: Tests
+on: [workflow_call]
 
 jobs:
     build:
