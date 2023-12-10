@@ -99,7 +99,7 @@ fn get_days() {
 }
 
 #[test]
-fn timestamps_are_distinct() {
+fn timestamps_are_distinct_and_ascending() {
     let mut timestamps = vec![];
     for _ in 0..1000 {
         timestamps.push(current_timestamp());
@@ -109,6 +109,9 @@ fn timestamps_are_distinct() {
         for (j, t_j) in timestamps.iter().enumerate() {
             if i != j {
                 assert!(t_i != t_j);
+            }
+            if i < j {
+                assert!(t_i < t_j);
             }
         }
     }
