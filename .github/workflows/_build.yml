@@ -33,16 +33,6 @@ jobs:
         run: |
           apt-get update
           apt-get install -y sudo curl build-essential cmake pkg-config cargo
-          ./scripts/install_build_dependencies_linux.sh
-      - name: Install dependencies for Windows
-        if: matrix.os == 'windows-latest'
-        run: |
-          .\scripts\install_build_dependencies_windows.bat
-      - name: Install dependencies for MacOS
-        if: matrix.os == 'macos-latest'
-        run: |
-          chmod +x ./scripts/install_build_dependencies_macos.sh
-          ./scripts/install_build_dependencies_macos.sh
 
       - uses: dtolnay/rust-toolchain@stable
         with:
