@@ -26,13 +26,7 @@ fn write_single_history_item() {
     temp_path.close().unwrap();
 }
 
-fn create_example() -> (
-    tempfile::TempPath,
-    LoreDatabase,
-    Vec<HistoryItem>,
-    Vec<i32>,
-    Vec<Option<i32>>,
-) {
+fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<HistoryItem>) {
     let temp_path = NamedTempFile::new().unwrap().into_temp_path();
     let path_in: PathBuf = temp_path.as_os_str().into();
     let db = LoreDatabase::open(path_in.clone()).unwrap();
@@ -59,12 +53,12 @@ fn create_example() -> (
     }
 
     db.write_history_items(items.clone()).unwrap();
-    (temp_path, db, items, years, days)
+    (temp_path, db, items)
 }
 
 #[test]
 fn write_many_history_items() {
-    let (temp_path, db, items, _, _) = create_example();
+    let (temp_path, db, items) = create_example();
 
     let items_out = db
         .get_history_items(HistoryItemSearchParams::empty())
@@ -75,7 +69,7 @@ fn write_many_history_items() {
 
 #[test]
 fn get_all_history_items() {
-    let (temp_path, db, items, _, _) = create_example();
+    let (temp_path, db, items) = create_example();
 
     let items_out = db
         .get_history_items(HistoryItemSearchParams::empty())
@@ -87,8 +81,8 @@ fn get_all_history_items() {
 
 #[test]
 fn get_history_items_by_year() {
-    let (temp_path, db, items, years, _) = create_example();
-    let year = years[0];
+    let (temp_path, db, items) = create_example();
+    let year = items[0].year;
     let expected_items: Vec<_> = items.iter().filter(|item| item.year == year).collect();
 
     let items_out = db
@@ -101,8 +95,8 @@ fn get_history_items_by_year() {
 
 #[test]
 fn get_history_items_by_day() {
-    let (temp_path, db, items, _years, days) = create_example();
-    let day = days[0];
+    let (temp_path, db, items) = create_example();
+    let day = items[0].day;
     let expected_items: Vec<_> = items.iter().filter(|item| item.day == day).collect();
 
     let items_out = db
@@ -115,7 +109,7 @@ fn get_history_items_by_day() {
 
 #[test]
 fn get_history_item_by_timestamp() {
-    let (temp_path, db, items, _, _) = create_example();
+    let (temp_path, db, items) = create_example();
     let timestamp = items[0].timestamp;
 
     let items_out = db
@@ -134,7 +128,7 @@ fn get_history_item_by_timestamp() {
 
 #[test]
 fn get_history_itmes_with_content_filter() {
-    let (temp_path, db, items, _, _) = create_example();
+    let (temp_path, db, items) = create_example();
     let content = "tent1".to_string();
     let expected_items: Vec<_> = items
         .iter()
@@ -157,7 +151,7 @@ fn get_history_itmes_with_content_filter() {
 
 #[test]
 fn get_history_itmes_with_exact_content_filter() {
-    let (temp_path, db, items, _, _) = create_example();
+    let (temp_path, db, items) = create_example();
     let content = "testcontent1".to_string();
     let expected_items: Vec<_> = items
         .iter()
@@ -180,9 +174,9 @@ fn get_history_itmes_with_exact_content_filter() {
 
 #[test]
 fn get_history_items_by_year_and_day() {
-    let (temp_path, db, items, years, days) = create_example();
-    let year = years[0];
-    let day = days[0];
+    let (temp_path, db, items) = create_example();
+    let year = items[0].year;
+    let day = items[0].day;
     let expected_items: Vec<_> = items
         .iter()
         .filter(|item| item.year == year && item.day == day)
@@ -198,7 +192,7 @@ fn get_history_items_by_year_and_day() {
 
 #[test]
 fn search_for_non_existing_year() {
-    let (temp_path, db, _items, _, _) = create_example();
+    let (temp_path, db, _items) = create_example();
 
     let year = 65537;
     let items_out = db
@@ -211,7 +205,7 @@ fn search_for_non_existing_year() {
 
 #[test]
 fn search_for_non_existing_day() {
-    let (temp_path, db, _items, _, _) = create_example();
+    let (temp_path, db, _items) = create_example();
 
     let day = Some(65537);
     let items_out = db
@@ -224,7 +218,7 @@ fn search_for_non_existing_day() {
 
 #[test]
 fn search_for_non_existing_timestamp() {
-    let (temp_path, db, _items, _, _) = create_example();
+    let (temp_path, db, _items) = create_example();
 
     let timestamp = 65537;
     let items_out = db
@@ -242,7 +236,7 @@ fn search_for_non_existing_timestamp() {
 
 #[test]
 fn search_for_non_existing_content() {
-    let (temp_path, db, _items, _, _) = create_example();
+    let (temp_path, db, _items) = create_example();
 
     let content = "nonexistingcontent".to_string();
     let content_search = SqlSearchText::partial(&content);
