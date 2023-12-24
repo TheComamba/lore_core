@@ -52,6 +52,14 @@ impl LoreDatabase {
         if let Some(timestamp) = timestamp {
             query = query.filter(history_items::timestamp.eq(timestamp));
         }
+        let content = search_params.content;
+        if content.is_some() {
+            if content.is_exact {
+                query = query.filter(history_items::content.eq(content.exact_text()));
+            } else {
+                query = query.filter(history_items::content.like(content.search_pattern()));
+            }
+        }
         let items = query.load::<HistoryItem>(&mut connection).map_err(|e| {
             sql_loading_error("history items", vec![("year", &year), ("day", &day)], e)
         })?;

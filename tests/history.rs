@@ -188,6 +188,11 @@ fn get_history_itmes_with_content_filter() {
         .filter(|item| item.content.contains(content.as_str()))
         .map(|item| item.timestamp)
         .collect();
+    let expected_contents: Vec<_> = items
+        .iter()
+        .filter(|item| item.content.contains(content.as_str()))
+        .map(|item| item.content.clone())
+        .collect();
     let content_search = SqlSearchText::partial(&content);
 
     let items_out = db
@@ -198,7 +203,7 @@ fn get_history_itmes_with_content_filter() {
             Some(content_search),
         ))
         .unwrap();
-    check_output(&items_out, &years, &days, &timestamps, &vec![content]);
+    check_output(&items_out, &years, &days, &timestamps, &expected_contents);
 
     temp_path.close().unwrap();
 }
@@ -212,6 +217,11 @@ fn get_history_itmes_with_exact_content_filter() {
         .filter(|item| item.content == content)
         .map(|item| item.timestamp)
         .collect();
+    let expected_contents: Vec<_> = items
+        .iter()
+        .filter(|item| item.content == content)
+        .map(|item| item.content.clone())
+        .collect();
     let content_search = SqlSearchText::exact(&content);
 
     let items_out = db
@@ -222,7 +232,7 @@ fn get_history_itmes_with_exact_content_filter() {
             Some(content_search),
         ))
         .unwrap();
-    check_output(&items_out, &years, &days, &timestamps, &vec![content]);
+    check_output(&items_out, &years, &days, &timestamps, &expected_contents);
 
     temp_path.close().unwrap();
 }
