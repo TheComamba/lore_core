@@ -79,3 +79,54 @@ pub fn extract_children(rels: &Vec<EntityRelationship>) -> Vec<String> {
     children.dedup();
     children
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_extract_parents() {
+        let rels = vec![
+            EntityRelationship {
+                parent: "b".to_string(),
+                child: "c".to_string(),
+                role: None,
+            },
+            EntityRelationship {
+                parent: "a".to_string(),
+                child: "b".to_string(),
+                role: None,
+            },
+            EntityRelationship {
+                parent: "a".to_string(),
+                child: "c".to_string(),
+                role: None,
+            },
+        ];
+        let parents = extract_parents(&rels);
+        assert!(parents == vec!["a".to_string(), "b".to_string()]);
+    }
+
+    #[test]
+    fn test_extract_children() {
+        let rels = vec![
+            EntityRelationship {
+                parent: "b".to_string(),
+                child: "c".to_string(),
+                role: None,
+            },
+            EntityRelationship {
+                parent: "a".to_string(),
+                child: "b".to_string(),
+                role: None,
+            },
+            EntityRelationship {
+                parent: "a".to_string(),
+                child: "c".to_string(),
+                role: None,
+            },
+        ];
+        let children = extract_children(&rels);
+        assert!(children == vec!["b".to_string(), "c".to_string()]);
+    }
+}

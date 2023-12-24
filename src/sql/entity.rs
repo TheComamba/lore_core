@@ -78,3 +78,54 @@ pub fn extract_descriptors(cols: &Vec<EntityColumn>) -> Vec<String> {
     descriptors.dedup();
     descriptors
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_extract_labels() {
+        let cols = vec![
+            EntityColumn {
+                label: "qux".to_string(),
+                descriptor: "bar".to_string(),
+                description: None,
+            },
+            EntityColumn {
+                label: "foo".to_string(),
+                descriptor: "bar".to_string(),
+                description: None,
+            },
+            EntityColumn {
+                label: "foo".to_string(),
+                descriptor: "baz".to_string(),
+                description: None,
+            },
+        ];
+        let labels = extract_labels(&cols);
+        assert_eq!(labels, vec!["foo".to_string(), "qux".to_string()]);
+    }
+
+    #[test]
+    fn test_extract_descriptors() {
+        let cols = vec![
+            EntityColumn {
+                label: "foo".to_string(),
+                descriptor: "bar".to_string(),
+                description: None,
+            },
+            EntityColumn {
+                label: "foo".to_string(),
+                descriptor: "baz".to_string(),
+                description: None,
+            },
+            EntityColumn {
+                label: "qux".to_string(),
+                descriptor: "bar".to_string(),
+                description: None,
+            },
+        ];
+        let descriptors = extract_descriptors(&cols);
+        assert_eq!(descriptors, vec!["bar".to_string(), "baz".to_string()]);
+    }
+}

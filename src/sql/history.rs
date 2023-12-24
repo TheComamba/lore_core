@@ -91,3 +91,74 @@ pub fn extract_days(items: &Vec<HistoryItem>) -> Vec<Option<i32>> {
     days.dedup();
     days
 }
+
+#[cfg(test)]
+mod tests {
+
+    #[test]
+    fn test_extract_years() {
+        use super::*;
+        let items = vec![
+            HistoryItem {
+                timestamp: 0,
+                year: 2021,
+                day: None,
+                content: "".to_string(),
+                properties: None,
+            },
+            HistoryItem {
+                timestamp: 0,
+                year: 2020,
+                day: None,
+                content: "".to_string(),
+                properties: None,
+            },
+            HistoryItem {
+                timestamp: 0,
+                year: 2020,
+                day: Some(4),
+                content: "".to_string(),
+                properties: None,
+            },
+        ];
+        let years = extract_years(&items);
+        assert!(years == vec![2020, 2021]);
+    }
+
+    #[test]
+    fn test_extract_days() {
+        use super::*;
+        let items = vec![
+            HistoryItem {
+                timestamp: 0,
+                year: 2020,
+                day: Some(2),
+                content: "".to_string(),
+                properties: None,
+            },
+            HistoryItem {
+                timestamp: 0,
+                year: 2020,
+                day: Some(1),
+                content: "".to_string(),
+                properties: None,
+            },
+            HistoryItem {
+                timestamp: 0,
+                year: 2020,
+                day: Some(1),
+                content: "".to_string(),
+                properties: None,
+            },
+            HistoryItem {
+                timestamp: 0,
+                year: 2020,
+                day: None,
+                content: "".to_string(),
+                properties: None,
+            },
+        ];
+        let days = extract_days(&items);
+        assert!(days == vec![None, Some(1), Some(2)]);
+    }
+}
