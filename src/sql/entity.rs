@@ -31,7 +31,7 @@ impl LoreDatabase {
         Ok(())
     }
 
-    pub fn get_entity_columns(
+    pub fn read_entity_columns(
         &self,
         search_params: EntityColumnSearchParams,
     ) -> Result<Vec<EntityColumn>, LoreCoreError> {
@@ -65,14 +65,14 @@ impl LoreDatabase {
     }
 }
 
-pub fn get_labels(cols: &Vec<EntityColumn>) -> Vec<String> {
+pub fn extract_labels(cols: &Vec<EntityColumn>) -> Vec<String> {
     let mut labels: Vec<_> = cols.iter().map(|c| c.label.clone()).collect();
     labels.sort();
     labels.dedup();
     labels
 }
 
-pub fn get_descriptors(cols: &Vec<EntityColumn>) -> Vec<String> {
+pub fn extract_descriptors(cols: &Vec<EntityColumn>) -> Vec<String> {
     let mut descriptors: Vec<_> = cols.iter().map(|c| c.descriptor.clone()).collect();
     descriptors.sort();
     descriptors.dedup();

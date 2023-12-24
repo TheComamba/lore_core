@@ -30,7 +30,7 @@ impl LoreDatabase {
         Ok(())
     }
 
-    pub fn get_relationships(
+    pub fn read_relationships(
         &self,
         search_params: RelationshipSearchParams,
     ) -> Result<Vec<EntityRelationship>, LoreCoreError> {
@@ -66,23 +66,16 @@ impl LoreDatabase {
     }
 }
 
-pub fn get_parents(rels: &Vec<EntityRelationship>) -> Vec<String> {
+pub fn extract_parents(rels: &Vec<EntityRelationship>) -> Vec<String> {
     let mut parents: Vec<_> = rels.iter().map(|rel| rel.parent.clone()).collect();
     parents.sort();
     parents.dedup();
     parents
 }
 
-pub fn get_children(rels: &Vec<EntityRelationship>) -> Vec<String> {
+pub fn extract_children(rels: &Vec<EntityRelationship>) -> Vec<String> {
     let mut children: Vec<_> = rels.iter().map(|rel| rel.child.clone()).collect();
     children.sort();
     children.dedup();
     children
-}
-
-pub fn get_roles(rels: &Vec<EntityRelationship>) -> Vec<Option<String>> {
-    let mut roles: Vec<_> = rels.iter().map(|rel| rel.role.clone()).collect();
-    roles.sort();
-    roles.dedup();
-    roles
 }

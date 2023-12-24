@@ -19,7 +19,7 @@ fn write_single_history_item() {
     };
     db.write_history_items(vec![item.clone()]).unwrap();
     let item_out = db
-        .get_history_items(HistoryItemSearchParams::empty())
+        .read_history_items(HistoryItemSearchParams::empty())
         .unwrap();
     assert!(item_out.len() == 1);
     assert!(item == item_out[0]);
@@ -62,7 +62,7 @@ fn write_many_history_items() {
     let (temp_path, db, items) = create_example();
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::empty())
+        .read_history_items(HistoryItemSearchParams::empty())
         .unwrap();
     assert!(items_out == items);
     temp_path.close().unwrap();
@@ -73,7 +73,7 @@ fn get_all_history_items() {
     let (temp_path, db, items) = create_example();
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::empty())
+        .read_history_items(HistoryItemSearchParams::empty())
         .unwrap();
     assert!(items_out == items);
 
@@ -87,7 +87,7 @@ fn get_history_items_by_year() {
     let expected_items: Vec<_> = items.iter().filter(|item| item.year == year).collect();
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
+        .read_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
         .unwrap();
     assert!(items_out == expected_items);
 
@@ -101,7 +101,7 @@ fn get_history_items_by_day() {
     let expected_items: Vec<_> = items.iter().filter(|item| item.day == day).collect();
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(None, day, None, None))
+        .read_history_items(HistoryItemSearchParams::new(None, day, None, None))
         .unwrap();
     assert!(items_out == expected_items);
 
@@ -114,7 +114,7 @@ fn get_history_item_by_timestamp() {
     let timestamp = items[0].timestamp;
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(
+        .read_history_items(HistoryItemSearchParams::new(
             None,
             None,
             Some(timestamp),
@@ -138,7 +138,7 @@ fn get_history_itmes_with_content_filter() {
     let content_search = SqlSearchText::partial(&content);
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(
+        .read_history_items(HistoryItemSearchParams::new(
             None,
             None,
             None,
@@ -161,7 +161,7 @@ fn get_history_itmes_with_exact_content_filter() {
     let content_search = SqlSearchText::exact(&content);
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(
+        .read_history_items(HistoryItemSearchParams::new(
             None,
             None,
             None,
@@ -184,7 +184,7 @@ fn get_history_items_by_year_and_day() {
         .collect();
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(Some(year), day, None, None))
+        .read_history_items(HistoryItemSearchParams::new(Some(year), day, None, None))
         .unwrap();
     assert!(items_out == expected_items);
 
@@ -197,7 +197,7 @@ fn search_for_non_existing_year() {
 
     let year = 65537;
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
+        .read_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
         .unwrap();
     assert!(items_out.len() == 0);
 
@@ -210,7 +210,7 @@ fn search_for_non_existing_day() {
 
     let day = Some(65537);
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(None, day, None, None))
+        .read_history_items(HistoryItemSearchParams::new(None, day, None, None))
         .unwrap();
     assert!(items_out.len() == 0);
 
@@ -223,7 +223,7 @@ fn search_for_non_existing_timestamp() {
 
     let timestamp = 65537;
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(
+        .read_history_items(HistoryItemSearchParams::new(
             None,
             None,
             Some(timestamp),
@@ -242,7 +242,7 @@ fn search_for_non_existing_content() {
     let content = "nonexistingcontent".to_string();
     let content_search = SqlSearchText::partial(&content);
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(
+        .read_history_items(HistoryItemSearchParams::new(
             None,
             None,
             None,

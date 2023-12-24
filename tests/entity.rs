@@ -18,7 +18,7 @@ fn writing_single_entity_column() {
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
     let entity_out = db
-        .get_entity_columns(EntityColumnSearchParams::empty())
+        .read_entity_columns(EntityColumnSearchParams::empty())
         .unwrap();
     assert!(entity_out.len() == 1);
     assert!(entity == entity_out[0]);
@@ -47,7 +47,7 @@ fn write_many_entity_columns() {
     db.write_entity_columns(entities.clone()).unwrap();
 
     let entities_out = db
-        .get_entity_columns(EntityColumnSearchParams::empty())
+        .read_entity_columns(EntityColumnSearchParams::empty())
         .unwrap();
     assert!(entities.len() == entities_out.len());
     for entity in entities.iter() {
@@ -68,7 +68,7 @@ fn write_entity_with_empty_description() {
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
     let entity_out = db
-        .get_entity_columns(EntityColumnSearchParams::empty())
+        .read_entity_columns(EntityColumnSearchParams::empty())
         .unwrap();
     assert!(entity_out.len() == 1);
     assert!(entity == entity_out[0]);
@@ -106,7 +106,7 @@ fn get_all_entities_without_filter_returns_all() {
     let (temp_path, db, entities) = create_example();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::empty())
+        .read_entity_columns(EntityColumnSearchParams::empty())
         .unwrap();
     assert!(out == entities);
 
@@ -118,7 +118,7 @@ fn get_entities_with_label_filter_fununu_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("fununu")),
             None,
         ))
@@ -138,7 +138,7 @@ fn get_entities_with_label_filter_bel1_returns_some() {
         .collect();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("bel1")),
             None,
         ))
@@ -158,7 +158,7 @@ fn get_entities_with_label_filter_testlabel1_returns_some() {
         .collect();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("testlabel1")),
             None,
         ))
@@ -173,7 +173,7 @@ fn get_entities_with_label_filter_bel_returns_all() {
     let (temp_path, db, entities) = create_example();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("bel")),
             None,
         ))
@@ -188,7 +188,7 @@ fn get_entities_with_exact_label_filter_fununu_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact("fununu")),
             None,
         ))
@@ -203,7 +203,7 @@ fn get_entities_with_exact_label_filter_bel1_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact("bel")),
             None,
         ))
@@ -223,7 +223,7 @@ fn get_entities_with_exact_label_filter_testlabel1_returns_some() {
         .collect();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact("testlabel1")),
             None,
         ))
@@ -238,7 +238,7 @@ fn get_entities_with_descriptor_filter_fununu_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::partial("fununu")),
         ))
@@ -258,7 +258,7 @@ fn get_entities_with_descriptor_filter_riptor1_returns_some() {
         .collect();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::partial("riptor1")),
         ))
@@ -278,7 +278,7 @@ fn get_entities_with_descriptor_filter_testdescriptor1_returns_some() {
         .collect();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::partial("testdescriptor1")),
         ))
@@ -293,7 +293,7 @@ fn get_entities_with_descriptor_filter_riptor_returns_all() {
     let (temp_path, db, entities) = create_example();
 
     let all_descriptors_out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::partial("riptor")),
         ))
@@ -308,7 +308,7 @@ fn get_entities_with_exact_descriptor_filter_fununu_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::exact("fununu")),
         ))
@@ -323,7 +323,7 @@ fn get_entities_with_exact_descriptor_filter_riptor_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::exact("riptor")),
         ))
@@ -343,7 +343,7 @@ fn get_entities_with_exact_descriptor_filter_testdescriptor1_returns_some() {
         .collect();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::exact("testdescriptor1")),
         ))
@@ -358,7 +358,7 @@ fn get_entities_with_label_filter_bel_and_descriptor_filter_fununu_returns_none(
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("bel")),
             Some(SqlSearchText::partial("fununu")),
         ))
@@ -373,7 +373,7 @@ fn get_entities_with_label_filter_fununu_and_descriptor_filter_riptor_returns_no
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("fununu")),
             Some(SqlSearchText::partial("riptor")),
         ))
@@ -395,7 +395,7 @@ fn get_entities_with_label_filter_bel1_and_descriptor_filter_riptor1_returns_som
         .collect();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("bel1")),
             Some(SqlSearchText::partial("riptor1")),
         ))
@@ -418,7 +418,7 @@ fn get_entities_with_exact_label_filter_testlabel1_and_exact_descriptor_filter_t
         .collect();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact("testlabel1")),
             Some(SqlSearchText::exact("testdescriptor1")),
         ))
@@ -438,7 +438,7 @@ fn get_entities_with_exact_label_filter_testlabel1_and_descriptor_filter_riptor_
         .collect();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact("testlabel1")),
             Some(SqlSearchText::partial("riptor")),
         ))
@@ -458,7 +458,7 @@ fn get_entities_with_label_filter_bel_and_exact_descriptor_filter_testdescriptor
         .collect();
 
     let out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
+        .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("bel")),
             Some(SqlSearchText::exact("testdescriptor1")),
         ))

@@ -44,7 +44,7 @@ impl LoreDatabase {
         Ok(())
     }
 
-    pub fn get_history_items(
+    pub fn read_history_items(
         &self,
         search_params: HistoryItemSearchParams,
     ) -> Result<Vec<HistoryItem>, LoreCoreError> {
@@ -78,22 +78,16 @@ impl LoreDatabase {
     }
 }
 
-pub fn get_years(items: &Vec<HistoryItem>) -> Vec<i32> {
+pub fn extract_years(items: &Vec<HistoryItem>) -> Vec<i32> {
     let mut years: Vec<_> = items.iter().map(|item| item.year).collect();
     years.sort();
     years.dedup();
     years
 }
 
-pub fn get_days(items: &Vec<HistoryItem>) -> Vec<Option<i32>> {
+pub fn extract_days(items: &Vec<HistoryItem>) -> Vec<Option<i32>> {
     let mut days: Vec<_> = items.iter().map(|item| item.day).collect();
     days.sort();
     days.dedup();
     days
-}
-
-pub fn get_contents(items: &Vec<HistoryItem>) -> Vec<String> {
-    let mut contents: Vec<_> = items.iter().map(|item| item.content.clone()).collect();
-    contents.sort();
-    contents
 }

@@ -18,7 +18,7 @@ fn write_single_relationship() {
     };
     db.write_relationships(vec![rel.clone()]).unwrap();
     let rel_out = db
-        .get_relationships(RelationshipSearchParams::empty())
+        .read_relationships(RelationshipSearchParams::empty())
         .unwrap();
     assert!(rel_out.len() == 1);
     assert!(rel == rel_out[0]);
@@ -30,7 +30,7 @@ fn write_many_relationships() {
     let (temp_path, db, rels) = create_example();
 
     let rels_out = db
-        .get_relationships(RelationshipSearchParams::empty())
+        .read_relationships(RelationshipSearchParams::empty())
         .unwrap();
     assert!(rels.len() == rels_out.len());
     for rel in rels.iter() {
@@ -86,7 +86,7 @@ fn writing_several_roles_to_same_relationship() {
     db.write_relationships(rels.clone()).unwrap();
 
     let rels_out = db
-        .get_relationships(RelationshipSearchParams::empty())
+        .read_relationships(RelationshipSearchParams::empty())
         .unwrap();
     assert!(rels.len() == rels_out.len());
     for rel in rels.iter() {
@@ -100,7 +100,7 @@ fn get_relationships_without_filter_returns_all() {
     let (temp_path, db, rels) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::empty())
+        .read_relationships(RelationshipSearchParams::empty())
         .unwrap();
     assert!(out == rels);
 
@@ -112,7 +112,7 @@ fn get_relationships_with_parent_filter_fununu_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::partial("fununu")),
             None,
         ))
@@ -132,7 +132,7 @@ fn get_relationships_with_parent_filter_rent1_returns_some() {
         .collect::<Vec<_>>();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::partial("rent1")),
             None,
         ))
@@ -152,7 +152,7 @@ fn get_relationships_with_parent_filter_testparent1_returns_some() {
         .collect::<Vec<_>>();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::partial("testparent1")),
             None,
         ))
@@ -167,7 +167,7 @@ fn get_relationships_with_parent_filter_rent_returns_all() {
     let (temp_path, db, rels) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::partial("rent")),
             None,
         ))
@@ -182,7 +182,7 @@ fn get_relationships_with_exact_parent_filter_fununu_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::exact("fununu")),
             None,
         ))
@@ -197,7 +197,7 @@ fn get_relationships_with_exact_parent_filter_rent_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::exact("rent")),
             None,
         ))
@@ -217,7 +217,7 @@ fn get_relationships_with_exact_parent_filter_testparent1_returns_some() {
         .collect::<Vec<_>>();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::exact("testparent1")),
             None,
         ))
@@ -232,7 +232,7 @@ fn get_relationships_with_child_filter_fununu_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             None,
             Some(SqlSearchText::partial("fununu")),
         ))
@@ -252,7 +252,7 @@ fn get_relationships_with_child_filter_ild1_returns_some() {
         .collect::<Vec<_>>();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             None,
             Some(SqlSearchText::partial("ild1")),
         ))
@@ -272,7 +272,7 @@ fn get_relationships_with_child_filter_testchild1_returns_some() {
         .collect::<Vec<_>>();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             None,
             Some(SqlSearchText::partial("testchild1")),
         ))
@@ -287,7 +287,7 @@ fn get_relationships_with_child_filter_ild_returns_all() {
     let (temp_path, db, rels) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             None,
             Some(SqlSearchText::partial("ild")),
         ))
@@ -302,7 +302,7 @@ fn get_relationships_with_exact_child_filter_fununu_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             None,
             Some(SqlSearchText::exact("fununu")),
         ))
@@ -317,7 +317,7 @@ fn get_relationships_with_exact_child_filter_ild_returns_none() {
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             None,
             Some(SqlSearchText::exact("ild")),
         ))
@@ -337,7 +337,7 @@ fn get_relationships_with_exact_child_filter_testchild1_returns_some() {
         .collect::<Vec<_>>();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             None,
             Some(SqlSearchText::exact("testchild1")),
         ))
@@ -352,7 +352,7 @@ fn get_relationships_with_parent_filter_fununu_and_child_filter_ild_returns_none
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::partial("fununu")),
             Some(SqlSearchText::partial("ild")),
         ))
@@ -367,7 +367,7 @@ fn get_relationships_with_parent_filter_rent_and_child_filter_fununu_returns_non
     let (temp_path, db, _) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::partial("rent")),
             Some(SqlSearchText::partial("fununu")),
         ))
@@ -388,7 +388,7 @@ fn get_relationships_with_parent_filter_rent1_and_child_filter_ild1_returns_some
         .collect::<Vec<_>>();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::partial("rent1")),
             Some(SqlSearchText::partial("ild1")),
         ))
@@ -409,7 +409,7 @@ fn get_relationships_with_parent_filter_testparent1_and_child_filter_testchild1_
         .collect::<Vec<_>>();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::partial("testparent1")),
             Some(SqlSearchText::partial("testchild1")),
         ))
@@ -424,7 +424,7 @@ fn get_relationships_with_parent_filter_rent_and_child_filter_ild_returns_all() 
     let (temp_path, db, rels) = create_example();
 
     let out = db
-        .get_relationships(RelationshipSearchParams::new(
+        .read_relationships(RelationshipSearchParams::new(
             Some(SqlSearchText::partial("rent")),
             Some(SqlSearchText::partial("ild")),
         ))
