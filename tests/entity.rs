@@ -101,7 +101,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<EntityColumn>) {
 }
 
 #[test]
-fn get_all_entity_columns() {
+fn get_all_entities_without_filter_returns_all() {
     let (temp_path, db, entities) = create_example();
 
     let out = db
@@ -113,233 +113,356 @@ fn get_all_entity_columns() {
 }
 
 #[test]
-fn get_entities_with_label_filter() {
-    let (temp_path, db, entities) = create_example();
+fn get_entities_with_label_filter_fununu_returns_none() {
+    let (temp_path, db, _) = create_example();
 
-    let no_result = db
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("fununu")),
             None,
         ))
         .unwrap();
-    assert!(no_result.is_empty());
+    assert!(out.is_empty());
 
-    let expected_label1: Vec<_> = entities
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_label_filter_bel1_returns_some() {
+    let (temp_path, db, entities) = create_example();
+    let expected: Vec<_> = entities
         .iter()
         .filter(|e| e.label == "testlabel1".to_string())
         .cloned()
         .collect();
-    let label1_out = db
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("bel1")),
             None,
         ))
         .unwrap();
-    assert!(label1_out == expected_label1);
+    assert!(out == expected);
 
-    let all_labels_out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
-            Some(SqlSearchText::partial("bel")),
-            None,
-        ))
-        .unwrap();
-    assert!(all_labels_out == entities);
+    temp_path.close().unwrap();
+}
 
-    let label1_out = db
+#[test]
+fn get_entities_with_label_filter_testlabel1_returns_some() {
+    let (temp_path, db, entities) = create_example();
+    let expected: Vec<_> = entities
+        .iter()
+        .filter(|e| e.label == "testlabel1".to_string())
+        .cloned()
+        .collect();
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("testlabel1")),
             None,
         ))
         .unwrap();
-    assert!(label1_out == expected_label1);
+    assert!(out == expected);
 
     temp_path.close().unwrap();
 }
 
 #[test]
-fn get_entities_with_exact_label_filter() {
+fn get_entities_with_label_filter_bel_returns_all() {
     let (temp_path, db, entities) = create_example();
 
-    let no_result = db
+    let out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            Some(SqlSearchText::partial("bel")),
+            None,
+        ))
+        .unwrap();
+    assert!(out == entities);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_exact_label_filter_fununu_returns_none() {
+    let (temp_path, db, _) = create_example();
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact("fununu")),
             None,
         ))
         .unwrap();
-    assert!(no_result.is_empty());
+    assert!(out.is_empty());
 
-    let all_labels_out = db
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_exact_label_filter_bel1_returns_none() {
+    let (temp_path, db, _) = create_example();
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact("bel")),
             None,
         ))
         .unwrap();
-    assert!(all_labels_out == entities);
+    assert!(out.is_empty());
 
-    let expected_label1: Vec<_> = entities
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_exact_label_filter_testlabel1_returns_some() {
+    let (temp_path, db, entities) = create_example();
+    let expected: Vec<_> = entities
         .iter()
         .filter(|e| e.label == "testlabel1".to_string())
         .cloned()
         .collect();
-    let label1_out = db
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact("testlabel1")),
             None,
         ))
         .unwrap();
-    assert!(label1_out == expected_label1);
+    assert!(out == expected);
 
     temp_path.close().unwrap();
 }
 
 #[test]
-fn get_entities_with_descriptor_filter() {
-    let (temp_path, db, entities) = create_example();
+fn get_entities_with_descriptor_filter_fununu_returns_none() {
+    let (temp_path, db, _) = create_example();
 
-    let no_result = db
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::partial("fununu")),
         ))
         .unwrap();
-    assert!(no_result.is_empty());
+    assert!(out.is_empty());
 
-    let expected_descriptor1: Vec<_> = entities
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_descriptor_filter_riptor1_returns_some() {
+    let (temp_path, db, entities) = create_example();
+    let expected: Vec<_> = entities
         .iter()
         .filter(|e| e.descriptor == "testdescriptor1".to_string())
         .cloned()
         .collect();
-    let descriptor1_out = db
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::partial("riptor1")),
         ))
         .unwrap();
-    assert!(descriptor1_out == expected_descriptor1);
+    assert!(out == expected);
 
-    let all_descriptors_out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
-            None,
-            Some(SqlSearchText::partial("riptor")),
-        ))
-        .unwrap();
-    assert!(all_descriptors_out == entities);
+    temp_path.close().unwrap();
+}
 
-    let descriptor1_out = db
+#[test]
+fn get_entities_with_descriptor_filter_testdescriptor1_returns_some() {
+    let (temp_path, db, entities) = create_example();
+    let expected: Vec<_> = entities
+        .iter()
+        .filter(|e| e.descriptor == "testdescriptor1".to_string())
+        .cloned()
+        .collect();
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::partial("testdescriptor1")),
         ))
         .unwrap();
-    assert!(descriptor1_out == expected_descriptor1);
+    assert!(out == expected);
 
     temp_path.close().unwrap();
 }
 
 #[test]
-fn get_entities_with_exact_descriptor_filter() {
+fn get_entities_with_descriptor_filter_riptor_returns_all() {
     let (temp_path, db, entities) = create_example();
 
-    let no_result = db
+    let all_descriptors_out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            None,
+            Some(SqlSearchText::partial("riptor")),
+        ))
+        .unwrap();
+    assert!(all_descriptors_out == entities);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_exact_descriptor_filter_fununu_returns_none() {
+    let (temp_path, db, _) = create_example();
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             None,
             Some(SqlSearchText::exact("fununu")),
         ))
         .unwrap();
-    assert!(no_result.is_empty());
-
-    let all_descriptors_out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
-            None,
-            Some(SqlSearchText::exact("riptor")),
-        ))
-        .unwrap();
-    assert!(all_descriptors_out == entities);
-
-    let expected_descriptor1: Vec<_> = entities
-        .iter()
-        .filter(|e| e.descriptor == "testdescriptor1".to_string())
-        .cloned()
-        .collect();
-    let descriptor1_out = db
-        .get_entity_columns(EntityColumnSearchParams::new(
-            None,
-            Some(SqlSearchText::exact("testdescriptor1")),
-        ))
-        .unwrap();
-    assert!(descriptor1_out == expected_descriptor1);
+    assert!(out.is_empty());
 
     temp_path.close().unwrap();
 }
 
 #[test]
-fn get_entities_with_label_and_descriptor_filter() {
-    let (temp_path, db, entities) = create_example();
+fn get_entities_with_exact_descriptor_filter_riptor_returns_none() {
+    let (temp_path, db, _) = create_example();
 
-    let no_result = db
+    let out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            None,
+            Some(SqlSearchText::exact("riptor")),
+        ))
+        .unwrap();
+    assert!(out.is_empty());
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_exact_descriptor_filter_testdescriptor1_returns_some() {
+    let (temp_path, db, entities) = create_example();
+    let expected: Vec<_> = entities
+        .iter()
+        .filter(|e| e.descriptor == "testdescriptor1".to_string())
+        .cloned()
+        .collect();
+
+    let out = db
+        .get_entity_columns(EntityColumnSearchParams::new(
+            None,
+            Some(SqlSearchText::exact("testdescriptor1")),
+        ))
+        .unwrap();
+    assert!(out == expected);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_label_filter_bel_and_descriptor_filter_fununu_returns_none() {
+    let (temp_path, db, _) = create_example();
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("bel")),
             Some(SqlSearchText::partial("fununu")),
         ))
         .unwrap();
-    assert!(no_result.is_empty());
+    assert!(out.is_empty());
 
-    let no_result = db
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_label_filter_fununu_and_descriptor_filter_riptor_returns_none() {
+    let (temp_path, db, _) = create_example();
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("fununu")),
             Some(SqlSearchText::partial("riptor")),
         ))
         .unwrap();
-    assert!(no_result.is_empty());
+    assert!(out.is_empty());
 
-    let label1_descriptor1_expected: Vec<_> = entities
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_label_filter_bel1_and_descriptor_filter_riptor1_returns_some() {
+    let (temp_path, db, entities) = create_example();
+    let expected: Vec<_> = entities
         .iter()
         .filter(|e| {
             e.label == "testlabel1".to_string() && e.descriptor == "testdescriptor1".to_string()
         })
         .cloned()
         .collect();
-    let label1_descriptor1_out = db
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("bel1")),
             Some(SqlSearchText::partial("riptor1")),
         ))
         .unwrap();
-    assert!(label1_descriptor1_out == label1_descriptor1_expected);
+    assert!(out == expected);
 
-    let label1_descriptor1_out = db
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_exact_label_filter_testlabel1_and_exact_descriptor_filter_testdescriptor1_returns_some(
+) {
+    let (temp_path, db, entities) = create_example();
+    let expected: Vec<_> = entities
+        .iter()
+        .filter(|e| {
+            e.label == "testlabel1".to_string() && e.descriptor == "testdescriptor1".to_string()
+        })
+        .cloned()
+        .collect();
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact("testlabel1")),
             Some(SqlSearchText::exact("testdescriptor1")),
         ))
         .unwrap();
-    assert!(label1_descriptor1_out == label1_descriptor1_expected);
+    assert!(out == expected);
 
-    let label1_expected: Vec<_> = entities
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_exact_label_filter_testlabel1_and_descriptor_filter_riptor_returns_some() {
+    let (temp_path, db, entities) = create_example();
+    let expected: Vec<_> = entities
         .iter()
         .filter(|e| e.label == "testlabel1".to_string())
         .cloned()
         .collect();
-    let label1_out = db
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact("testlabel1")),
             Some(SqlSearchText::partial("riptor")),
         ))
         .unwrap();
-    assert!(label1_out == label1_expected);
+    assert!(out == expected);
 
-    let descriptor1_expected: Vec<_> = entities
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_entities_with_label_filter_bel_and_exact_descriptor_filter_testdescriptor1_returns_some() {
+    let (temp_path, db, entities) = create_example();
+    let expected: Vec<_> = entities
         .iter()
         .filter(|e| e.descriptor == "testdescriptor1".to_string())
         .cloned()
         .collect();
-    let descriptor1_out = db
+
+    let out = db
         .get_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::partial("bel")),
             Some(SqlSearchText::exact("testdescriptor1")),
         ))
         .unwrap();
-    assert!(descriptor1_out == descriptor1_expected);
+    assert!(out == expected);
 
     temp_path.close().unwrap();
 }
