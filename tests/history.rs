@@ -1,6 +1,6 @@
 use lorecore::sql::history::{get_contents, get_days, get_years, HistoryItem};
 use lorecore::sql::lore_database::LoreDatabase;
-use lorecore::sql::search_params::HistoryItemSearchParams;
+use lorecore::sql::search_params::{HistoryItemSearchParams, SqlSearchText};
 use lorecore::timestamp::current_timestamp;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
@@ -133,7 +133,7 @@ fn get_history_items_by_year() {
         .collect();
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(Some(year), None, None))
+        .get_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
         .unwrap();
     check_output(&items_out, &vec![year], &days, &timestamps, &contents);
 
@@ -151,7 +151,7 @@ fn get_history_items_by_day() {
         .collect();
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(None, day, None))
+        .get_history_items(HistoryItemSearchParams::new(None, day, None, None))
         .unwrap();
     check_output(&items_out, &years, &vec![day], &timestamp, &contents);
 
@@ -167,9 +167,62 @@ fn get_history_item_by_timestamp() {
     let contents = vec![items[0].content.clone()];
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(None, None, Some(timestamp)))
+        .get_history_items(HistoryItemSearchParams::new(
+            None,
+            None,
+            Some(timestamp),
+            None,
+        ))
         .unwrap();
     check_output(&items_out, &years, &days, &vec![timestamp], &contents);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_history_itmes_with_content_filter() {
+    let (temp_path, db, items, years, days, _) = create_example();
+    let content = "tent1".to_string();
+    let timestamps = items
+        .iter()
+        .filter(|item| item.content.contains(content.as_str()))
+        .map(|item| item.timestamp)
+        .collect();
+    let content_search = SqlSearchText::partial(&content);
+
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::new(
+            None,
+            None,
+            None,
+            Some(content_search),
+        ))
+        .unwrap();
+    check_output(&items_out, &years, &days, &timestamps, &vec![content]);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_history_itmes_with_exact_content_filter() {
+    let (temp_path, db, items, years, days, _) = create_example();
+    let content = "testcontent1".to_string();
+    let timestamps = items
+        .iter()
+        .filter(|item| item.content == content)
+        .map(|item| item.timestamp)
+        .collect();
+    let content_search = SqlSearchText::exact(&content);
+
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::new(
+            None,
+            None,
+            None,
+            Some(content_search),
+        ))
+        .unwrap();
+    check_output(&items_out, &years, &days, &timestamps, &vec![content]);
 
     temp_path.close().unwrap();
 }
@@ -186,7 +239,7 @@ fn get_history_items_by_year_and_day() {
         .collect();
 
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(Some(year), day, None))
+        .get_history_items(HistoryItemSearchParams::new(Some(year), day, None, None))
         .unwrap();
     check_output(&items_out, &vec![year], &vec![day], &timestamps, &contents);
 
@@ -199,7 +252,7 @@ fn search_for_non_existing_year() {
 
     let year = 65537;
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(Some(year), None, None))
+        .get_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
         .unwrap();
     assert!(items_out.len() == 0);
 
@@ -212,7 +265,7 @@ fn search_for_non_existing_day() {
 
     let day = Some(65537);
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(None, day, None))
+        .get_history_items(HistoryItemSearchParams::new(None, day, None, None))
         .unwrap();
     assert!(items_out.len() == 0);
 
@@ -225,7 +278,31 @@ fn search_for_non_existing_timestamp() {
 
     let timestamp = 65537;
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(None, None, Some(timestamp)))
+        .get_history_items(HistoryItemSearchParams::new(
+            None,
+            None,
+            Some(timestamp),
+            None,
+        ))
+        .unwrap();
+    assert!(items_out.len() == 0);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn search_for_non_existing_content() {
+    let (temp_path, db, _items, _, _, _) = create_example();
+
+    let content = "nonexistingcontent".to_string();
+    let content_search = SqlSearchText::partial(&content);
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::new(
+            None,
+            None,
+            None,
+            Some(content_search),
+        ))
         .unwrap();
     assert!(items_out.len() == 0);
 

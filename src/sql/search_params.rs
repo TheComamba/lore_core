@@ -77,14 +77,25 @@ pub struct HistoryItemSearchParams {
     pub(crate) year: Option<i32>,
     pub(crate) day: Option<i32>,
     pub(crate) timestamp: Option<i64>,
+    pub(crate) content: SqlSearchText,
 }
 
 impl HistoryItemSearchParams {
-    pub fn new(year: Option<i32>, day: Option<i32>, timestamp: Option<i64>) -> Self {
+    pub fn new(
+        year: Option<i32>,
+        day: Option<i32>,
+        timestamp: Option<i64>,
+        content: Option<SqlSearchText>,
+    ) -> Self {
+        let content = match content {
+            Some(content) => content,
+            None => SqlSearchText::empty(),
+        };
         Self {
             year,
             day,
             timestamp,
+            content,
         }
     }
 
@@ -93,6 +104,7 @@ impl HistoryItemSearchParams {
             year: None,
             day: None,
             timestamp: None,
+            content: SqlSearchText::empty(),
         }
     }
 }
