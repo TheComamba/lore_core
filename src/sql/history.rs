@@ -18,6 +18,16 @@ pub struct HistoryItem {
     pub properties: Option<String>,
 }
 
+impl PartialEq<&HistoryItem> for HistoryItem {
+    fn eq(&self, other: &&HistoryItem) -> bool {
+        self.timestamp == other.timestamp
+            && self.year == other.year
+            && self.day == other.day
+            && self.content == other.content
+            && self.properties == other.properties
+    }
+}
+
 impl LoreDatabase {
     pub fn write_history_items(&self, cols: Vec<HistoryItem>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
@@ -84,6 +94,5 @@ pub fn get_days(items: &Vec<HistoryItem>) -> Vec<Option<i32>> {
 pub fn get_contents(items: &Vec<HistoryItem>) -> Vec<String> {
     let mut contents: Vec<_> = items.iter().map(|item| item.content.clone()).collect();
     contents.sort();
-    contents.dedup();
     contents
 }

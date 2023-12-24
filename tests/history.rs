@@ -1,4 +1,4 @@
-use lorecore::sql::history::{get_contents, get_days, get_years, HistoryItem};
+use lorecore::sql::history::HistoryItem;
 use lorecore::sql::lore_database::LoreDatabase;
 use lorecore::sql::search_params::{HistoryItemSearchParams, SqlSearchText};
 use lorecore::timestamp::current_timestamp;
@@ -32,7 +32,6 @@ fn create_example() -> (
     Vec<HistoryItem>,
     Vec<i32>,
     Vec<Option<i32>>,
-    Vec<String>,
 ) {
     let temp_path = NamedTempFile::new().unwrap().into_temp_path();
     let path_in: PathBuf = temp_path.as_os_str().into();
@@ -60,111 +59,64 @@ fn create_example() -> (
     }
 
     db.write_history_items(items.clone()).unwrap();
-    (temp_path, db, items, years, days, contents)
-}
-
-fn check_output(
-    items: &Vec<HistoryItem>,
-    years: &Vec<i32>,
-    days: &Vec<Option<i32>>,
-    timestamps: &Vec<i64>,
-    contents: &Vec<String>,
-) {
-    let years_out = get_years(items);
-    assert!(years.len() == years_out.len());
-    for year in years.iter() {
-        assert!(years_out.contains(year));
-    }
-
-    let days_out = get_days(items);
-    assert!(days.len() == days_out.len());
-    for day in days.iter() {
-        assert!(days_out.contains(day));
-    }
-
-    let timestamps_out: Vec<_> = items.iter().map(|item| item.timestamp).collect();
-    assert!(timestamps.len() == timestamps_out.len());
-    for timestamp in timestamps.iter() {
-        assert!(timestamps_out.contains(timestamp));
-    }
-
-    let contents_out = get_contents(items);
-    assert!(contents.len() == contents_out.len());
-    for content in contents.iter() {
-        assert!(contents_out.contains(content));
-    }
+    (temp_path, db, items, years, days)
 }
 
 #[test]
 fn write_many_history_items() {
-    let (temp_path, db, items, _, _, _) = create_example();
+    let (temp_path, db, items, _, _) = create_example();
 
     let items_out = db
         .get_history_items(HistoryItemSearchParams::empty())
         .unwrap();
-    assert!(items.len() == items_out.len());
-    for item in items.iter() {
-        assert!(items_out.contains(item));
-    }
+    assert!(items_out == items);
     temp_path.close().unwrap();
 }
 
 #[test]
 fn get_all_history_items() {
-    let (temp_path, db, items, years, days, contents) = create_example();
-    let timestamps = items.iter().map(|item| item.timestamp).collect();
+    let (temp_path, db, items, _, _) = create_example();
 
     let items_out = db
         .get_history_items(HistoryItemSearchParams::empty())
         .unwrap();
-    check_output(&items_out, &years, &days, &timestamps, &contents);
+    assert!(items_out == items);
 
     temp_path.close().unwrap();
 }
 
 #[test]
 fn get_history_items_by_year() {
-    let (temp_path, db, items, years, days, contents) = create_example();
+    let (temp_path, db, items, years, _) = create_example();
     let year = years[0];
-    let timestamps = items
-        .iter()
-        .filter(|item| item.year == year)
-        .map(|item| item.timestamp)
-        .collect();
+    let expected_items: Vec<_> = items.iter().filter(|item| item.year == year).collect();
 
     let items_out = db
         .get_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
         .unwrap();
-    check_output(&items_out, &vec![year], &days, &timestamps, &contents);
+    assert!(items_out == expected_items);
 
     temp_path.close().unwrap();
 }
 
 #[test]
 fn get_history_items_by_day() {
-    let (temp_path, db, items, years, days, contents) = create_example();
+    let (temp_path, db, items, _years, days) = create_example();
     let day = days[0];
-    let timestamp = items
-        .iter()
-        .filter(|item| item.day == day)
-        .map(|item| item.timestamp)
-        .collect();
+    let expected_items: Vec<_> = items.iter().filter(|item| item.day == day).collect();
 
     let items_out = db
         .get_history_items(HistoryItemSearchParams::new(None, day, None, None))
         .unwrap();
-    check_output(&items_out, &years, &vec![day], &timestamp, &contents);
+    assert!(items_out == expected_items);
 
     temp_path.close().unwrap();
 }
 
 #[test]
 fn get_history_item_by_timestamp() {
-    let (temp_path, db, items, _, _, _) = create_example();
+    let (temp_path, db, items, _, _) = create_example();
     let timestamp = items[0].timestamp;
-    let years = vec![items[0].year];
-    let days = vec![items[0].day];
-    let contents = vec![items[0].content.clone()];
 
     let items_out = db
         .get_history_items(HistoryItemSearchParams::new(
@@ -174,24 +126,19 @@ fn get_history_item_by_timestamp() {
             None,
         ))
         .unwrap();
-    check_output(&items_out, &years, &days, &vec![timestamp], &contents);
+    assert!(items_out.len() == 1);
+    assert!(items_out[0] == items[0]);
 
     temp_path.close().unwrap();
 }
 
 #[test]
 fn get_history_itmes_with_content_filter() {
-    let (temp_path, db, items, years, days, _) = create_example();
+    let (temp_path, db, items, _, _) = create_example();
     let content = "tent1".to_string();
-    let timestamps = items
+    let expected_items: Vec<_> = items
         .iter()
         .filter(|item| item.content.contains(content.as_str()))
-        .map(|item| item.timestamp)
-        .collect();
-    let expected_contents: Vec<_> = items
-        .iter()
-        .filter(|item| item.content.contains(content.as_str()))
-        .map(|item| item.content.clone())
         .collect();
     let content_search = SqlSearchText::partial(&content);
 
@@ -203,24 +150,18 @@ fn get_history_itmes_with_content_filter() {
             Some(content_search),
         ))
         .unwrap();
-    check_output(&items_out, &years, &days, &timestamps, &expected_contents);
+    assert!(items_out == expected_items);
 
     temp_path.close().unwrap();
 }
 
 #[test]
 fn get_history_itmes_with_exact_content_filter() {
-    let (temp_path, db, items, years, days, _) = create_example();
+    let (temp_path, db, items, _, _) = create_example();
     let content = "testcontent1".to_string();
-    let timestamps = items
+    let expected_items: Vec<_> = items
         .iter()
         .filter(|item| item.content == content)
-        .map(|item| item.timestamp)
-        .collect();
-    let expected_contents: Vec<_> = items
-        .iter()
-        .filter(|item| item.content == content)
-        .map(|item| item.content.clone())
         .collect();
     let content_search = SqlSearchText::exact(&content);
 
@@ -232,33 +173,32 @@ fn get_history_itmes_with_exact_content_filter() {
             Some(content_search),
         ))
         .unwrap();
-    check_output(&items_out, &years, &days, &timestamps, &expected_contents);
+    assert!(items_out == expected_items);
 
     temp_path.close().unwrap();
 }
 
 #[test]
 fn get_history_items_by_year_and_day() {
-    let (temp_path, db, items, years, days, contents) = create_example();
+    let (temp_path, db, items, years, days) = create_example();
     let year = years[0];
     let day = days[0];
-    let timestamps = items
+    let expected_items: Vec<_> = items
         .iter()
         .filter(|item| item.year == year && item.day == day)
-        .map(|item| item.timestamp)
         .collect();
 
     let items_out = db
         .get_history_items(HistoryItemSearchParams::new(Some(year), day, None, None))
         .unwrap();
-    check_output(&items_out, &vec![year], &vec![day], &timestamps, &contents);
+    assert!(items_out == expected_items);
 
     temp_path.close().unwrap();
 }
 
 #[test]
 fn search_for_non_existing_year() {
-    let (temp_path, db, _items, _, _, _) = create_example();
+    let (temp_path, db, _items, _, _) = create_example();
 
     let year = 65537;
     let items_out = db
@@ -271,7 +211,7 @@ fn search_for_non_existing_year() {
 
 #[test]
 fn search_for_non_existing_day() {
-    let (temp_path, db, _items, _, _, _) = create_example();
+    let (temp_path, db, _items, _, _) = create_example();
 
     let day = Some(65537);
     let items_out = db
@@ -284,7 +224,7 @@ fn search_for_non_existing_day() {
 
 #[test]
 fn search_for_non_existing_timestamp() {
-    let (temp_path, db, _items, _, _, _) = create_example();
+    let (temp_path, db, _items, _, _) = create_example();
 
     let timestamp = 65537;
     let items_out = db
@@ -302,7 +242,7 @@ fn search_for_non_existing_timestamp() {
 
 #[test]
 fn search_for_non_existing_content() {
-    let (temp_path, db, _items, _, _, _) = create_example();
+    let (temp_path, db, _items, _, _) = create_example();
 
     let content = "nonexistingcontent".to_string();
     let content_search = SqlSearchText::partial(&content);
