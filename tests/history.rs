@@ -51,6 +51,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<HistoryItem>) {
             }
         }
     }
+    items.sort();
 
     db.write_history_items(items.clone()).unwrap();
     (temp_path, db, items)

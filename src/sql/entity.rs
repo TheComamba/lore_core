@@ -6,7 +6,7 @@ use crate::{
 use ::diesel::prelude::*;
 use diesel::{Insertable, RunQueryDsl};
 
-#[derive(Insertable, Queryable, PartialEq, Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
 #[diesel(table_name = entities)]
 #[repr(C)]
 pub struct EntityColumn {
@@ -53,13 +53,14 @@ impl LoreDatabase {
                 query = query.filter(entities::descriptor.like(descriptor.search_pattern()));
             }
         }
-        let cols = query.load::<EntityColumn>(&mut connection).map_err(|e| {
+        let mut cols = query.load::<EntityColumn>(&mut connection).map_err(|e| {
             sql_loading_error(
                 "entities",
                 vec![("label", &label), ("descriptor", &descriptor)],
                 e,
             )
         })?;
+        cols.sort();
         Ok(cols)
     }
 }

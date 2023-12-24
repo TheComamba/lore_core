@@ -59,6 +59,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<EntityRelationship
             }
         }
     }
+    rels.sort();
 
     db.write_relationships(rels.clone()).unwrap();
     (temp_path, db, rels)

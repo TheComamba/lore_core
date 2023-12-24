@@ -7,7 +7,7 @@ use crate::errors::{sql_loading_error, LoreCoreError};
 use ::diesel::prelude::*;
 use diesel::Insertable;
 
-#[derive(Insertable, Queryable, PartialEq, Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
 #[diesel(table_name = history_items)]
 #[repr(C)]
 pub struct HistoryItem {
@@ -70,9 +70,10 @@ impl LoreDatabase {
                 query = query.filter(history_items::content.like(content.search_pattern()));
             }
         }
-        let items = query.load::<HistoryItem>(&mut connection).map_err(|e| {
+        let mut items = query.load::<HistoryItem>(&mut connection).map_err(|e| {
             sql_loading_error("history items", vec![("year", &year), ("day", &day)], e)
         })?;
+        items.sort();
         Ok(items)
     }
 }

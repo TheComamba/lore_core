@@ -95,6 +95,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<EntityColumn>) {
             });
         }
     }
+    entities.sort();
 
     db.write_entity_columns(entities.clone()).unwrap();
     (temp_path, db, entities)

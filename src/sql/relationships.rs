@@ -5,7 +5,7 @@ use ::diesel::prelude::*;
 use diesel::Insertable;
 use diesel::{QueryDsl, Queryable, RunQueryDsl};
 
-#[derive(Insertable, Queryable, PartialEq, Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
 #[diesel(table_name = relationships)]
 #[repr(C)]
 pub struct EntityRelationship {
@@ -52,7 +52,7 @@ impl LoreDatabase {
                 query = query.filter(relationships::child.like(child.search_pattern()));
             }
         }
-        let rels = query
+        let mut rels = query
             .load::<EntityRelationship>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
@@ -61,6 +61,7 @@ impl LoreDatabase {
                     e,
                 )
             })?;
+        rels.sort();
         Ok(rels)
     }
 }
