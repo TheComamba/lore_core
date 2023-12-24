@@ -1,7 +1,7 @@
 use super::{
     lore_database::LoreDatabase,
     schema::history_items::{self},
-    search_text::HistoryItemSearchParams,
+    search_params::HistoryItemSearchParams,
 };
 use crate::errors::{sql_loading_error, LoreCoreError};
 use ::diesel::prelude::*;

@@ -1,18 +1,25 @@
 #[derive(Debug)]
-pub(crate) struct SqlSearchText {
+pub struct SqlSearchText {
     text: Option<String>,
     pub(crate) is_exact: bool,
 }
 
 impl SqlSearchText {
-    pub(crate) fn new(search_text: &str, is_exact: bool) -> Self {
+    pub fn exact(search_text: &str) -> Self {
         Self {
             text: Some(search_text.to_string()),
-            is_exact,
+            is_exact: true,
         }
     }
 
-    pub(crate) fn empty() -> Self {
+    pub fn partial(search_text: &str) -> Self {
+        Self {
+            text: Some(search_text.to_string()),
+            is_exact: false,
+        }
+    }
+
+    pub fn empty() -> Self {
         Self {
             text: None,
             is_exact: false,
@@ -45,16 +52,14 @@ pub struct EntityColumnSearchParams {
 }
 
 impl EntityColumnSearchParams {
-    pub fn new(label: Option<(&str, bool)>, descriptor: Option<(&str, bool)>) -> Self {
-        let label = if let Some(label) = label {
-            SqlSearchText::new(label.0, label.1)
-        } else {
-            SqlSearchText::empty()
+    pub fn new(label: Option<SqlSearchText>, descriptor: Option<SqlSearchText>) -> Self {
+        let label = match label {
+            Some(label) => label,
+            None => SqlSearchText::empty(),
         };
-        let descriptor = if let Some(descriptor) = descriptor {
-            SqlSearchText::new(descriptor.0, descriptor.1)
-        } else {
-            SqlSearchText::empty()
+        let descriptor = match descriptor {
+            Some(descriptor) => descriptor,
+            None => SqlSearchText::empty(),
         };
         Self { label, descriptor }
     }
@@ -99,16 +104,14 @@ pub struct RelationshipSearchParams {
 }
 
 impl RelationshipSearchParams {
-    pub fn new(parent: Option<(&str, bool)>, child: Option<(&str, bool)>) -> Self {
-        let parent = if let Some(parent) = parent {
-            SqlSearchText::new(parent.0, parent.1)
-        } else {
-            SqlSearchText::empty()
+    pub fn new(parent: Option<SqlSearchText>, child: Option<SqlSearchText>) -> Self {
+        let parent = match parent {
+            Some(parent) => parent,
+            None => SqlSearchText::empty(),
         };
-        let child = if let Some(child) = child {
-            SqlSearchText::new(child.0, child.1)
-        } else {
-            SqlSearchText::empty()
+        let child = match child {
+            Some(child) => child,
+            None => SqlSearchText::empty(),
         };
         Self { parent, child }
     }

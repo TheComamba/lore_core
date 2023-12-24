@@ -9,7 +9,7 @@ use crate::{
     errors::LoreCoreError,
     sql::{
         lore_database::LoreDatabase,
-        search_text::{
+        search_params::{
             EntityColumnSearchParams, HistoryItemSearchParams, RelationshipSearchParams,
         },
     },

@@ -1,4 +1,4 @@
-use super::{lore_database::LoreDatabase, search_text::EntityColumnSearchParams};
+use super::{lore_database::LoreDatabase, search_params::EntityColumnSearchParams};
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
     sql::schema::entities,

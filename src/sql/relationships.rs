@@ -1,4 +1,4 @@
-use super::search_text::RelationshipSearchParams;
+use super::search_params::RelationshipSearchParams;
 use super::{lore_database::LoreDatabase, schema::relationships};
 use crate::errors::{sql_loading_error, LoreCoreError};
 use ::diesel::prelude::*;

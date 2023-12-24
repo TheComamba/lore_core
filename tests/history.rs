@@ -1,6 +1,6 @@
 use lorecore::sql::history::{get_contents, get_days, get_years, HistoryItem};
 use lorecore::sql::lore_database::LoreDatabase;
-use lorecore::sql::search_text::HistoryItemSearchParams;
+use lorecore::sql::search_params::HistoryItemSearchParams;
 use lorecore::timestamp::current_timestamp;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;

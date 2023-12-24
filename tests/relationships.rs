@@ -1,7 +1,7 @@
 use lorecore::sql::{
     lore_database::LoreDatabase,
     relationships::{get_children, get_parents, get_roles, EntityRelationship},
-    search_text::RelationshipSearchParams,
+    search_params::{RelationshipSearchParams, SqlSearchText},
 };
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
@@ -145,12 +145,18 @@ fn get_relationships_with_parent_filter() {
     let all_roles = get_roles(&rels);
 
     let no_rel = db
-        .get_relationships(RelationshipSearchParams::new(Some(("fununu", false)), None))
+        .get_relationships(RelationshipSearchParams::new(
+            Some(SqlSearchText::partial("fununu")),
+            None,
+        ))
         .unwrap();
     check_output(&no_rel, &vec![], &vec![], &vec![]);
 
     let parent1 = db
-        .get_relationships(RelationshipSearchParams::new(Some(("rent1", false)), None))
+        .get_relationships(RelationshipSearchParams::new(
+            Some(SqlSearchText::partial("rent1")),
+            None,
+        ))
         .unwrap();
     check_output(
         &parent1,
@@ -160,13 +166,16 @@ fn get_relationships_with_parent_filter() {
     );
 
     let parent1 = db
-        .get_relationships(RelationshipSearchParams::new(Some(("rent", false)), None))
+        .get_relationships(RelationshipSearchParams::new(
+            Some(SqlSearchText::partial("rent")),
+            None,
+        ))
         .unwrap();
     check_output(&parent1, &all_parents, &all_children, &all_roles);
 
     let parent1 = db
         .get_relationships(RelationshipSearchParams::new(
-            Some(("testparent1", false)),
+            Some(SqlSearchText::partial("testparent1")),
             None,
         ))
         .unwrap();
@@ -185,18 +194,24 @@ fn get_relationships_with_exact_parent_filter() {
     let (temp_path, db, rels) = create_example();
 
     let no_rel = db
-        .get_relationships(RelationshipSearchParams::new(Some(("fununu", true)), None))
+        .get_relationships(RelationshipSearchParams::new(
+            Some(SqlSearchText::exact("fununu")),
+            None,
+        ))
         .unwrap();
     check_output(&no_rel, &vec![], &vec![], &vec![]);
 
     let parent1 = db
-        .get_relationships(RelationshipSearchParams::new(Some(("rent", true)), None))
+        .get_relationships(RelationshipSearchParams::new(
+            Some(SqlSearchText::exact("rent")),
+            None,
+        ))
         .unwrap();
     check_output(&parent1, &vec![], &vec![], &vec![]);
 
     let parent1 = db
         .get_relationships(RelationshipSearchParams::new(
-            Some(("testparent1", true)),
+            Some(SqlSearchText::exact("testparent1")),
             None,
         ))
         .unwrap();
@@ -219,12 +234,18 @@ fn get_relationships_with_child_filter() {
     let all_roles = get_roles(&rels);
 
     let no_rel = db
-        .get_relationships(RelationshipSearchParams::new(None, Some(("fununu", false))))
+        .get_relationships(RelationshipSearchParams::new(
+            None,
+            Some(SqlSearchText::partial("fununu")),
+        ))
         .unwrap();
     check_output(&no_rel, &vec![], &vec![], &vec![]);
 
     let child1 = db
-        .get_relationships(RelationshipSearchParams::new(None, Some(("ild1", false))))
+        .get_relationships(RelationshipSearchParams::new(
+            None,
+            Some(SqlSearchText::partial("ild1")),
+        ))
         .unwrap();
     check_output(
         &child1,
@@ -234,14 +255,17 @@ fn get_relationships_with_child_filter() {
     );
 
     let child1 = db
-        .get_relationships(RelationshipSearchParams::new(None, Some(("ild", false))))
+        .get_relationships(RelationshipSearchParams::new(
+            None,
+            Some(SqlSearchText::partial("ild")),
+        ))
         .unwrap();
     check_output(&child1, &all_parents, &all_children, &all_roles);
 
     let child1 = db
         .get_relationships(RelationshipSearchParams::new(
             None,
-            Some(("testchild1", false)),
+            Some(SqlSearchText::partial("testchild1")),
         ))
         .unwrap();
     check_output(
@@ -259,19 +283,25 @@ fn get_relationships_with_exact_child_filter() {
     let (temp_path, db, rels) = create_example();
 
     let no_rel = db
-        .get_relationships(RelationshipSearchParams::new(None, Some(("fununu", true))))
+        .get_relationships(RelationshipSearchParams::new(
+            None,
+            Some(SqlSearchText::exact("fununu")),
+        ))
         .unwrap();
     check_output(&no_rel, &vec![], &vec![], &vec![]);
 
     let child1 = db
-        .get_relationships(RelationshipSearchParams::new(None, Some(("ild", true))))
+        .get_relationships(RelationshipSearchParams::new(
+            None,
+            Some(SqlSearchText::exact("ild")),
+        ))
         .unwrap();
     check_output(&child1, &vec![], &vec![], &vec![]);
 
     let child1 = db
         .get_relationships(RelationshipSearchParams::new(
             None,
-            Some(("testchild1", true)),
+            Some(SqlSearchText::exact("testchild1")),
         ))
         .unwrap();
     check_output(
@@ -294,24 +324,24 @@ fn get_relationships_with_parent_and_child_filter() {
 
     let no_rel = db
         .get_relationships(RelationshipSearchParams::new(
-            Some(("fununu", false)),
-            Some(("ild", false)),
+            Some(SqlSearchText::partial("fununu")),
+            Some(SqlSearchText::partial("ild")),
         ))
         .unwrap();
     check_output(&no_rel, &vec![], &vec![], &vec![]);
 
     let no_rel = db
         .get_relationships(RelationshipSearchParams::new(
-            Some(("rent", false)),
-            Some(("fununu", false)),
+            Some(SqlSearchText::partial("rent")),
+            Some(SqlSearchText::partial("fununu")),
         ))
         .unwrap();
     check_output(&no_rel, &vec![], &vec![], &vec![]);
 
     let parent1_child1 = db
         .get_relationships(RelationshipSearchParams::new(
-            Some(("rent1", false)),
-            Some(("ild1", false)),
+            Some(SqlSearchText::partial("rent1")),
+            Some(SqlSearchText::partial("ild1")),
         ))
         .unwrap();
     check_output(
@@ -323,16 +353,16 @@ fn get_relationships_with_parent_and_child_filter() {
 
     let parent1_child1 = db
         .get_relationships(RelationshipSearchParams::new(
-            Some(("rent", false)),
-            Some(("ild", false)),
+            Some(SqlSearchText::partial("rent")),
+            Some(SqlSearchText::partial("ild")),
         ))
         .unwrap();
     check_output(&parent1_child1, &all_parents, &all_children, &all_roles);
 
     let parent1_child1 = db
         .get_relationships(RelationshipSearchParams::new(
-            Some(("testparent1", false)),
-            Some(("testchild1", false)),
+            Some(SqlSearchText::partial("testparent1")),
+            Some(SqlSearchText::partial("testchild1")),
         ))
         .unwrap();
     check_output(
