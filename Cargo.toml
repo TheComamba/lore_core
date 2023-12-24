@@ -13,8 +13,5 @@ diesel_migrations = {version = "2.0.0"}
 libc = "0.2.140" # types for C api
 rusqlite = { version = "0.30.0", features = ["bundled"] }
 
-[build-dependencies]
-cbindgen = "0.26.0"
-
 [dev-dependencies]
 tempfile = "3.8.0"
