@@ -5,7 +5,7 @@ set -e
 cd "$(git rev-parse --show-toplevel)"
 
 if ! command -v diesel &> /dev/null; then
-    cargo --locked install diesel_cli --no-default-features --features sqlite-bundled
+    cargo install diesel_cli --no-default-features --features sqlite-bundled
 fi
 
 diesel setup --database-url=dummy.db
