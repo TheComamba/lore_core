@@ -71,17 +71,23 @@ impl EntityColumnSearchParams {
 pub struct HistoryItemSearchParams {
     pub(crate) year: Option<i32>,
     pub(crate) day: Option<i32>,
+    pub(crate) timestamp: Option<i64>,
 }
 
 impl HistoryItemSearchParams {
-    pub fn new(year: Option<i32>, day: Option<i32>) -> Self {
-        Self { year, day }
+    pub fn new(year: Option<i32>, day: Option<i32>, timestamp: Option<i64>) -> Self {
+        Self {
+            year,
+            day,
+            timestamp,
+        }
     }
 
     pub fn empty() -> Self {
         Self {
             year: None,
             day: None,
+            timestamp: None,
         }
     }
 }

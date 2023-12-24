@@ -67,6 +67,7 @@ fn check_output(
     items: &Vec<HistoryItem>,
     years: &Vec<i32>,
     days: &Vec<Option<i32>>,
+    timestamps: &Vec<i64>,
     contents: &Vec<String>,
 ) {
     let years_out = get_years(items);
@@ -79,6 +80,12 @@ fn check_output(
     assert!(days.len() == days_out.len());
     for day in days.iter() {
         assert!(days_out.contains(day));
+    }
+
+    let timestamps_out: Vec<_> = items.iter().map(|item| item.timestamp).collect();
+    assert!(timestamps.len() == timestamps_out.len());
+    for timestamp in timestamps.iter() {
+        assert!(timestamps_out.contains(timestamp));
     }
 
     let contents_out = get_contents(items);
@@ -104,52 +111,84 @@ fn write_many_history_items() {
 
 #[test]
 fn get_all_history_items() {
-    let (temp_path, db, _items, years, days, contents) = create_example();
+    let (temp_path, db, items, years, days, contents) = create_example();
+    let timestamps = items.iter().map(|item| item.timestamp).collect();
 
     let items_out = db
         .get_history_items(HistoryItemSearchParams::empty())
         .unwrap();
-    check_output(&items_out, &years, &days, &contents);
+    check_output(&items_out, &years, &days, &timestamps, &contents);
 
     temp_path.close().unwrap();
 }
 
 #[test]
 fn get_history_items_by_year() {
-    let (temp_path, db, _items, years, days, contents) = create_example();
-
+    let (temp_path, db, items, years, days, contents) = create_example();
     let year = years[0];
+    let timestamps = items
+        .iter()
+        .filter(|item| item.year == year)
+        .map(|item| item.timestamp)
+        .collect();
+
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(Some(year), None))
+        .get_history_items(HistoryItemSearchParams::new(Some(year), None, None))
         .unwrap();
-    check_output(&items_out, &vec![year], &days, &contents);
+    check_output(&items_out, &vec![year], &days, &timestamps, &contents);
 
     temp_path.close().unwrap();
 }
 
 #[test]
 fn get_history_items_by_day() {
-    let (temp_path, db, _items, years, days, contents) = create_example();
-
+    let (temp_path, db, items, years, days, contents) = create_example();
     let day = days[0];
+    let timestamp = items
+        .iter()
+        .filter(|item| item.day == day)
+        .map(|item| item.timestamp)
+        .collect();
+
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(None, day))
+        .get_history_items(HistoryItemSearchParams::new(None, day, None))
         .unwrap();
-    check_output(&items_out, &years, &vec![day], &contents);
+    check_output(&items_out, &years, &vec![day], &timestamp, &contents);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_history_item_by_timestamp() {
+    let (temp_path, db, items, _, _, _) = create_example();
+    let timestamp = items[0].timestamp;
+    let years = vec![items[0].year];
+    let days = vec![items[0].day];
+    let contents = vec![items[0].content.clone()];
+
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::new(None, None, Some(timestamp)))
+        .unwrap();
+    check_output(&items_out, &years, &days, &vec![timestamp], &contents);
 
     temp_path.close().unwrap();
 }
 
 #[test]
 fn get_history_items_by_year_and_day() {
-    let (temp_path, db, _items, years, days, contents) = create_example();
-
+    let (temp_path, db, items, years, days, contents) = create_example();
     let year = years[0];
     let day = days[0];
+    let timestamps = items
+        .iter()
+        .filter(|item| item.year == year && item.day == day)
+        .map(|item| item.timestamp)
+        .collect();
+
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(Some(year), day))
+        .get_history_items(HistoryItemSearchParams::new(Some(year), day, None))
         .unwrap();
-    check_output(&items_out, &vec![year], &vec![day], &contents);
+    check_output(&items_out, &vec![year], &vec![day], &timestamps, &contents);
 
     temp_path.close().unwrap();
 }
@@ -160,7 +199,7 @@ fn search_for_non_existing_year() {
 
     let year = 65537;
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(Some(year), None))
+        .get_history_items(HistoryItemSearchParams::new(Some(year), None, None))
         .unwrap();
     assert!(items_out.len() == 0);
 
@@ -173,7 +212,20 @@ fn search_for_non_existing_day() {
 
     let day = Some(65537);
     let items_out = db
-        .get_history_items(HistoryItemSearchParams::new(None, day))
+        .get_history_items(HistoryItemSearchParams::new(None, day, None))
+        .unwrap();
+    assert!(items_out.len() == 0);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn search_for_non_existing_timestamp() {
+    let (temp_path, db, _items, _, _, _) = create_example();
+
+    let timestamp = 65537;
+    let items_out = db
+        .get_history_items(HistoryItemSearchParams::new(None, None, Some(timestamp)))
         .unwrap();
     assert!(items_out.len() == 0);
 
