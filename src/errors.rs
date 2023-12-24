@@ -13,16 +13,8 @@ impl ToString for LoreCoreError {
     }
 }
 
-pub(super) fn sql_loading_error_no_params<E>(loadee: &str, target: &str, err: E) -> LoreCoreError
-where
-    E: Display,
-{
-    sql_loading_error::<String, E>(loadee, target, vec![], err)
-}
-
 pub(super) fn sql_loading_error<T, E>(
     loadee: &str,
-    target: &str,
     params: Vec<(&str, &T)>,
     err: E,
 ) -> LoreCoreError
@@ -30,7 +22,7 @@ where
     T: Debug,
     E: Display,
 {
-    let mut message = "Loading ".to_string() + loadee + " to get " + target;
+    let mut message = "Loading ".to_string() + loadee + " ";
     for (i, (name, value)) in params.iter().enumerate() {
         if i == 0 {
             message += " for parameters ";

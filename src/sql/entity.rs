@@ -1,12 +1,12 @@
-use super::{lore_database::LoreDatabase, search_text::SqlSearchText};
+use super::{lore_database::LoreDatabase, search_params::EntityColumnSearchParams};
 use crate::{
-    errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreError},
+    errors::{sql_loading_error, LoreCoreError},
     sql::schema::entities,
 };
 use ::diesel::prelude::*;
 use diesel::{Insertable, RunQueryDsl};
 
-#[derive(Insertable, Queryable, PartialEq, Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
 #[diesel(table_name = entities)]
 #[repr(C)]
 pub struct EntityColumn {
@@ -31,104 +31,101 @@ impl LoreDatabase {
         Ok(())
     }
 
-    pub fn get_all_entity_columns(&self) -> Result<Vec<EntityColumn>, LoreCoreError> {
+    pub fn read_entity_columns(
+        &self,
+        search_params: EntityColumnSearchParams,
+    ) -> Result<Vec<EntityColumn>, LoreCoreError> {
         let mut connection = self.db_connection()?;
-        let mut cols = entities::table
-            .load::<EntityColumn>(&mut connection)
-            .map_err(|e| sql_loading_error_no_params("entities", "all", e))?;
-        cols.dedup();
+        let mut query = entities::table.into_boxed();
+        let label = search_params.label;
+        if label.is_some() {
+            if label.is_exact {
+                query = query.filter(entities::label.eq(label.exact_text()));
+            } else {
+                query = query.filter(entities::label.like(label.search_pattern()));
+            }
+        }
+        let descriptor = search_params.descriptor;
+        if descriptor.is_some() {
+            if descriptor.is_exact {
+                query = query.filter(entities::descriptor.eq(descriptor.exact_text()));
+            } else {
+                query = query.filter(entities::descriptor.like(descriptor.search_pattern()));
+            }
+        }
+        let mut cols = query.load::<EntityColumn>(&mut connection).map_err(|e| {
+            sql_loading_error(
+                "entities",
+                vec![("label", &label), ("descriptor", &descriptor)],
+                e,
+            )
+        })?;
+        cols.sort();
         Ok(cols)
     }
+}
 
-    pub fn get_entity_labels(
-        &self,
-        search_text: SqlSearchText,
-    ) -> Result<Vec<String>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let mut query = entities::table.into_boxed();
-        if search_text.is_some() {
-            query = query.filter(entities::label.like(search_text.to_string()));
-        }
-        let mut labels: Vec<_> = query
-            .load::<EntityColumn>(&mut connection)
-            .map_err(|e| {
-                sql_loading_error("entities", "labels", vec![("search_text", &search_text)], e)
-            })?
-            .into_iter()
-            .map(|c| c.label)
-            .collect();
-        labels.dedup();
-        Ok(labels)
+pub fn extract_labels(cols: &Vec<EntityColumn>) -> Vec<String> {
+    let mut labels: Vec<_> = cols.iter().map(|c| c.label.clone()).collect();
+    labels.sort();
+    labels.dedup();
+    labels
+}
+
+pub fn extract_descriptors(cols: &Vec<EntityColumn>) -> Vec<String> {
+    let mut descriptors: Vec<_> = cols.iter().map(|c| c.descriptor.clone()).collect();
+    descriptors.sort();
+    descriptors.dedup();
+    descriptors
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_extract_labels() {
+        let cols = vec![
+            EntityColumn {
+                label: "qux".to_string(),
+                descriptor: "bar".to_string(),
+                description: None,
+            },
+            EntityColumn {
+                label: "foo".to_string(),
+                descriptor: "bar".to_string(),
+                description: None,
+            },
+            EntityColumn {
+                label: "foo".to_string(),
+                descriptor: "baz".to_string(),
+                description: None,
+            },
+        ];
+        let labels = extract_labels(&cols);
+        assert_eq!(labels, vec!["foo".to_string(), "qux".to_string()]);
     }
 
-    pub fn get_descriptors(
-        &self,
-        label: &String,
-        search_text: SqlSearchText,
-    ) -> Result<Vec<String>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let mut query = entities::table.into_boxed();
-        query = query.filter(entities::label.eq(label));
-        if search_text.is_some() {
-            query = query.filter(entities::descriptor.like(search_text.to_string()));
-        }
-        let mut descriptors: Vec<_> = query
-            .load::<EntityColumn>(&mut connection)
-            .map_err(|e| {
-                sql_loading_error(
-                    "entities",
-                    "descriptors",
-                    vec![("label", label), ("search_text", &search_text.to_string())],
-                    e,
-                )
-            })?
-            .into_iter()
-            .map(|c| c.descriptor)
-            .collect();
-        descriptors.dedup();
-        Ok(descriptors)
-    }
-
-    pub fn get_description(
-        &self,
-        label: &String,
-        descriptor: &String,
-    ) -> Result<Option<String>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let descriptions = entities::table
-            .filter(entities::label.eq(label))
-            .filter(entities::descriptor.eq(descriptor))
-            .load::<EntityColumn>(&mut connection)
-            .map_err(|e| {
-                sql_loading_error(
-                    "entities",
-                    "description",
-                    vec![("label", label), ("descriptor", descriptor)],
-                    e,
-                )
-            })?;
-        if descriptions.len() > 1 {
-            Err(LoreCoreError::SqlError(
-                "More than one description found for label '".to_string()
-                    + label
-                    + "' and descriptor '"
-                    + descriptor
-                    + "'.",
-            ))
-        } else {
-            let description = match descriptions.first() {
-                Some(col) => col.description.to_owned(),
-                None => {
-                    return Err(LoreCoreError::SqlError(
-                        "No description found for label '".to_string()
-                            + label
-                            + "' and descriptor '"
-                            + descriptor
-                            + "'.",
-                    ))
-                }
-            };
-            Ok(description)
-        }
+    #[test]
+    fn test_extract_descriptors() {
+        let cols = vec![
+            EntityColumn {
+                label: "foo".to_string(),
+                descriptor: "bar".to_string(),
+                description: None,
+            },
+            EntityColumn {
+                label: "foo".to_string(),
+                descriptor: "baz".to_string(),
+                description: None,
+            },
+            EntityColumn {
+                label: "qux".to_string(),
+                descriptor: "bar".to_string(),
+                description: None,
+            },
+        ];
+        let descriptors = extract_descriptors(&cols);
+        assert_eq!(descriptors, vec!["bar".to_string(), "baz".to_string()]);
     }
 }

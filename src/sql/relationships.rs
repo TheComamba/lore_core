@@ -1,10 +1,11 @@
+use super::search_params::RelationshipSearchParams;
 use super::{lore_database::LoreDatabase, schema::relationships};
-use crate::errors::{sql_loading_error, sql_loading_error_no_params, LoreCoreError};
+use crate::errors::{sql_loading_error, LoreCoreError};
 use ::diesel::prelude::*;
 use diesel::Insertable;
 use diesel::{QueryDsl, Queryable, RunQueryDsl};
 
-#[derive(Insertable, Queryable, PartialEq, Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
 #[diesel(table_name = relationships)]
 #[repr(C)]
 pub struct EntityRelationship {
@@ -29,86 +30,103 @@ impl LoreDatabase {
         Ok(())
     }
 
-    pub fn get_relationships(&self) -> Result<Vec<EntityRelationship>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let rels = relationships::table
-            .load::<EntityRelationship>(&mut connection)
-            .map_err(|e| sql_loading_error_no_params("relationships", "all", e))?;
-        Ok(rels)
-    }
-
-    pub fn get_parents(&self, child: &Option<&String>) -> Result<Vec<String>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let mut query = relationships::table.into_boxed();
-        if let Some(child) = child {
-            query = query.filter(relationships::child.eq(child));
-        }
-        let parents = query
-            .load::<EntityRelationship>(&mut connection)
-            .map_err(|e| sql_loading_error("relationships", "parents", vec![("child", child)], e))?
-            .into_iter()
-            .map(|r| r.parent)
-            .collect::<Vec<_>>();
-        Ok(parents)
-    }
-
-    pub fn get_children(&self, parent: &Option<&String>) -> Result<Vec<String>, LoreCoreError> {
-        let mut connection = self.db_connection()?;
-        let mut query = relationships::table.into_boxed();
-        if let Some(parent) = parent {
-            query = query.filter(relationships::parent.eq(parent))
-        }
-        let children = query
-            .load::<EntityRelationship>(&mut connection)
-            .map_err(|e| {
-                sql_loading_error("relationships", "children", vec![("parent", parent)], e)
-            })?
-            .into_iter()
-            .map(|r| r.child)
-            .collect::<Vec<_>>();
-        Ok(children)
-    }
-
-    pub fn get_relationship_role(
+    pub fn read_relationships(
         &self,
-        parent: &String,
-        child: &String,
-    ) -> Result<Option<String>, LoreCoreError> {
+        search_params: RelationshipSearchParams,
+    ) -> Result<Vec<EntityRelationship>, LoreCoreError> {
         let mut connection = self.db_connection()?;
-        let relationships = relationships::table
-            .filter(relationships::parent.eq(parent))
-            .filter(relationships::child.eq(child))
+        let mut query = relationships::table.into_boxed();
+        let parent = search_params.parent;
+        if parent.is_some() {
+            if parent.is_exact {
+                query = query.filter(relationships::parent.eq(parent.exact_text()));
+            } else {
+                query = query.filter(relationships::parent.like(parent.search_pattern()));
+            }
+        }
+        let child = search_params.child;
+        if child.is_some() {
+            if child.is_exact {
+                query = query.filter(relationships::child.eq(child.exact_text()));
+            } else {
+                query = query.filter(relationships::child.like(child.search_pattern()));
+            }
+        }
+        let mut rels = query
             .load::<EntityRelationship>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
-                    "relationship",
-                    "role",
-                    vec![("parent", parent), ("child", child)],
+                    "relationships",
+                    vec![("parent", &parent), ("child", &child)],
                     e,
                 )
             })?;
-        if relationships.len() > 1 {
-            Err(LoreCoreError::SqlError(
-                "More than one entry found for parent '".to_string()
-                    + parent
-                    + "' and child '"
-                    + child
-                    + "'.",
-            ))
-        } else {
-            let role = match relationships.first() {
-                Some(relationship) => relationship.role.to_owned(),
-                None => {
-                    return Err(LoreCoreError::SqlError(
-                        "No content found for parent '".to_string()
-                            + parent
-                            + "' and child '"
-                            + child
-                            + "'.",
-                    ))
-                }
-            };
-            Ok(role)
-        }
+        rels.sort();
+        Ok(rels)
+    }
+}
+
+pub fn extract_parents(rels: &Vec<EntityRelationship>) -> Vec<String> {
+    let mut parents: Vec<_> = rels.iter().map(|rel| rel.parent.clone()).collect();
+    parents.sort();
+    parents.dedup();
+    parents
+}
+
+pub fn extract_children(rels: &Vec<EntityRelationship>) -> Vec<String> {
+    let mut children: Vec<_> = rels.iter().map(|rel| rel.child.clone()).collect();
+    children.sort();
+    children.dedup();
+    children
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_extract_parents() {
+        let rels = vec![
+            EntityRelationship {
+                parent: "b".to_string(),
+                child: "c".to_string(),
+                role: None,
+            },
+            EntityRelationship {
+                parent: "a".to_string(),
+                child: "b".to_string(),
+                role: None,
+            },
+            EntityRelationship {
+                parent: "a".to_string(),
+                child: "c".to_string(),
+                role: None,
+            },
+        ];
+        let parents = extract_parents(&rels);
+        assert!(parents == vec!["a".to_string(), "b".to_string()]);
+    }
+
+    #[test]
+    fn test_extract_children() {
+        let rels = vec![
+            EntityRelationship {
+                parent: "b".to_string(),
+                child: "c".to_string(),
+                role: None,
+            },
+            EntityRelationship {
+                parent: "a".to_string(),
+                child: "b".to_string(),
+                role: None,
+            },
+            EntityRelationship {
+                parent: "a".to_string(),
+                child: "c".to_string(),
+                role: None,
+            },
+        ];
+        let children = extract_children(&rels);
+        assert!(children == vec!["b".to_string(), "c".to_string()]);
     }
 }
