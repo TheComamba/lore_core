@@ -1,9 +1,6 @@
 use super::{
     auxil::char_pointer_to_string,
-    types::{
-        to_entity_column, to_history_item, to_relationship, CEntityColumn, CEntityRelationship,
-        CHistoryItem,
-    },
+    types::{CEntityColumn, CEntityRelationship, CHistoryItem},
 };
 use crate::{errors::LoreCoreError, sql::lore_database::LoreDatabase};
 use std::path::PathBuf;
@@ -14,7 +11,7 @@ pub(super) unsafe fn c_write_entity_column(
 ) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
-    let column = to_entity_column(column)?;
+    let column = column.try_into()?;
     let db = LoreDatabase::open(db_path)?;
     db.write_entity_columns(vec![column])?;
     Ok(())
@@ -26,7 +23,7 @@ pub(super) unsafe fn c_write_history_item(
 ) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
-    let item = to_history_item(item)?;
+    let item = item.try_into()?;
     let db = LoreDatabase::open(db_path)?;
     db.write_history_items(vec![item])?;
     Ok(())
@@ -38,7 +35,7 @@ pub(super) unsafe fn c_write_relationship(
 ) -> Result<(), LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
     let db_path = PathBuf::from(db_path);
-    let relationship = to_relationship(rel)?;
+    let relationship = rel.try_into()?;
     let db = LoreDatabase::open(db_path)?;
     db.write_relationships(vec![relationship])?;
     Ok(())

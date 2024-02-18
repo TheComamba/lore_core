@@ -33,7 +33,7 @@ pub struct CHistoryItem {
     pub properties: *const libc::c_char,
 }
 
-pub(super) fn to_c_entity_column(column: &EntityColumn) -> Result<CEntityColumn, LoreCoreError> {
+fn to_c_entity_column(column: &EntityColumn) -> Result<CEntityColumn, LoreCoreError> {
     Ok(CEntityColumn {
         label: string_to_char_pointer(&column.label),
         descriptor: string_to_char_pointer(&column.descriptor),
@@ -41,9 +41,15 @@ pub(super) fn to_c_entity_column(column: &EntityColumn) -> Result<CEntityColumn,
     })
 }
 
-pub(super) unsafe fn to_entity_column(
-    column: &CEntityColumn,
-) -> Result<EntityColumn, LoreCoreError> {
+impl TryFrom<EntityColumn> for CEntityColumn {
+    type Error = LoreCoreError;
+
+    fn try_from(value: EntityColumn) -> Result<Self, Self::Error> {
+        to_c_entity_column(&value)
+    }
+}
+
+unsafe fn to_entity_column(column: &CEntityColumn) -> Result<EntityColumn, LoreCoreError> {
     Ok(EntityColumn {
         label: char_pointer_to_string(column.label)?,
         descriptor: char_pointer_to_string(column.descriptor)?,
@@ -51,7 +57,15 @@ pub(super) unsafe fn to_entity_column(
     })
 }
 
-pub(super) fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, LoreCoreError> {
+impl TryFrom<&CEntityColumn> for EntityColumn {
+    type Error = LoreCoreError;
+
+    fn try_from(value: &CEntityColumn) -> Result<Self, Self::Error> {
+        unsafe { to_entity_column(value) }
+    }
+}
+
+fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, LoreCoreError> {
     Ok(CHistoryItem {
         timestamp: item.timestamp,
         year: item.year,
@@ -61,7 +75,15 @@ pub(super) fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, Lore
     })
 }
 
-pub(super) unsafe fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
+impl TryFrom<HistoryItem> for CHistoryItem {
+    type Error = LoreCoreError;
+
+    fn try_from(value: HistoryItem) -> Result<Self, Self::Error> {
+        to_c_history_item(&value)
+    }
+}
+
+unsafe fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
     Ok(HistoryItem {
         timestamp: item.timestamp,
         year: item.year,
@@ -71,9 +93,15 @@ pub(super) unsafe fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem,
     })
 }
 
-pub(super) fn to_c_relationship(
-    rel: &EntityRelationship,
-) -> Result<CEntityRelationship, LoreCoreError> {
+impl TryFrom<&CHistoryItem> for HistoryItem {
+    type Error = LoreCoreError;
+
+    fn try_from(value: &CHistoryItem) -> Result<Self, Self::Error> {
+        unsafe { to_history_item(value) }
+    }
+}
+
+fn to_c_relationship(rel: &EntityRelationship) -> Result<CEntityRelationship, LoreCoreError> {
     Ok(CEntityRelationship {
         parent: string_to_char_pointer(&rel.parent),
         child: string_to_char_pointer(&rel.child),
@@ -81,14 +109,28 @@ pub(super) fn to_c_relationship(
     })
 }
 
-pub(super) unsafe fn to_relationship(
-    rel: &CEntityRelationship,
-) -> Result<EntityRelationship, LoreCoreError> {
+impl TryFrom<EntityRelationship> for CEntityRelationship {
+    type Error = LoreCoreError;
+
+    fn try_from(value: EntityRelationship) -> Result<Self, Self::Error> {
+        to_c_relationship(&value)
+    }
+}
+
+unsafe fn to_relationship(rel: &CEntityRelationship) -> Result<EntityRelationship, LoreCoreError> {
     Ok(EntityRelationship {
         parent: char_pointer_to_string(rel.parent)?,
         child: char_pointer_to_string(rel.child)?,
         role: char_pointer_to_optional_string(rel.role)?,
     })
+}
+
+impl TryFrom<&CEntityRelationship> for EntityRelationship {
+    type Error = LoreCoreError;
+
+    fn try_from(value: &CEntityRelationship) -> Result<Self, Self::Error> {
+        unsafe { to_relationship(value) }
+    }
 }
 
 #[cfg(test)]
