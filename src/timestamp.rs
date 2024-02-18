@@ -10,7 +10,7 @@ pub fn current_timestamp() -> i64 {
     let mut ns_since_the_epoch = now.duration_since(UNIX_EPOCH).unwrap().as_nanos() as i64;
     let mut last_timestamp = LAST_TIMESTAMP.lock().unwrap();
     while *last_timestamp >= ns_since_the_epoch {
-        ns_since_the_epoch = ns_since_the_epoch + 1;
+        ns_since_the_epoch += 1;
     }
     *last_timestamp = ns_since_the_epoch;
     ns_since_the_epoch

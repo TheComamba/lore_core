@@ -66,14 +66,14 @@ impl LoreDatabase {
     }
 }
 
-pub fn extract_parents(rels: &Vec<EntityRelationship>) -> Vec<String> {
+pub fn extract_parents(rels: &[EntityRelationship]) -> Vec<String> {
     let mut parents: Vec<_> = rels.iter().map(|rel| rel.parent.clone()).collect();
     parents.sort();
     parents.dedup();
     parents
 }
 
-pub fn extract_children(rels: &Vec<EntityRelationship>) -> Vec<String> {
+pub fn extract_children(rels: &[EntityRelationship]) -> Vec<String> {
     let mut children: Vec<_> = rels.iter().map(|rel| rel.child.clone()).collect();
     children.sort();
     children.dedup();

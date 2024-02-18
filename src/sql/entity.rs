@@ -65,14 +65,14 @@ impl LoreDatabase {
     }
 }
 
-pub fn extract_labels(cols: &Vec<EntityColumn>) -> Vec<String> {
+pub fn extract_labels(cols: &[EntityColumn]) -> Vec<String> {
     let mut labels: Vec<_> = cols.iter().map(|c| c.label.clone()).collect();
     labels.sort();
     labels.dedup();
     labels
 }
 
-pub fn extract_descriptors(cols: &Vec<EntityColumn>) -> Vec<String> {
+pub fn extract_descriptors(cols: &[EntityColumn]) -> Vec<String> {
     let mut descriptors: Vec<_> = cols.iter().map(|c| c.descriptor.clone()).collect();
     descriptors.sort();
     descriptors.dedup();

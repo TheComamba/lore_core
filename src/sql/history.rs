@@ -78,14 +78,14 @@ impl LoreDatabase {
     }
 }
 
-pub fn extract_years(items: &Vec<HistoryItem>) -> Vec<i32> {
+pub fn extract_years(items: &[HistoryItem]) -> Vec<i32> {
     let mut years: Vec<_> = items.iter().map(|item| item.year).collect();
     years.sort();
     years.dedup();
     years
 }
 
-pub fn extract_days(items: &Vec<HistoryItem>) -> Vec<Option<i32>> {
+pub fn extract_days(items: &[HistoryItem]) -> Vec<Option<i32>> {
     let mut days: Vec<_> = items.iter().map(|item| item.day).collect();
     days.sort();
     days.dedup();
