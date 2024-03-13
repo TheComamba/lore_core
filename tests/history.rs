@@ -253,3 +253,27 @@ fn search_for_non_existing_content() {
 
     temp_path.close().unwrap();
 }
+
+#[test]
+fn test_write_read_history_after_db_deletion() {
+    let (temp_path, db, _) = create_example();
+    temp_path.close().unwrap();
+
+    let write_result = db.write_history_items(vec![HistoryItem {
+        year: 2020,
+        day: Some(1),
+        timestamp: current_timestamp(),
+        content: "testcontent".to_string(),
+        properties: None,
+    }]);
+    assert!(
+        write_result.is_err(),
+        "Expected an error when writing to a deleted database"
+    );
+
+    let read_result = db.read_history_items(HistoryItemSearchParams::new(None, None, None, None));
+    assert!(
+        read_result.is_err(),
+        "Expected an error when reading from a deleted database"
+    );
+}

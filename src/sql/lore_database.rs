@@ -44,3 +44,26 @@ impl LoreDatabase {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::ffi::OsString;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_open_non_existing_database() {
+        let non_existing_path = PathBuf::from("/non/existing/path");
+        let result = LoreDatabase::open(non_existing_path);
+        assert!(result.is_err());
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn test_open_database_with_non_utf8_path() {
+        let non_utf8_path =
+            unsafe { PathBuf::from(OsString::from_encoded_bytes_unchecked(vec![0xFF, 0xFF])) };
+        let result = LoreDatabase::open(non_utf8_path);
+        assert!(matches!(result, Err(LoreCoreError::FileError(_))));
+    }
+}

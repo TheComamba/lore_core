@@ -467,3 +467,25 @@ fn get_entities_with_label_filter_bel_and_exact_descriptor_filter_testdescriptor
 
     temp_path.close().unwrap();
 }
+
+#[test]
+fn test_write_read_after_db_deletion() {
+    let (temp_path, db, _) = create_example();
+    temp_path.close().unwrap();
+
+    let write_result = db.write_entity_columns(vec![EntityColumn {
+        label: "testlabel".to_string(),
+        descriptor: "testdescriptor".to_string(),
+        description: Some("testdescription".to_string()),
+    }]);
+    assert!(
+        write_result.is_err(),
+        "Expected an error when writing to a deleted database"
+    );
+
+    let read_result = db.read_entity_columns(EntityColumnSearchParams::new(None, None));
+    assert!(
+        read_result.is_err(),
+        "Expected an error when reading from a deleted database"
+    );
+}

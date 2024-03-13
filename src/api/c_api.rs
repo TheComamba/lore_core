@@ -10,6 +10,7 @@ use super::{
 ///
 /// `db_path` must be a valid C string.
 /// `columns` must be a valid pointer to an array of `CEntityColumn`s.
+/// `size` must correspond to the length of the array.
 #[no_mangle]
 pub unsafe extern "C" fn write_entity_columns(
     db_path: *const libc::c_char,
@@ -66,6 +67,7 @@ pub unsafe extern "C" fn read_entity_columns(
 ///
 /// `db_path` must be a valid C string.
 /// `items` must be a valid pointer to an array of `CHistoryItem`s.
+/// `size` must correspond to the length of the array.
 #[no_mangle]
 pub unsafe extern "C" fn write_history_items(
     db_path: *const libc::c_char,
@@ -122,6 +124,7 @@ pub unsafe extern "C" fn read_history_items(
 ///
 /// `db_path` must be a valid C string.
 /// `relationships` must be a valid pointer to an array of `CEntityRelationship`s.
+/// `size` must correspond to the length of the array.
 #[no_mangle]
 pub unsafe extern "C" fn write_relationships(
     db_path: *const libc::c_char,

@@ -58,6 +58,17 @@ mod tests {
     }
 
     #[test]
+    fn test_null_pointer_to_string_error() {
+        use std::ptr;
+        let null_pointer = ptr::null();
+        let result = unsafe { char_pointer_to_string(null_pointer) };
+        assert!(
+            result.is_err(),
+            "Expected an error when converting a null pointer to a string"
+        );
+    }
+
+    #[test]
     fn test_null_pointer_to_string() {
         let char_pointer = ptr::null();
         let result = unsafe { char_pointer_to_string(char_pointer) };

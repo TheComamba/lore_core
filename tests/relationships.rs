@@ -433,3 +433,25 @@ fn get_relationships_with_parent_filter_rent_and_child_filter_ild_returns_all() 
 
     temp_path.close().unwrap();
 }
+
+#[test]
+fn test_write_read_relationships_after_db_deletion() {
+    let (temp_path, db, _) = create_example();
+    temp_path.close().unwrap();
+
+    let write_result = db.write_relationships(vec![EntityRelationship {
+        parent: "testparent".to_string(),
+        child: "testchild".to_string(),
+        role: None,
+    }]);
+    assert!(
+        write_result.is_err(),
+        "Expected an error when writing to a deleted database"
+    );
+
+    let read_result = db.read_relationships(RelationshipSearchParams::new(None, None));
+    assert!(
+        read_result.is_err(),
+        "Expected an error when reading from a deleted database"
+    );
+}
