@@ -80,6 +80,13 @@ pub fn extract_children(rels: &[EntityRelationship]) -> Vec<String> {
     children
 }
 
+pub fn extract_roles(rels: &[EntityRelationship]) -> Vec<String> {
+    let mut roles: Vec<_> = rels.iter().filter_map(|rel| rel.role.clone()).collect();
+    roles.sort();
+    roles.dedup();
+    roles
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -128,5 +135,28 @@ mod tests {
         ];
         let children = extract_children(&rels);
         assert!(children == vec!["b".to_string(), "c".to_string()]);
+    }
+
+    #[test]
+    fn test_extract_roles() {
+        let rels = vec![
+            EntityRelationship {
+                parent: "b".to_string(),
+                child: "c".to_string(),
+                role: Some("r1".to_string()),
+            },
+            EntityRelationship {
+                parent: "a".to_string(),
+                child: "b".to_string(),
+                role: Some("r2".to_string()),
+            },
+            EntityRelationship {
+                parent: "a".to_string(),
+                child: "c".to_string(),
+                role: Some("r1".to_string()),
+            },
+        ];
+        let roles = extract_roles(&rels);
+        assert!(roles == vec!["r1".to_string(), "r2".to_string()]);
     }
 }
