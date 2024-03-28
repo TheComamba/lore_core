@@ -85,7 +85,8 @@ impl LoreDatabase {
             .execute(&mut connection)
             .map_err(|e| {
                 LoreCoreError::SqlError(
-                    "Changing history item content in database failed: ".to_string() + &e.to_string(),
+                    "Changing history item content in database failed: ".to_string()
+                        + &e.to_string(),
                 )
             })?;
         Ok(())
@@ -102,7 +103,8 @@ impl LoreDatabase {
             .execute(&mut connection)
             .map_err(|e| {
                 LoreCoreError::SqlError(
-                    "Changing history item properties in database failed: ".to_string() + &e.to_string(),
+                    "Changing history item properties in database failed: ".to_string()
+                        + &e.to_string(),
                 )
             })?;
         Ok(())

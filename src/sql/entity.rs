@@ -62,15 +62,18 @@ impl LoreDatabase {
         new_descriptor: &str,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::update(entities::table.filter(entities::label.eq(label))
-            .filter(entities::descriptor.eq(old_descriptor)))
-            .set(entities::descriptor.eq(new_descriptor))
-            .execute(&mut connection)
-            .map_err(|e| {
-                LoreCoreError::SqlError(
-                    "Changing entity descriptor in database failed: ".to_string() + &e.to_string(),
-                )
-            })?;
+        diesel::update(
+            entities::table
+                .filter(entities::label.eq(label))
+                .filter(entities::descriptor.eq(old_descriptor)),
+        )
+        .set(entities::descriptor.eq(new_descriptor))
+        .execute(&mut connection)
+        .map_err(|e| {
+            LoreCoreError::SqlError(
+                "Changing entity descriptor in database failed: ".to_string() + &e.to_string(),
+            )
+        })?;
         Ok(())
     }
 
@@ -79,14 +82,17 @@ impl LoreDatabase {
         (label, descriptor): (String, String),
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::delete(entities::table.filter(entities::label.eq(label))
-            .filter(entities::descriptor.eq(descriptor)))
-            .execute(&mut connection)
-            .map_err(|e| {
-                LoreCoreError::SqlError(
-                    "Deleting entity column from database failed: ".to_string() + &e.to_string(),
-                )
-            })?;
+        diesel::delete(
+            entities::table
+                .filter(entities::label.eq(label))
+                .filter(entities::descriptor.eq(descriptor)),
+        )
+        .execute(&mut connection)
+        .map_err(|e| {
+            LoreCoreError::SqlError(
+                "Deleting entity column from database failed: ".to_string() + &e.to_string(),
+            )
+        })?;
         Ok(())
     }
 
@@ -96,15 +102,18 @@ impl LoreDatabase {
         new_description: &Option<String>,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::update(entities::table.filter(entities::label.eq(label))
-            .filter(entities::descriptor.eq(descriptor)))
-            .set(entities::description.eq(new_description))
-            .execute(&mut connection)
-            .map_err(|e| {
-                LoreCoreError::SqlError(
-                    "Changing entity description in database failed: ".to_string() + &e.to_string(),
-                )
-            })?;
+        diesel::update(
+            entities::table
+                .filter(entities::label.eq(label))
+                .filter(entities::descriptor.eq(descriptor)),
+        )
+        .set(entities::description.eq(new_description))
+        .execute(&mut connection)
+        .map_err(|e| {
+            LoreCoreError::SqlError(
+                "Changing entity description in database failed: ".to_string() + &e.to_string(),
+            )
+        })?;
         Ok(())
     }
 
