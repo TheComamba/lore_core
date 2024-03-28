@@ -455,3 +455,52 @@ fn test_write_read_relationships_after_db_deletion() {
         "Expected an error when reading from a deleted database"
     );
 }
+
+#[test]
+fn test_change_relationship_role_to_some() {
+    let (temp_path, db, rels) = create_example();
+    let rel = rels[0].clone();
+    let new_role = Some("New_Role".to_string());
+    db.change_relationship_role(rel.clone(), &new_role).unwrap();
+    let rels_out = db
+        .read_relationships(RelationshipSearchParams::empty())
+        .unwrap();
+    assert!(rels_out.len() == rels.len());
+    assert!(rels_out.contains(&EntityRelationship {
+        parent: rel.parent,
+        child: rel.child,
+        role: new_role,
+    }));
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_change_relationship_role_to_none() {
+    let (temp_path, db, rels) = create_example();
+    let rel = rels[0].clone();
+    let new_role = None;
+    db.change_relationship_role(rel.clone(), &new_role).unwrap();
+    let rels_out = db
+        .read_relationships(RelationshipSearchParams::empty())
+        .unwrap();
+    assert!(rels_out.len() == rels.len());
+    assert!(rels_out.contains(&EntityRelationship {
+        parent: rel.parent,
+        child: rel.child,
+        role: new_role,
+    }));
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_delete_relationship() {
+    let (temp_path, db, rels) = create_example();
+    let rel = rels[0].clone();
+    db.delete_relationship(rel.clone()).unwrap();
+    let rels_out = db
+        .read_relationships(RelationshipSearchParams::empty())
+        .unwrap();
+    assert!(rels_out.len() == rels.len() - 1);
+    assert!(!rels_out.contains(&rel));
+    temp_path.close().unwrap();
+}

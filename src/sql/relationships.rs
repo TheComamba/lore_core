@@ -38,7 +38,7 @@ impl LoreDatabase {
         todo!()
     }
 
-    pub fn delet_relationship(
+    pub fn delete_relationship(
         &self,
         relationship: EntityRelationship,
     ) -> Result<(), LoreCoreError> {
