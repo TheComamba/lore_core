@@ -31,6 +31,18 @@ impl LoreDatabase {
         Ok(())
     }
 
+    pub fn relabel_entity(
+        &self,
+        old_label: String,
+        new_label: String,
+    ) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
+    pub fn delete_entity(&self, label: String) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
     pub fn read_entity_columns(
         &self,
         search_params: EntityColumnSearchParams,
