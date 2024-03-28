@@ -30,6 +30,21 @@ impl LoreDatabase {
         Ok(())
     }
 
+    pub fn change_relationship_role(
+        &self,
+        old_relationship: EntityRelationship,
+        new_role: Option<String>,
+    ) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
+    pub fn delet_relationship(
+        &self,
+        relationship: EntityRelationship,
+    ) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
     pub fn read_relationships(
         &self,
         search_params: RelationshipSearchParams,

@@ -43,6 +43,29 @@ impl LoreDatabase {
         todo!()
     }
 
+    pub fn change_entity_descriptor(
+        &self,
+        (label, old_descriptor): (String, String),
+        new_descriptor: String,
+    ) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
+    pub fn delete_entity_column(
+        &self,
+        (label, descriptor): (String, String),
+    ) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
+    pub fn change_entity_description(
+        &self,
+        (label, descriptor): (String, String),
+        new_description: String,
+    ) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
     pub fn read_entity_columns(
         &self,
         search_params: EntityColumnSearchParams,

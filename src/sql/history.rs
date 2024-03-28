@@ -44,6 +44,35 @@ impl LoreDatabase {
         Ok(())
     }
 
+    pub fn redate_history_item(
+        &self,
+        timestamp: i64,
+        year: i32,
+        day: Option<i32>,
+    ) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
+    pub fn delete_history_item(&self, timestamp: i64) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
+    pub fn change_history_item_content(
+        &self,
+        timestamp: i64,
+        content: String,
+    ) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
+    pub fn change_history_item_properties(
+        &self,
+        timestamp: i64,
+        properties: Option<String>,
+    ) -> Result<(), LoreCoreError> {
+        todo!()
+    }
+
     pub fn read_history_items(
         &self,
         search_params: HistoryItemSearchParams,
