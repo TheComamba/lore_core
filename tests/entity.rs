@@ -489,3 +489,177 @@ fn test_write_read_after_db_deletion() {
         "Expected an error when reading from a deleted database"
     );
 }
+
+#[test]
+fn test_relabel_entity() {
+    let (temp_path, db, entities) = create_example();
+    let old_entity = entities[0].clone();
+    let new_label = "New_Label".to_string();
+
+    // Relabel the entity
+    db.relabel_entity(&old_entity.label, &new_label).unwrap();
+
+    // Read the entity back from the database
+    let updated_entity = db
+        .read_entity_columns(EntityColumnSearchParams::new(
+            Some(SqlSearchText::exact(&new_label)),
+            None,
+        ))
+        .unwrap();
+
+    // Check that the entity was updated correctly
+    assert_eq!(updated_entity.len(), 1);
+    assert_eq!(updated_entity[0].label, new_label);
+    assert_eq!(updated_entity[0].descriptor, old_entity.descriptor);
+    assert_eq!(updated_entity[0].description, old_entity.description);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_delete_entity() {
+    let (temp_path, db, entities) = create_example();
+    let entity = entities[0].clone();
+
+    // Verify the entity exists
+    let entity_out = db
+        .read_entity_columns(EntityColumnSearchParams::new(
+            Some(SqlSearchText::exact(&entity.label)),
+            None,
+        ))
+        .unwrap();
+    assert_eq!(entity_out.len(), 1);
+    assert_eq!(entity, entity_out[0]);
+
+    // Delete the entity
+    db.delete_entity(entity.label.clone()).unwrap();
+
+    // Verify the entity no longer exists
+    let entity_out = db
+        .read_entity_columns(EntityColumnSearchParams::new(
+            Some(SqlSearchText::exact(&entity.label)),
+            None,
+        ))
+        .unwrap();
+    assert_eq!(entity_out.len(), 0);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_change_entity_descriptor() {
+    let (temp_path, db, entities) = create_example();
+    let old_entity = entities[0].clone();
+    let new_descriptor = "New_Descriptor".to_string();
+
+    // Change the entity's descriptor
+    db.change_entity_descriptor((&old_entity.label, old_entity.descriptor), &new_descriptor)
+        .unwrap();
+
+    // Read the entity back from the database
+    let updated_entity = db
+        .read_entity_columns(EntityColumnSearchParams::new(
+            Some(SqlSearchText::exact(&old_entity.label)),
+            None,
+        ))
+        .unwrap();
+
+    // Check that the entity was updated correctly
+    assert_eq!(updated_entity.len(), 1);
+    assert_eq!(updated_entity[0].label, old_entity.label);
+    assert_eq!(updated_entity[0].descriptor, new_descriptor);
+    assert_eq!(updated_entity[0].description, old_entity.description);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_delete_entity_column() {
+    let (temp_path, db, entities) = create_example();
+    let entity = entities[0].clone();
+
+    // Verify the entity exists
+    let entity_out = db
+        .read_entity_columns(EntityColumnSearchParams::new(
+            Some(SqlSearchText::exact(&entity.label)),
+            None,
+        ))
+        .unwrap();
+    assert_eq!(entity_out.len(), 1);
+    assert_eq!(entity, entity_out[0]);
+
+    // Delete the entity column
+    db.delete_entity_column((entity.label.clone(), entity.descriptor))
+        .unwrap();
+
+    // Verify the entity column no longer exists
+    let entity_out = db
+        .read_entity_columns(EntityColumnSearchParams::new(
+            Some(SqlSearchText::exact(&entity.label)),
+            None,
+        ))
+        .unwrap();
+    assert_eq!(entity_out.len(), 0);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_change_entity_description() {
+    let (temp_path, db, entities) = create_example();
+    let old_entity = entities[0].clone();
+    let new_description = Some("New_Description".to_string());
+
+    // Change the entity's description
+    db.change_entity_description(
+        (&old_entity.label, &old_entity.descriptor),
+        &new_description.clone(),
+    )
+    .unwrap();
+
+    // Read the entity back from the database
+    let updated_entity = db
+        .read_entity_columns(EntityColumnSearchParams::new(
+            Some(SqlSearchText::exact(&old_entity.label)),
+            None,
+        ))
+        .unwrap();
+
+    // Check that the entity was updated correctly
+    assert_eq!(updated_entity.len(), 1);
+    assert_eq!(updated_entity[0].label, old_entity.label);
+    assert_eq!(updated_entity[0].descriptor, old_entity.descriptor);
+    assert_eq!(updated_entity[0].description, new_description);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_change_entity_description_to_none() {
+    let (temp_path, db, entities) = create_example();
+    let old_entity = entities[0].clone();
+    let new_description = None;
+
+    // Change the entity's description
+    db.change_entity_description(
+        (&old_entity.label, &old_entity.descriptor),
+        &new_description.clone(),
+    )
+    .unwrap();
+
+    // Read the entity back from the database
+    let updated_entity = db
+        .read_entity_columns(EntityColumnSearchParams::new(
+            Some(SqlSearchText::exact(&old_entity.label)),
+            None,
+        ))
+        .unwrap();
+
+    // Check that the entity was updated correctly
+    assert_eq!(updated_entity.len(), 1);
+    assert_eq!(updated_entity[0].label, old_entity.label);
+    assert_eq!(updated_entity[0].descriptor, old_entity.descriptor);
+    assert_eq!(updated_entity[0].description, new_description);
+
+    temp_path.close().unwrap();
+}
