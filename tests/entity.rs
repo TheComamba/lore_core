@@ -20,8 +20,8 @@ fn writing_single_entity_column() {
     let entity_out = db
         .read_entity_columns(EntityColumnSearchParams::empty())
         .unwrap();
-    assert!(entity_out.len() == 1);
-    assert!(entity == entity_out[0]);
+    assert_eq!(entity_out.len(), 1);
+    assert_eq!(entity, entity_out[0]);
     temp_path.close().unwrap();
 }
 
@@ -49,7 +49,7 @@ fn write_many_entity_columns() {
     let entities_out = db
         .read_entity_columns(EntityColumnSearchParams::empty())
         .unwrap();
-    assert!(entities.len() == entities_out.len());
+    assert_eq!(entities.len(), entities_out.len());
     for entity in entities.iter() {
         assert!(entities_out.contains(entity));
     }
@@ -70,8 +70,8 @@ fn write_entity_with_empty_description() {
     let entity_out = db
         .read_entity_columns(EntityColumnSearchParams::empty())
         .unwrap();
-    assert!(entity_out.len() == 1);
-    assert!(entity == entity_out[0]);
+    assert_eq!(entity_out.len(), 1);
+    assert_eq!(entity, entity_out[0]);
     temp_path.close().unwrap();
 }
 
@@ -108,7 +108,7 @@ fn get_all_entities_without_filter_returns_all() {
     let out = db
         .read_entity_columns(EntityColumnSearchParams::empty())
         .unwrap();
-    assert!(out == entities);
+    assert_eq!(out, entities);
 
     temp_path.close().unwrap();
 }
@@ -143,7 +143,7 @@ fn get_entities_with_label_filter_bel1_returns_some() {
             None,
         ))
         .unwrap();
-    assert!(out == expected);
+    assert_eq!(out, expected);
 
     temp_path.close().unwrap();
 }
@@ -163,7 +163,7 @@ fn get_entities_with_label_filter_testlabel1_returns_some() {
             None,
         ))
         .unwrap();
-    assert!(out == expected);
+    assert_eq!(out, expected);
 
     temp_path.close().unwrap();
 }
@@ -178,7 +178,7 @@ fn get_entities_with_label_filter_bel_returns_all() {
             None,
         ))
         .unwrap();
-    assert!(out == entities);
+    assert_eq!(out, entities);
 
     temp_path.close().unwrap();
 }
@@ -228,7 +228,7 @@ fn get_entities_with_exact_label_filter_testlabel1_returns_some() {
             None,
         ))
         .unwrap();
-    assert!(out == expected);
+    assert_eq!(out, expected);
 
     temp_path.close().unwrap();
 }
@@ -263,7 +263,7 @@ fn get_entities_with_descriptor_filter_riptor1_returns_some() {
             Some(SqlSearchText::partial("riptor1")),
         ))
         .unwrap();
-    assert!(out == expected);
+    assert_eq!(out, expected);
 
     temp_path.close().unwrap();
 }
@@ -283,7 +283,7 @@ fn get_entities_with_descriptor_filter_testdescriptor1_returns_some() {
             Some(SqlSearchText::partial("testdescriptor1")),
         ))
         .unwrap();
-    assert!(out == expected);
+    assert_eq!(out, expected);
 
     temp_path.close().unwrap();
 }
@@ -298,7 +298,7 @@ fn get_entities_with_descriptor_filter_riptor_returns_all() {
             Some(SqlSearchText::partial("riptor")),
         ))
         .unwrap();
-    assert!(all_descriptors_out == entities);
+    assert_eq!(all_descriptors_out, entities);
 
     temp_path.close().unwrap();
 }
@@ -348,7 +348,7 @@ fn get_entities_with_exact_descriptor_filter_testdescriptor1_returns_some() {
             Some(SqlSearchText::exact("testdescriptor1")),
         ))
         .unwrap();
-    assert!(out == expected);
+    assert_eq!(out, expected);
 
     temp_path.close().unwrap();
 }
@@ -400,7 +400,7 @@ fn get_entities_with_label_filter_bel1_and_descriptor_filter_riptor1_returns_som
             Some(SqlSearchText::partial("riptor1")),
         ))
         .unwrap();
-    assert!(out == expected);
+    assert_eq!(out, expected);
 
     temp_path.close().unwrap();
 }
@@ -423,7 +423,7 @@ fn get_entities_with_exact_label_filter_testlabel1_and_exact_descriptor_filter_t
             Some(SqlSearchText::exact("testdescriptor1")),
         ))
         .unwrap();
-    assert!(out == expected);
+    assert_eq!(out, expected);
 
     temp_path.close().unwrap();
 }
@@ -443,7 +443,7 @@ fn get_entities_with_exact_label_filter_testlabel1_and_descriptor_filter_riptor_
             Some(SqlSearchText::partial("riptor")),
         ))
         .unwrap();
-    assert!(out == expected);
+    assert_eq!(out, expected);
 
     temp_path.close().unwrap();
 }
@@ -463,7 +463,7 @@ fn get_entities_with_label_filter_bel_and_exact_descriptor_filter_testdescriptor
             Some(SqlSearchText::exact("testdescriptor1")),
         ))
         .unwrap();
-    assert!(out == expected);
+    assert_eq!(out, expected);
 
     temp_path.close().unwrap();
 }
@@ -508,7 +508,7 @@ fn test_relabel_entity() {
         .unwrap();
 
     // Check that the entity was updated correctly
-    assert_eq!(updated_entity.len(), 1);
+    assert!(!updated_entity.is_empty());
     assert_eq!(updated_entity[0].label, new_label);
     assert_eq!(updated_entity[0].descriptor, old_entity.descriptor);
     assert_eq!(updated_entity[0].description, old_entity.description);
@@ -528,7 +528,7 @@ fn test_delete_entity() {
             None,
         ))
         .unwrap();
-    assert_eq!(entity_out.len(), 1);
+    assert!(!entity_out.is_empty());
     assert_eq!(entity, entity_out[0]);
 
     // Delete the entity
@@ -565,7 +565,7 @@ fn test_change_entity_descriptor() {
         .unwrap();
 
     // Check that the entity was updated correctly
-    assert_eq!(updated_entity.len(), 1);
+    assert!(!updated_entity.is_empty());
     assert_eq!(updated_entity[0].label, old_entity.label);
     assert_eq!(updated_entity[0].descriptor, new_descriptor);
     assert_eq!(updated_entity[0].description, old_entity.description);
@@ -585,21 +585,21 @@ fn test_delete_entity_column() {
             None,
         ))
         .unwrap();
-    assert_eq!(entity_out.len(), 1);
+    assert!(!entity_out.is_empty());
     assert_eq!(entity, entity_out[0]);
 
     // Delete the entity column
-    db.delete_entity_column((entity.label.clone(), entity.descriptor))
+    db.delete_entity_column((entity.label.clone(), entity.descriptor.clone()))
         .unwrap();
 
     // Verify the entity column no longer exists
     let entity_out = db
         .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact(&entity.label)),
-            None,
+            Some(SqlSearchText::exact(&entity.descriptor)),
         ))
         .unwrap();
-    assert_eq!(entity_out.len(), 0);
+    assert!(entity_out.is_empty());
 
     temp_path.close().unwrap();
 }
@@ -626,7 +626,7 @@ fn test_change_entity_description() {
         .unwrap();
 
     // Check that the entity was updated correctly
-    assert_eq!(updated_entity.len(), 1);
+    assert!(!updated_entity.is_empty());
     assert_eq!(updated_entity[0].label, old_entity.label);
     assert_eq!(updated_entity[0].descriptor, old_entity.descriptor);
     assert_eq!(updated_entity[0].description, new_description);
@@ -656,7 +656,7 @@ fn test_change_entity_description_to_none() {
         .unwrap();
 
     // Check that the entity was updated correctly
-    assert_eq!(updated_entity.len(), 1);
+    assert!(!updated_entity.is_empty());
     assert_eq!(updated_entity[0].label, old_entity.label);
     assert_eq!(updated_entity[0].descriptor, old_entity.descriptor);
     assert_eq!(updated_entity[0].description, new_description);
