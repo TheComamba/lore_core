@@ -33,7 +33,7 @@ impl LoreDatabase {
     pub fn change_relationship_role(
         &self,
         old_relationship: EntityRelationship,
-        new_role: Option<String>,
+        new_role: &Option<String>,
     ) -> Result<(), LoreCoreError> {
         todo!()
     }

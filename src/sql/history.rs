@@ -60,7 +60,7 @@ impl LoreDatabase {
     pub fn change_history_item_content(
         &self,
         timestamp: i64,
-        content: String,
+        content: &str,
     ) -> Result<(), LoreCoreError> {
         todo!()
     }
@@ -68,7 +68,7 @@ impl LoreDatabase {
     pub fn change_history_item_properties(
         &self,
         timestamp: i64,
-        properties: Option<String>,
+        properties: &Option<String>,
     ) -> Result<(), LoreCoreError> {
         todo!()
     }

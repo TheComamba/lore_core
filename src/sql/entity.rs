@@ -33,8 +33,8 @@ impl LoreDatabase {
 
     pub fn relabel_entity(
         &self,
-        old_label: String,
-        new_label: String,
+        old_label: &str,
+        new_label: &str,
     ) -> Result<(), LoreCoreError> {
         todo!()
     }
@@ -45,8 +45,8 @@ impl LoreDatabase {
 
     pub fn change_entity_descriptor(
         &self,
-        (label, old_descriptor): (String, String),
-        new_descriptor: String,
+        (label, old_descriptor): (&str, String),
+        new_descriptor: &str,
     ) -> Result<(), LoreCoreError> {
         todo!()
     }
@@ -60,8 +60,8 @@ impl LoreDatabase {
 
     pub fn change_entity_description(
         &self,
-        (label, descriptor): (String, String),
-        new_description: String,
+        (label, descriptor): (&str, &str),
+        new_description: &str,
     ) -> Result<(), LoreCoreError> {
         todo!()
     }
