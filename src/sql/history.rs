@@ -50,11 +50,28 @@ impl LoreDatabase {
         year: i32,
         day: Option<i32>,
     ) -> Result<(), LoreCoreError> {
-        todo!()
+        let mut connection = self.db_connection()?;
+        diesel::update(history_items::table.filter(history_items::timestamp.eq(timestamp)))
+            .set((history_items::year.eq(year), history_items::day.eq(day)))
+            .execute(&mut connection)
+            .map_err(|e| {
+                LoreCoreError::SqlError(
+                    "Redating history item in database failed: ".to_string() + &e.to_string(),
+                )
+            })?;
+        Ok(())
     }
 
     pub fn delete_history_item(&self, timestamp: i64) -> Result<(), LoreCoreError> {
-        todo!()
+        let mut connection = self.db_connection()?;
+        diesel::delete(history_items::table.filter(history_items::timestamp.eq(timestamp)))
+            .execute(&mut connection)
+            .map_err(|e| {
+                LoreCoreError::SqlError(
+                    "Deleting history item from database failed: ".to_string() + &e.to_string(),
+                )
+            })?;
+        Ok(())
     }
 
     pub fn change_history_item_content(
@@ -62,7 +79,16 @@ impl LoreDatabase {
         timestamp: i64,
         content: &str,
     ) -> Result<(), LoreCoreError> {
-        todo!()
+        let mut connection = self.db_connection()?;
+        diesel::update(history_items::table.filter(history_items::timestamp.eq(timestamp)))
+            .set(history_items::content.eq(content))
+            .execute(&mut connection)
+            .map_err(|e| {
+                LoreCoreError::SqlError(
+                    "Changing history item content in database failed: ".to_string() + &e.to_string(),
+                )
+            })?;
+        Ok(())
     }
 
     pub fn change_history_item_properties(
@@ -70,7 +96,16 @@ impl LoreDatabase {
         timestamp: i64,
         properties: &Option<String>,
     ) -> Result<(), LoreCoreError> {
-        todo!()
+        let mut connection = self.db_connection()?;
+        diesel::update(history_items::table.filter(history_items::timestamp.eq(timestamp)))
+            .set(history_items::properties.eq(properties))
+            .execute(&mut connection)
+            .map_err(|e| {
+                LoreCoreError::SqlError(
+                    "Changing history item properties in database failed: ".to_string() + &e.to_string(),
+                )
+            })?;
+        Ok(())
     }
 
     pub fn read_history_items(

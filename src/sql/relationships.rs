@@ -35,14 +35,45 @@ impl LoreDatabase {
         old_relationship: EntityRelationship,
         new_role: &Option<String>,
     ) -> Result<(), LoreCoreError> {
-        todo!()
+        let mut connection = self.db_connection()?;
+        diesel::update(
+            relationships::table.filter(
+                relationships::parent
+                    .eq(old_relationship.parent)
+                    .and(relationships::child.eq(old_relationship.child))
+                    .and(relationships::role.eq(old_relationship.role)),
+            ),
+        )
+        .set(relationships::role.eq(new_role))
+        .execute(&mut connection)
+        .map_err(|e| {
+            LoreCoreError::SqlError(
+                "Changing relationship role in database failed: ".to_string() + &e.to_string(),
+            )
+        })?;
+        Ok(())
     }
 
     pub fn delete_relationship(
         &self,
         relationship: EntityRelationship,
     ) -> Result<(), LoreCoreError> {
-        todo!()
+        let mut connection = self.db_connection()?;
+        diesel::delete(
+            relationships::table.filter(
+                relationships::parent
+                    .eq(relationship.parent)
+                    .and(relationships::child.eq(relationship.child))
+                    .and(relationships::role.eq(relationship.role)),
+            ),
+        )
+        .execute(&mut connection)
+        .map_err(|e| {
+            LoreCoreError::SqlError(
+                "Deleting relationship from database failed: ".to_string() + &e.to_string(),
+            )
+        })?;
+        Ok(())
     }
 
     pub fn read_relationships(
