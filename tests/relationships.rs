@@ -455,3 +455,136 @@ fn test_write_read_relationships_after_db_deletion() {
         "Expected an error when reading from a deleted database"
     );
 }
+
+#[test]
+fn test_change_relationship_role_to_some() {
+    let (temp_path, db, rels) = create_example();
+    let rel = rels[0].clone();
+    let new_role = Some("New_Role".to_string());
+    db.change_relationship_role(rel.clone(), &new_role).unwrap();
+    let rels_out = db
+        .read_relationships(RelationshipSearchParams::empty())
+        .unwrap();
+    assert!(rels_out.len() == rels.len());
+    assert!(rels_out.contains(&EntityRelationship {
+        parent: rel.parent,
+        child: rel.child,
+        role: new_role,
+    }));
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_change_relationship_role_to_none() {
+    let (temp_path, db, rels) = create_example();
+    let rel = rels[0].clone();
+    let new_role = None;
+    db.change_relationship_role(rel.clone(), &new_role).unwrap();
+    let rels_out = db
+        .read_relationships(RelationshipSearchParams::empty())
+        .unwrap();
+    assert!(rels_out.len() == rels.len());
+    assert!(rels_out.contains(&EntityRelationship {
+        parent: rel.parent,
+        child: rel.child,
+        role: new_role,
+    }));
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_delete_relationship() {
+    let (temp_path, db, rels) = create_example();
+    let rel = rels[0].clone();
+    db.delete_relationship(rel.clone()).unwrap();
+    let rels_out = db
+        .read_relationships(RelationshipSearchParams::empty())
+        .unwrap();
+    assert!(rels_out.len() == rels.len() - 1);
+    assert!(!rels_out.contains(&rel));
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_delete_relationship_without_role() {
+    // Create a temporary path and database
+    let temp_path = NamedTempFile::new().unwrap().into_temp_path();
+    let path_in: PathBuf = temp_path.as_os_str().into();
+    let db = LoreDatabase::open(path_in.clone()).unwrap();
+
+    // Create two relationships, one with a role and one without
+    let parent = "parent".to_string();
+    let child = "child".to_string();
+    let role = Some("role".to_string());
+    let rel_with_role = EntityRelationship {
+        parent: parent.clone(),
+        child: child.clone(),
+        role,
+    };
+    let rel_without_role = EntityRelationship {
+        parent,
+        child,
+        role: None,
+    };
+
+    // Write the relationships to the database
+    db.write_relationships(vec![rel_with_role.clone(), rel_without_role.clone()])
+        .unwrap();
+
+    // Delete the relationship without the role
+    db.delete_relationship(rel_without_role.clone()).unwrap();
+
+    // Read the relationships from the database
+    let rels_out = db
+        .read_relationships(RelationshipSearchParams::empty())
+        .unwrap();
+
+    // Assert that only one relationship remains and it is the one with the role
+    assert_eq!(rels_out.len(), 1);
+    assert_eq!(rels_out[0], rel_with_role);
+
+    // Close the temporary path
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_delete_relationship_with_role() {
+    // Create a temporary path and database
+    let temp_path = NamedTempFile::new().unwrap().into_temp_path();
+    let path_in: PathBuf = temp_path.as_os_str().into();
+    let db = LoreDatabase::open(path_in.clone()).unwrap();
+
+    // Create two relationships, one with a role and one without
+    let parent = "parent".to_string();
+    let child = "child".to_string();
+    let role = Some("role".to_string());
+    let rel_with_role = EntityRelationship {
+        parent: parent.clone(),
+        child: child.clone(),
+        role,
+    };
+    let rel_without_role = EntityRelationship {
+        parent,
+        child,
+        role: None,
+    };
+
+    // Write the relationships to the database
+    db.write_relationships(vec![rel_with_role.clone(), rel_without_role.clone()])
+        .unwrap();
+
+    // Delete the relationship with the role
+    db.delete_relationship(rel_with_role.clone()).unwrap();
+
+    // Read the relationships from the database
+    let rels_out = db
+        .read_relationships(RelationshipSearchParams::empty())
+        .unwrap();
+
+    // Assert that only one relationship remains and it is the one without the role
+    assert_eq!(rels_out.len(), 1);
+    assert_eq!(rels_out[0], rel_without_role);
+
+    // Close the temporary path
+    temp_path.close().unwrap();
+}

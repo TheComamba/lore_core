@@ -277,3 +277,199 @@ fn test_write_read_history_after_db_deletion() {
         "Expected an error when reading from a deleted database"
     );
 }
+
+#[test]
+fn test_setting_year() {
+    let (temp_path, db, mut items) = create_example();
+    let item = items.pop().unwrap();
+    let old_year = item.year;
+    let new_year = old_year + 12345;
+
+    db.redate_history_item(item.timestamp, new_year, item.day)
+        .unwrap();
+
+    let updated_item = db
+        .read_history_items(HistoryItemSearchParams::new(
+            Some(new_year),
+            item.day,
+            Some(item.timestamp),
+            None,
+        ))
+        .unwrap()
+        .pop()
+        .unwrap();
+
+    assert_eq!(updated_item.year, new_year);
+    assert_ne!(updated_item.year, old_year);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_setting_day_to_some() {
+    let temp_path = NamedTempFile::new().unwrap().into_temp_path();
+    let path_in: PathBuf = temp_path.as_os_str().into();
+    let db = LoreDatabase::open(path_in.clone()).unwrap();
+
+    let item = HistoryItem {
+        year: 12,
+        day: None,
+        timestamp: current_timestamp(),
+        content: "testcontent".to_string(),
+        properties: None,
+    };
+
+    db.write_history_items(vec![item.clone()].clone()).unwrap();
+
+    let old_day = item.day;
+    let new_day = Some(12345);
+
+    db.redate_history_item(item.timestamp, item.year, new_day)
+        .unwrap();
+
+    let updated_item = db
+        .read_history_items(HistoryItemSearchParams::new(
+            Some(item.year),
+            new_day,
+            Some(item.timestamp),
+            None,
+        ))
+        .unwrap()
+        .pop()
+        .unwrap();
+
+    assert_eq!(updated_item.day, new_day);
+    assert_ne!(updated_item.day, old_day);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_setting_day_to_none() {
+    let temp_path = NamedTempFile::new().unwrap().into_temp_path();
+    let path_in: PathBuf = temp_path.as_os_str().into();
+    let db = LoreDatabase::open(path_in.clone()).unwrap();
+
+    let item = HistoryItem {
+        year: 12,
+        day: Some(34),
+        timestamp: current_timestamp(),
+        content: "testcontent".to_string(),
+        properties: None,
+    };
+
+    db.write_history_items(vec![item.clone()].clone()).unwrap();
+
+    let old_day = item.day;
+    let new_day = None;
+
+    db.redate_history_item(item.timestamp, item.year, new_day)
+        .unwrap();
+
+    let updated_item = db
+        .read_history_items(HistoryItemSearchParams::new(
+            Some(item.year),
+            new_day,
+            Some(item.timestamp),
+            None,
+        ))
+        .unwrap()
+        .pop()
+        .unwrap();
+
+    assert_eq!(updated_item.day, new_day);
+    assert_ne!(updated_item.day, old_day);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_delete_history_item() {
+    let (temp_path, db, mut items) = create_example();
+    let item = items.pop().unwrap();
+
+    db.delete_history_item(item.timestamp).unwrap();
+
+    let items_out = db
+        .read_history_items(HistoryItemSearchParams::new(None, None, None, None))
+        .unwrap();
+
+    assert!(!items_out.contains(&item));
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_change_history_item_content() {
+    let (temp_path, db, mut items) = create_example();
+    let item = items.pop().unwrap();
+    let new_content = "New_Content".to_string();
+
+    db.change_history_item_content(item.timestamp, &new_content)
+        .unwrap();
+
+    let updated_item = db
+        .read_history_items(HistoryItemSearchParams::new(
+            None,
+            None,
+            Some(item.timestamp),
+            None,
+        ))
+        .unwrap()
+        .pop()
+        .unwrap();
+
+    assert_eq!(updated_item.content, new_content);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_changing_history_item_properties_to_some() {
+    let (temp_path, db, mut items) = create_example();
+    let item = items.pop().unwrap();
+    let new_properties = Some("{\"is_secret\": false}".to_string());
+
+    db.change_history_item_properties(item.timestamp, &new_properties)
+        .unwrap();
+
+    let updated_item = db
+        .read_history_items(HistoryItemSearchParams::new(
+            None,
+            None,
+            Some(item.timestamp),
+            None,
+        ))
+        .unwrap()
+        .pop()
+        .unwrap();
+
+    assert_eq!(updated_item.properties, new_properties);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn test_changing_history_item_properties_to_none() {
+    let (temp_path, db, mut items) = create_example();
+    let item = items.pop().unwrap();
+    let new_properties = None;
+
+    db.change_history_item_properties(item.timestamp, &new_properties)
+        .unwrap();
+
+    let updated_item = db
+        .read_history_items(HistoryItemSearchParams::new(
+            None,
+            None,
+            Some(item.timestamp),
+            None,
+        ))
+        .unwrap()
+        .pop()
+        .unwrap();
+
+    assert_eq!(updated_item.properties, new_properties);
+
+    temp_path.close().unwrap();
+}

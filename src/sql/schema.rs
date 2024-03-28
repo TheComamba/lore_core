@@ -22,7 +22,7 @@ diesel::table! {
     relationships (parent, child, role) {
         parent -> Text,
         child -> Text,
-        role -> Nullable<Text>,
+        role -> Text,
     }
 }
 
