@@ -5,7 +5,7 @@ use ::diesel::prelude::*;
 use diesel::Insertable;
 use diesel::{QueryDsl, Queryable, RunQueryDsl};
 
-const NO_ROLE: &'static str = "_NO_ROLE_";
+const NO_ROLE: &str = "_NO_ROLE_";
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(C)]
