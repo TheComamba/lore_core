@@ -307,8 +307,20 @@ fn test_setting_year() {
 
 #[test]
 fn test_setting_day_to_some() {
-    let (temp_path, db, mut items) = create_example();
-    let item = items.pop().unwrap();
+    let temp_path = NamedTempFile::new().unwrap().into_temp_path();
+    let path_in: PathBuf = temp_path.as_os_str().into();
+    let db = LoreDatabase::open(path_in.clone()).unwrap();
+
+    let item = HistoryItem {
+        year: 12,
+        day: None,
+        timestamp: current_timestamp(),
+        content: "testcontent".to_string(),
+        properties: None,
+    };
+
+    db.write_history_items(vec![item.clone()].clone()).unwrap();
+
     let old_day = item.day;
     let new_day = Some(12345);
 
@@ -334,8 +346,20 @@ fn test_setting_day_to_some() {
 
 #[test]
 fn test_setting_day_to_none() {
-    let (temp_path, db, mut items) = create_example();
-    let item = items.pop().unwrap();
+    let temp_path = NamedTempFile::new().unwrap().into_temp_path();
+    let path_in: PathBuf = temp_path.as_os_str().into();
+    let db = LoreDatabase::open(path_in.clone()).unwrap();
+
+    let item = HistoryItem {
+        year: 12,
+        day: Some(34),
+        timestamp: current_timestamp(),
+        content: "testcontent".to_string(),
+        properties: None,
+    };
+
+    db.write_history_items(vec![item.clone()].clone()).unwrap();
+
     let old_day = item.day;
     let new_day = None;
 
