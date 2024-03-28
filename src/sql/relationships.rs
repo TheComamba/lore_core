@@ -5,8 +5,9 @@ use ::diesel::prelude::*;
 use diesel::Insertable;
 use diesel::{QueryDsl, Queryable, RunQueryDsl};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
-#[diesel(table_name = relationships)]
+const NO_ROLE: &'static str = "_NO_ROLE_";
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(C)]
 pub struct EntityRelationship {
     pub parent: String,
@@ -14,10 +15,49 @@ pub struct EntityRelationship {
     pub role: Option<String>,
 }
 
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
+#[diesel(table_name = relationships)]
+struct EntityRelationshipSqlRepresentation {
+    pub parent: String,
+    pub child: String,
+    pub role: String,
+}
+
+impl EntityRelationship {
+    fn to_sql_representation(&self) -> EntityRelationshipSqlRepresentation {
+        EntityRelationshipSqlRepresentation {
+            parent: self.parent.clone(),
+            child: self.child.clone(),
+            role: role_to_sql(&self.role),
+        }
+    }
+}
+
+fn role_to_sql(role: &Option<String>) -> String {
+    match role {
+        Some(role) => role.clone(),
+        None => NO_ROLE.to_string(),
+    }
+}
+
+impl EntityRelationshipSqlRepresentation {
+    fn to_relationship(&self) -> EntityRelationship {
+        EntityRelationship {
+            parent: self.parent.clone(),
+            child: self.child.clone(),
+            role: match self.role.as_str() {
+                NO_ROLE => None,
+                _ => Some(self.role.clone()),
+            },
+        }
+    }
+}
+
 impl LoreDatabase {
     pub fn write_relationships(&self, rels: Vec<EntityRelationship>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         for rel in rels.into_iter() {
+            let rel = rel.to_sql_representation();
             diesel::insert_into(relationships::table)
                 .values(&rel)
                 .execute(&mut connection)
@@ -41,10 +81,10 @@ impl LoreDatabase {
                 relationships::parent
                     .eq(old_relationship.parent)
                     .and(relationships::child.eq(old_relationship.child))
-                    .and(relationships::role.eq(old_relationship.role)),
+                    .and(relationships::role.eq(role_to_sql(&old_relationship.role))),
             ),
         )
-        .set(relationships::role.eq(new_role))
+        .set(relationships::role.eq(role_to_sql(new_role)))
         .execute(&mut connection)
         .map_err(|e| {
             LoreCoreError::SqlError(
@@ -64,7 +104,7 @@ impl LoreDatabase {
                 relationships::parent
                     .eq(relationship.parent)
                     .and(relationships::child.eq(relationship.child))
-                    .and(relationships::role.eq(relationship.role)),
+                    .and(relationships::role.eq(role_to_sql(&relationship.role))),
             ),
         )
         .execute(&mut connection)
@@ -98,8 +138,8 @@ impl LoreDatabase {
                 query = query.filter(relationships::child.like(child.search_pattern()));
             }
         }
-        let mut rels = query
-            .load::<EntityRelationship>(&mut connection)
+        let rels = query
+            .load::<EntityRelationshipSqlRepresentation>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
                     "relationships",
@@ -107,6 +147,8 @@ impl LoreDatabase {
                     e,
                 )
             })?;
+        let mut rels: Vec<EntityRelationship> =
+            rels.into_iter().map(|rel| rel.to_relationship()).collect();
         rels.sort();
         Ok(rels)
     }
