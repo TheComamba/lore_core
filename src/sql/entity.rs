@@ -135,13 +135,15 @@ impl LoreDatabase {
                 query = query.filter(entities::descriptor.like(descriptor.search_pattern()));
             }
         }
-        let mut cols = query.load::<SqlEntityColumn>(&mut connection).map_err(|e| {
-            sql_loading_error(
-                "entities",
-                vec![("label", &label), ("descriptor", &descriptor)],
-                e,
-            )
-        })?;
+        let mut cols = query
+            .load::<SqlEntityColumn>(&mut connection)
+            .map_err(|e| {
+                sql_loading_error(
+                    "entities",
+                    vec![("label", &label), ("descriptor", &descriptor)],
+                    e,
+                )
+            })?;
         cols.sort();
         Ok(cols)
     }

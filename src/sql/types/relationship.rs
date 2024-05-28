@@ -1,6 +1,6 @@
 use diesel::{Insertable, Queryable};
 
-use crate::sql::{relationship::EntityRelationship, schema::relationships};
+use crate::{sql::schema::relationships, types::relationship::EntityRelationship};
 
 const NO_ROLE: &str = "_NO_ROLE_";
 

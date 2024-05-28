@@ -2,18 +2,11 @@ use ::diesel::prelude::*;
 use diesel::{QueryDsl, RunQueryDsl};
 
 use crate::errors::{sql_loading_error, LoreCoreError};
+use crate::types::relationship::EntityRelationship;
 
 use super::search_params::RelationshipSearchParams;
 use super::types::relationship::{role_to_sql, SqlEntityRelationship};
 use super::{lore_database::LoreDatabase, schema::relationships};
-
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-#[repr(C)]
-pub struct EntityRelationship {
-    pub parent: String,
-    pub child: String,
-    pub role: Option<String>,
-}
 
 impl LoreDatabase {
     pub fn write_relationships(&self, rels: Vec<EntityRelationship>) -> Result<(), LoreCoreError> {

@@ -4,7 +4,6 @@ use crate::sql::schema::history_items;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
 #[diesel(table_name = history_items)]
-#[repr(C)]
 pub(crate) struct SqlHistoryItem {
     pub timestamp: i64,
     pub year: i32,

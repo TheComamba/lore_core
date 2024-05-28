@@ -4,7 +4,7 @@ use crate::{
         string_to_char_pointer,
     },
     errors::LoreCoreError,
-    sql::types::history::HistoryItem,
+    types::history::HistoryItem,
 };
 
 #[repr(C)]
