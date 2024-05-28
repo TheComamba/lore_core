@@ -4,7 +4,7 @@ use crate::{
         string_to_char_pointer,
     },
     errors::LoreCoreError,
-    sql::entity::EntityColumn,
+    sql::types::entity::EntityColumn,
 };
 
 #[repr(C)]

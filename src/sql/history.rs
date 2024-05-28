@@ -1,32 +1,11 @@
-use super::{
-    lore_database::LoreDatabase,
-    schema::history_items::{self},
-    search_params::HistoryItemSearchParams,
-};
-use crate::errors::{sql_loading_error, LoreCoreError};
 use ::diesel::prelude::*;
-use diesel::Insertable;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
-#[diesel(table_name = history_items)]
-#[repr(C)]
-pub struct HistoryItem {
-    pub timestamp: i64,
-    pub year: i32,
-    pub day: Option<i32>,
-    pub content: String,
-    pub properties: Option<String>,
-}
+use crate::errors::{sql_loading_error, LoreCoreError};
 
-impl PartialEq<&HistoryItem> for HistoryItem {
-    fn eq(&self, other: &&HistoryItem) -> bool {
-        self.timestamp == other.timestamp
-            && self.year == other.year
-            && self.day == other.day
-            && self.content == other.content
-            && self.properties == other.properties
-    }
-}
+use super::{
+    lore_database::LoreDatabase, schema::history_items, search_params::HistoryItemSearchParams,
+    types::history::HistoryItem,
+};
 
 impl LoreDatabase {
     pub fn write_history_items(&self, cols: Vec<HistoryItem>) -> Result<(), LoreCoreError> {

@@ -1,11 +1,11 @@
-use super::search_params::RelationshipSearchParams;
-use super::{lore_database::LoreDatabase, schema::relationships};
-use crate::errors::{sql_loading_error, LoreCoreError};
 use ::diesel::prelude::*;
-use diesel::Insertable;
-use diesel::{QueryDsl, Queryable, RunQueryDsl};
+use diesel::{QueryDsl, RunQueryDsl};
 
-const NO_ROLE: &str = "_NO_ROLE_";
+use crate::errors::{sql_loading_error, LoreCoreError};
+
+use super::search_params::RelationshipSearchParams;
+use super::types::relationship::{role_to_sql, EntityRelationshipSqlRepresentation};
+use super::{lore_database::LoreDatabase, schema::relationships};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(C)]
@@ -13,44 +13,6 @@ pub struct EntityRelationship {
     pub parent: String,
     pub child: String,
     pub role: Option<String>,
-}
-
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
-#[diesel(table_name = relationships)]
-struct EntityRelationshipSqlRepresentation {
-    pub parent: String,
-    pub child: String,
-    pub role: String,
-}
-
-impl EntityRelationship {
-    fn to_sql_representation(&self) -> EntityRelationshipSqlRepresentation {
-        EntityRelationshipSqlRepresentation {
-            parent: self.parent.clone(),
-            child: self.child.clone(),
-            role: role_to_sql(&self.role),
-        }
-    }
-}
-
-fn role_to_sql(role: &Option<String>) -> String {
-    match role {
-        Some(role) => role.clone(),
-        None => NO_ROLE.to_string(),
-    }
-}
-
-impl EntityRelationshipSqlRepresentation {
-    fn to_relationship(&self) -> EntityRelationship {
-        EntityRelationship {
-            parent: self.parent.clone(),
-            child: self.child.clone(),
-            role: match self.role.as_str() {
-                NO_ROLE => None,
-                _ => Some(self.role.clone()),
-            },
-        }
-    }
 }
 
 impl LoreDatabase {

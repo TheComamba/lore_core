@@ -1,19 +1,15 @@
-use super::{lore_database::LoreDatabase, search_params::EntityColumnSearchParams};
+use ::diesel::prelude::*;
+use diesel::RunQueryDsl;
+
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
     sql::schema::entities,
 };
-use ::diesel::prelude::*;
-use diesel::{Insertable, RunQueryDsl};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
-#[diesel(table_name = entities)]
-#[repr(C)]
-pub struct EntityColumn {
-    pub label: String,
-    pub descriptor: String,
-    pub description: Option<String>,
-}
+use super::{
+    lore_database::LoreDatabase, search_params::EntityColumnSearchParams,
+    types::entity::EntityColumn,
+};
 
 impl LoreDatabase {
     pub fn write_entity_columns(&self, cols: Vec<EntityColumn>) -> Result<(), LoreCoreError> {
