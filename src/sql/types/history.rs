@@ -5,7 +5,7 @@ use crate::sql::schema::history_items;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
 #[diesel(table_name = history_items)]
 #[repr(C)]
-pub(crate) struct HistoryItem {
+pub(crate) struct SqlHistoryItem {
     pub timestamp: i64,
     pub year: i32,
     pub day: Option<i32>,
@@ -13,8 +13,8 @@ pub(crate) struct HistoryItem {
     pub properties: Option<String>,
 }
 
-impl PartialEq<&HistoryItem> for HistoryItem {
-    fn eq(&self, other: &&HistoryItem) -> bool {
+impl PartialEq<&SqlHistoryItem> for SqlHistoryItem {
+    fn eq(&self, other: &&SqlHistoryItem) -> bool {
         self.timestamp == other.timestamp
             && self.year == other.year
             && self.day == other.day

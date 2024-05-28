@@ -4,7 +4,7 @@ use diesel::{QueryDsl, RunQueryDsl};
 use crate::errors::{sql_loading_error, LoreCoreError};
 
 use super::search_params::RelationshipSearchParams;
-use super::types::relationship::{role_to_sql, EntityRelationshipSqlRepresentation};
+use super::types::relationship::{role_to_sql, SqlEntityRelationship};
 use super::{lore_database::LoreDatabase, schema::relationships};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -19,7 +19,7 @@ impl LoreDatabase {
     pub fn write_relationships(&self, rels: Vec<EntityRelationship>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         for rel in rels.into_iter() {
-            let rel = rel.to_sql_representation();
+            let rel = rel.to_sql_entity_relationship();
             diesel::insert_into(relationships::table)
                 .values(&rel)
                 .execute(&mut connection)
@@ -101,7 +101,7 @@ impl LoreDatabase {
             }
         }
         let rels = query
-            .load::<EntityRelationshipSqlRepresentation>(&mut connection)
+            .load::<SqlEntityRelationship>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
                     "relationships",

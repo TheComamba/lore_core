@@ -4,11 +4,11 @@ use crate::errors::{sql_loading_error, LoreCoreError};
 
 use super::{
     lore_database::LoreDatabase, schema::history_items, search_params::HistoryItemSearchParams,
-    types::history::HistoryItem,
+    types::history::SqlHistoryItem,
 };
 
 impl LoreDatabase {
-    pub fn write_history_items(&self, cols: Vec<HistoryItem>) -> Result<(), LoreCoreError> {
+    pub fn write_history_items(&self, cols: Vec<SqlHistoryItem>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         for col in cols.into_iter() {
             diesel::insert_into(history_items::table)
@@ -92,7 +92,7 @@ impl LoreDatabase {
     pub fn read_history_items(
         &self,
         search_params: HistoryItemSearchParams,
-    ) -> Result<Vec<HistoryItem>, LoreCoreError> {
+    ) -> Result<Vec<SqlHistoryItem>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = history_items::table.into_boxed();
         let year = search_params.year;
@@ -115,7 +115,7 @@ impl LoreDatabase {
                 query = query.filter(history_items::content.like(content.search_pattern()));
             }
         }
-        let mut items = query.load::<HistoryItem>(&mut connection).map_err(|e| {
+        let mut items = query.load::<SqlHistoryItem>(&mut connection).map_err(|e| {
             sql_loading_error("history items", vec![("year", &year), ("day", &day)], e)
         })?;
         items.sort();
@@ -123,14 +123,14 @@ impl LoreDatabase {
     }
 }
 
-pub fn extract_years(items: &[HistoryItem]) -> Vec<i32> {
+pub fn extract_years(items: &[SqlHistoryItem]) -> Vec<i32> {
     let mut years: Vec<_> = items.iter().map(|item| item.year).collect();
     years.sort();
     years.dedup();
     years
 }
 
-pub fn extract_days(items: &[HistoryItem]) -> Vec<Option<i32>> {
+pub fn extract_days(items: &[SqlHistoryItem]) -> Vec<Option<i32>> {
     let mut days: Vec<_> = items.iter().map(|item| item.day).collect();
     days.sort();
     days.dedup();
@@ -144,21 +144,21 @@ mod tests {
     fn test_extract_years() {
         use super::*;
         let items = vec![
-            HistoryItem {
+            SqlHistoryItem {
                 timestamp: 0,
                 year: 2021,
                 day: None,
                 content: "".to_string(),
                 properties: None,
             },
-            HistoryItem {
+            SqlHistoryItem {
                 timestamp: 0,
                 year: 2020,
                 day: None,
                 content: "".to_string(),
                 properties: None,
             },
-            HistoryItem {
+            SqlHistoryItem {
                 timestamp: 0,
                 year: 2020,
                 day: Some(4),
@@ -174,28 +174,28 @@ mod tests {
     fn test_extract_days() {
         use super::*;
         let items = vec![
-            HistoryItem {
+            SqlHistoryItem {
                 timestamp: 0,
                 year: 2020,
                 day: Some(2),
                 content: "".to_string(),
                 properties: None,
             },
-            HistoryItem {
+            SqlHistoryItem {
                 timestamp: 0,
                 year: 2020,
                 day: Some(1),
                 content: "".to_string(),
                 properties: None,
             },
-            HistoryItem {
+            SqlHistoryItem {
                 timestamp: 0,
                 year: 2020,
                 day: Some(1),
                 content: "".to_string(),
                 properties: None,
             },
-            HistoryItem {
+            SqlHistoryItem {
                 timestamp: 0,
                 year: 2020,
                 day: None,

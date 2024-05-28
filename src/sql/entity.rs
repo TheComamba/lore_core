@@ -8,11 +8,11 @@ use crate::{
 
 use super::{
     lore_database::LoreDatabase, search_params::EntityColumnSearchParams,
-    types::entity::EntityColumn,
+    types::entity::SqlEntityColumn,
 };
 
 impl LoreDatabase {
-    pub fn write_entity_columns(&self, cols: Vec<EntityColumn>) -> Result<(), LoreCoreError> {
+    pub fn write_entity_columns(&self, cols: Vec<SqlEntityColumn>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         for col in cols.into_iter() {
             diesel::insert_into(entities::table)
@@ -116,7 +116,7 @@ impl LoreDatabase {
     pub fn read_entity_columns(
         &self,
         search_params: EntityColumnSearchParams,
-    ) -> Result<Vec<EntityColumn>, LoreCoreError> {
+    ) -> Result<Vec<SqlEntityColumn>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = entities::table.into_boxed();
         let label = search_params.label;
@@ -135,7 +135,7 @@ impl LoreDatabase {
                 query = query.filter(entities::descriptor.like(descriptor.search_pattern()));
             }
         }
-        let mut cols = query.load::<EntityColumn>(&mut connection).map_err(|e| {
+        let mut cols = query.load::<SqlEntityColumn>(&mut connection).map_err(|e| {
             sql_loading_error(
                 "entities",
                 vec![("label", &label), ("descriptor", &descriptor)],
@@ -147,14 +147,14 @@ impl LoreDatabase {
     }
 }
 
-pub fn extract_labels(cols: &[EntityColumn]) -> Vec<String> {
+pub fn extract_labels(cols: &[SqlEntityColumn]) -> Vec<String> {
     let mut labels: Vec<_> = cols.iter().map(|c| c.label.clone()).collect();
     labels.sort();
     labels.dedup();
     labels
 }
 
-pub fn extract_descriptors(cols: &[EntityColumn]) -> Vec<String> {
+pub fn extract_descriptors(cols: &[SqlEntityColumn]) -> Vec<String> {
     let mut descriptors: Vec<_> = cols.iter().map(|c| c.descriptor.clone()).collect();
     descriptors.sort();
     descriptors.dedup();
@@ -168,17 +168,17 @@ mod tests {
     #[test]
     fn test_extract_labels() {
         let cols = vec![
-            EntityColumn {
+            SqlEntityColumn {
                 label: "qux".to_string(),
                 descriptor: "bar".to_string(),
                 description: None,
             },
-            EntityColumn {
+            SqlEntityColumn {
                 label: "foo".to_string(),
                 descriptor: "bar".to_string(),
                 description: None,
             },
-            EntityColumn {
+            SqlEntityColumn {
                 label: "foo".to_string(),
                 descriptor: "baz".to_string(),
                 description: None,
@@ -191,17 +191,17 @@ mod tests {
     #[test]
     fn test_extract_descriptors() {
         let cols = vec![
-            EntityColumn {
+            SqlEntityColumn {
                 label: "foo".to_string(),
                 descriptor: "bar".to_string(),
                 description: None,
             },
-            EntityColumn {
+            SqlEntityColumn {
                 label: "foo".to_string(),
                 descriptor: "baz".to_string(),
                 description: None,
             },
-            EntityColumn {
+            SqlEntityColumn {
                 label: "qux".to_string(),
                 descriptor: "bar".to_string(),
                 description: None,
