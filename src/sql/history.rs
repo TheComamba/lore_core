@@ -1,6 +1,9 @@
 use ::diesel::prelude::*;
 
-use crate::errors::{sql_loading_error, LoreCoreError};
+use crate::{
+    errors::{sql_loading_error, LoreCoreError},
+    types::history::HistoryItem,
+};
 
 use super::{
     lore_database::LoreDatabase, schema::history_items, search_params::HistoryItemSearchParams,
@@ -8,9 +11,10 @@ use super::{
 };
 
 impl LoreDatabase {
-    pub fn write_history_items(&self, cols: Vec<SqlHistoryItem>) -> Result<(), LoreCoreError> {
+    pub fn write_history_items(&self, cols: Vec<HistoryItem>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         for col in cols.into_iter() {
+            let col = col.to_sql_history_item();
             diesel::insert_into(history_items::table)
                 .values(&col)
                 .execute(&mut connection)
@@ -92,7 +96,7 @@ impl LoreDatabase {
     pub fn read_history_items(
         &self,
         search_params: HistoryItemSearchParams,
-    ) -> Result<Vec<SqlHistoryItem>, LoreCoreError> {
+    ) -> Result<Vec<HistoryItem>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = history_items::table.into_boxed();
         let year = search_params.year;
@@ -115,9 +119,14 @@ impl LoreDatabase {
                 query = query.filter(history_items::content.like(content.search_pattern()));
             }
         }
-        let mut items = query.load::<SqlHistoryItem>(&mut connection).map_err(|e| {
-            sql_loading_error("history items", vec![("year", &year), ("day", &day)], e)
-        })?;
+        let mut items: Vec<_> = query
+            .load::<SqlHistoryItem>(&mut connection)
+            .map_err(|e| {
+                sql_loading_error("history items", vec![("year", &year), ("day", &day)], e)
+            })?
+            .into_iter()
+            .map(|item| item.to_history_item())
+            .collect();
         items.sort();
         Ok(items)
     }

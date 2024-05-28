@@ -4,6 +4,7 @@ use diesel::RunQueryDsl;
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
     sql::schema::entities,
+    types::entity::EntityColumn,
 };
 
 use super::{
@@ -12,9 +13,10 @@ use super::{
 };
 
 impl LoreDatabase {
-    pub fn write_entity_columns(&self, cols: Vec<SqlEntityColumn>) -> Result<(), LoreCoreError> {
+    pub fn write_entity_columns(&self, cols: Vec<EntityColumn>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         for col in cols.into_iter() {
+            let col = col.to_sql_entity_column();
             diesel::insert_into(entities::table)
                 .values(&col)
                 .execute(&mut connection)
@@ -116,7 +118,7 @@ impl LoreDatabase {
     pub fn read_entity_columns(
         &self,
         search_params: EntityColumnSearchParams,
-    ) -> Result<Vec<SqlEntityColumn>, LoreCoreError> {
+    ) -> Result<Vec<EntityColumn>, LoreCoreError> {
         let mut connection = self.db_connection()?;
         let mut query = entities::table.into_boxed();
         let label = search_params.label;
@@ -135,7 +137,7 @@ impl LoreDatabase {
                 query = query.filter(entities::descriptor.like(descriptor.search_pattern()));
             }
         }
-        let mut cols = query
+        let mut cols: Vec<_> = query
             .load::<SqlEntityColumn>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
@@ -143,7 +145,10 @@ impl LoreDatabase {
                     vec![("label", &label), ("descriptor", &descriptor)],
                     e,
                 )
-            })?;
+            })?
+            .into_iter()
+            .map(|c| c.to_entity_column())
+            .collect();
         cols.sort();
         Ok(cols)
     }

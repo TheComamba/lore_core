@@ -3,7 +3,6 @@ mod tests {
     use lorecore::c_api::{
         auxil::{char_pointer_to_string, string_to_char_pointer},
         c_api::*,
-        types::{CEntityColumn, CEntityRelationship, CHistoryItem},
     };
     use tempfile::NamedTempFile;
 

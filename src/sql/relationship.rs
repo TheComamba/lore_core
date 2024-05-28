@@ -31,12 +31,13 @@ impl LoreDatabase {
         new_role: &Option<String>,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
+        let old_relationship = old_relationship.to_sql_entity_relationship();
         diesel::update(
             relationships::table.filter(
                 relationships::parent
                     .eq(old_relationship.parent)
                     .and(relationships::child.eq(old_relationship.child))
-                    .and(relationships::role.eq(role_to_sql(&old_relationship.role))),
+                    .and(relationships::role.eq(old_relationship.role)),
             ),
         )
         .set(relationships::role.eq(role_to_sql(new_role)))
@@ -54,12 +55,13 @@ impl LoreDatabase {
         relationship: EntityRelationship,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
+        let relationship = relationship.to_sql_entity_relationship();
         diesel::delete(
             relationships::table.filter(
                 relationships::parent
                     .eq(relationship.parent)
                     .and(relationships::child.eq(relationship.child))
-                    .and(relationships::role.eq(role_to_sql(&relationship.role))),
+                    .and(relationships::role.eq(relationship.role)),
             ),
         )
         .execute(&mut connection)

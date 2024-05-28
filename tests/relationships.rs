@@ -1,7 +1,9 @@
-use lorecore::sql::{
-    lore_database::LoreDatabase,
-    relationship::EntityRelationship,
-    search_params::{RelationshipSearchParams, SqlSearchText},
+use lorecore::{
+    sql::{
+        lore_database::LoreDatabase,
+        search_params::{RelationshipSearchParams, SqlSearchText},
+    },
+    types::relationship::EntityRelationship,
 };
 use std::path::PathBuf;
 use tempfile::NamedTempFile;

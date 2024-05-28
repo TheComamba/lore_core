@@ -1,7 +1,7 @@
-use lorecore::sql::history::HistoryItem;
 use lorecore::sql::lore_database::LoreDatabase;
 use lorecore::sql::search_params::{HistoryItemSearchParams, SqlSearchText};
 use lorecore::timestamp::current_timestamp;
+use lorecore::types::history::HistoryItem;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
 
@@ -84,7 +84,7 @@ fn get_all_history_items() {
 fn get_history_items_by_year() {
     let (temp_path, db, items) = create_example();
     let year = items[0].year;
-    let expected_items: Vec<_> = items.iter().filter(|item| item.year == year).collect();
+    let expected_items: Vec<_> = items.into_iter().filter(|item| item.year == year).collect();
 
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
@@ -98,7 +98,7 @@ fn get_history_items_by_year() {
 fn get_history_items_by_day() {
     let (temp_path, db, items) = create_example();
     let day = items[0].day;
-    let expected_items: Vec<_> = items.iter().filter(|item| item.day == day).collect();
+    let expected_items: Vec<_> = items.into_iter().filter(|item| item.day == day).collect();
 
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(None, day, None, None))
@@ -132,7 +132,7 @@ fn get_history_itmes_with_content_filter() {
     let (temp_path, db, items) = create_example();
     let content = "tent1".to_string();
     let expected_items: Vec<_> = items
-        .iter()
+        .into_iter()
         .filter(|item| item.content.contains(content.as_str()))
         .collect();
     let content_search = SqlSearchText::partial(&content);
@@ -155,7 +155,7 @@ fn get_history_itmes_with_exact_content_filter() {
     let (temp_path, db, items) = create_example();
     let content = "testcontent1".to_string();
     let expected_items: Vec<_> = items
-        .iter()
+        .into_iter()
         .filter(|item| item.content == content)
         .collect();
     let content_search = SqlSearchText::exact(&content);
@@ -179,7 +179,7 @@ fn get_history_items_by_year_and_day() {
     let year = items[0].year;
     let day = items[0].day;
     let expected_items: Vec<_> = items
-        .iter()
+        .into_iter()
         .filter(|item| item.year == year && item.day == day)
         .collect();
 

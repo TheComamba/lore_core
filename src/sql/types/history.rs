@@ -1,6 +1,6 @@
 use diesel::{Insertable, Queryable};
 
-use crate::sql::schema::history_items;
+use crate::{sql::schema::history_items, types::history::HistoryItem};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
 #[diesel(table_name = history_items)]
@@ -19,5 +19,29 @@ impl PartialEq<&SqlHistoryItem> for SqlHistoryItem {
             && self.day == other.day
             && self.content == other.content
             && self.properties == other.properties
+    }
+}
+
+impl HistoryItem {
+    pub(crate) fn to_sql_history_item(&self) -> SqlHistoryItem {
+        SqlHistoryItem {
+            timestamp: self.timestamp,
+            year: self.year,
+            day: self.day,
+            content: self.content.clone(),
+            properties: self.properties.clone(),
+        }
+    }
+}
+
+impl SqlHistoryItem {
+    pub(crate) fn to_history_item(&self) -> HistoryItem {
+        HistoryItem {
+            timestamp: self.timestamp,
+            year: self.year,
+            day: self.day,
+            content: self.content.clone(),
+            properties: self.properties.clone(),
+        }
     }
 }

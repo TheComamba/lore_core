@@ -1,5 +1,5 @@
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) struct HistoryItem {
+pub struct HistoryItem {
     pub timestamp: i64,
     pub year: i32,
     pub day: Option<i32>,
