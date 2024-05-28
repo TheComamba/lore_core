@@ -1,6 +1,6 @@
 use lorecore::sql::{
     lore_database::LoreDatabase,
-    relationships::EntityRelationship,
+    relationship::EntityRelationship,
     search_params::{RelationshipSearchParams, SqlSearchText},
 };
 use std::path::PathBuf;
