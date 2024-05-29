@@ -1,4 +1,4 @@
-pub mod auxil;
+mod auxil;
 pub mod c_api;
 mod read_database;
 mod types;

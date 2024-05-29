@@ -4,7 +4,9 @@ use std::ffi::{CStr, CString};
 /// # Safety
 ///
 /// `string` must be a valid C string.
-pub unsafe fn char_pointer_to_string(string: *const libc::c_char) -> Result<String, LoreCoreError> {
+pub(super) unsafe fn char_pointer_to_string(
+    string: *const libc::c_char,
+) -> Result<String, LoreCoreError> {
     if string.is_null() {
         return Err(LoreCoreError::InputError(
             "Characterpointer is null.".to_string(),
@@ -29,7 +31,7 @@ pub(super) unsafe fn char_pointer_to_optional_string(
     })
 }
 
-pub fn string_to_char_pointer(string: &str) -> *const libc::c_char {
+pub(super) fn string_to_char_pointer(string: &str) -> *const libc::c_char {
     CString::new(string).unwrap().into_raw()
 }
 
