@@ -14,9 +14,9 @@ fn write_single_relationship() {
     let path_in: PathBuf = temp_path.as_os_str().into();
     let db = LoreDatabase::open(path_in.clone()).unwrap();
     let rel = EntityRelationship {
-        parent: "testparent".to_string(),
-        child: "testchild".to_string(),
-        role: Some("testrole".to_string()),
+        parent: "testparent".into(),
+        child: "testchild".into(),
+        role: "testrole".into(),
     };
     db.write_relationships(vec![rel.clone()]).unwrap();
     let rel_out = db
@@ -54,9 +54,9 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<EntityRelationship
         for child in children.iter() {
             for role in roles.iter() {
                 rels.push(EntityRelationship {
-                    parent: parent.clone(),
-                    child: child.clone(),
-                    role: role.clone(),
+                    parent: parent.as_str().into(),
+                    child: child.as_str().into(),
+                    role: role.clone().into(),
                 });
             }
         }
@@ -79,9 +79,9 @@ fn writing_several_roles_to_same_relationship() {
     let mut rels: Vec<EntityRelationship> = Vec::new();
     for role in roles.iter() {
         rels.push(EntityRelationship {
-            parent: parent.clone(),
-            child: child.clone(),
-            role: Some(role.clone()),
+            parent: parent.as_str().into(),
+            child: child.as_str().into(),
+            role: role.clone().into(),
         });
     }
 
@@ -129,7 +129,7 @@ fn get_relationships_with_parent_filter_rent1_returns_some() {
     let (temp_path, db, rels) = create_example();
     let expected = rels
         .iter()
-        .filter(|rel| rel.parent == "testparent1".to_string())
+        .filter(|rel| rel.parent == "testparent1".into())
         .cloned()
         .collect::<Vec<_>>();
 
