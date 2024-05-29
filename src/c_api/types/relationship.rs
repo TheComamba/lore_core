@@ -1,8 +1,5 @@
 use crate::{
-    c_api::auxil::{
-        char_pointer_to_optional_string, char_pointer_to_string, optional_string_to_char_pointer,
-        string_to_char_pointer,
-    },
+    c_api::auxil::{char_pointer_to_string, string_to_char_pointer},
     errors::LoreCoreError,
     types::relationship::EntityRelationship,
 };
@@ -17,9 +14,9 @@ pub struct CEntityRelationship {
 
 fn to_c_relationship(rel: &EntityRelationship) -> Result<CEntityRelationship, LoreCoreError> {
     Ok(CEntityRelationship {
-        parent: string_to_char_pointer(&rel.parent),
-        child: string_to_char_pointer(&rel.child),
-        role: optional_string_to_char_pointer(&rel.role),
+        parent: string_to_char_pointer(&rel.parent.to_str()),
+        child: string_to_char_pointer(&rel.child.to_str()),
+        role: string_to_char_pointer(&rel.role.to_str()),
     })
 }
 
@@ -33,9 +30,9 @@ impl TryFrom<EntityRelationship> for CEntityRelationship {
 
 unsafe fn to_relationship(rel: &CEntityRelationship) -> Result<EntityRelationship, LoreCoreError> {
     Ok(EntityRelationship {
-        parent: char_pointer_to_string(rel.parent)?,
-        child: char_pointer_to_string(rel.child)?,
-        role: char_pointer_to_optional_string(rel.role)?,
+        parent: char_pointer_to_string(rel.parent)?.into(),
+        child: char_pointer_to_string(rel.child)?.into(),
+        role: char_pointer_to_string(rel.role)?.into(),
     })
 }
 
@@ -64,9 +61,9 @@ mod tests {
             for child in &children {
                 for role in &roles {
                     let rel_before = EntityRelationship {
-                        parent: parent.to_string(),
-                        child: child.to_string(),
-                        role: role.clone(),
+                        parent: (*parent).into(),
+                        child: (*child).into(),
+                        role: role.clone().into(),
                     };
                     let c_rel = to_c_relationship(&rel_before).unwrap();
                     let rel_after = unsafe { to_relationship(&c_rel).unwrap() };
