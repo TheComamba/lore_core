@@ -318,8 +318,8 @@ fn test_setting_year() {
 
     let updated_item = db
         .read_history_items(HistoryItemSearchParams::new(
-            Some(new_year),
-            Some(item.day),
+            None,
+            None,
             Some(item.timestamp),
             None,
         ))
