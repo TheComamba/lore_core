@@ -27,7 +27,7 @@ impl HistoryItem {
         SqlHistoryItem {
             timestamp: self.timestamp,
             year: self.year,
-            day: self.day,
+            day: self.day.to_optional_signed_int(),
             content: self.content.clone(),
             properties: self.properties.clone(),
         }
@@ -39,7 +39,7 @@ impl SqlHistoryItem {
         HistoryItem {
             timestamp: self.timestamp,
             year: self.year,
-            day: self.day,
+            day: self.day.into(),
             content: self.content.clone(),
             properties: self.properties.clone(),
         }

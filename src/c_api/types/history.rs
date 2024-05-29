@@ -12,7 +12,7 @@ use crate::{
 pub struct CHistoryItem {
     pub timestamp: i64,
     pub year: i32,
-    pub day: i32,
+    pub day: u32,
     pub content: *const libc::c_char,
     pub properties: *const libc::c_char,
 }
@@ -21,7 +21,7 @@ fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, LoreCoreError> 
     Ok(CHistoryItem {
         timestamp: item.timestamp,
         year: item.year,
-        day: if let Some(day) = item.day { day } else { 0 },
+        day: item.day.to_int(),
         content: string_to_char_pointer(&item.content),
         properties: optional_string_to_char_pointer(&item.properties),
     })
@@ -39,7 +39,7 @@ unsafe fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreEr
     Ok(HistoryItem {
         timestamp: item.timestamp,
         year: item.year,
-        day: if item.day > 0 { Some(item.day) } else { None },
+        day: item.day.into(),
         content: char_pointer_to_string(item.content)?,
         properties: char_pointer_to_optional_string(item.properties)?,
     })
@@ -57,12 +57,12 @@ impl TryFrom<&CHistoryItem> for HistoryItem {
 mod tests {
     use super::*;
 
-    use crate::timestamp::current_timestamp;
+    use crate::{timestamp::current_timestamp, types::day::Day};
 
     #[test]
     fn history_item_roundtrips() {
         let years = vec![-13, 2021];
-        let days = vec![None, Some(14)];
+        let days = vec![Day(None), Day(Some(14))];
         let contents = vec!["", "Test content", "\\_\"'%$&!{[]}"];
         let properties = vec![
             None,

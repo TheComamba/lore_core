@@ -1,6 +1,7 @@
 use lorecore::sql::lore_database::LoreDatabase;
 use lorecore::sql::search_params::{HistoryItemSearchParams, SqlSearchText};
 use lorecore::timestamp::current_timestamp;
+use lorecore::types::day::Day;
 use lorecore::types::history::HistoryItem;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
@@ -12,7 +13,7 @@ fn write_single_history_item() {
     let db = LoreDatabase::open(path_in.clone()).unwrap();
     let item = HistoryItem {
         year: 2020,
-        day: Some(1),
+        day: 1.into(),
         timestamp: current_timestamp(),
         content: "testcontent".to_string(),
         properties: None,
@@ -32,7 +33,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<HistoryItem>) {
     let db = LoreDatabase::open(path_in.clone()).unwrap();
 
     let years = vec![-13, 0, 2021];
-    let days = vec![Some(1), None];
+    let days: Vec<Day> = vec![1.into(), Day::NONE];
     let contents = vec!["testcontent1".to_string(), "testcontent2".to_string()];
     let properties = vec![Some("{\"is_secret\": true}".to_string()), None];
     let mut items: Vec<HistoryItem> = Vec::new();
@@ -87,7 +88,12 @@ fn get_history_items_by_year() {
     let expected_items: Vec<_> = items.into_iter().filter(|item| item.year == year).collect();
 
     let items_out = db
-        .read_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
+        .read_history_items(HistoryItemSearchParams::new(
+            Some(year),
+            Day::NONE,
+            None,
+            None,
+        ))
         .unwrap();
     assert!(items_out == expected_items);
 
@@ -116,7 +122,7 @@ fn get_history_item_by_timestamp() {
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(
             None,
-            None,
+            Day::NONE,
             Some(timestamp),
             None,
         ))
@@ -140,7 +146,7 @@ fn get_history_itmes_with_content_filter() {
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(
             None,
-            None,
+            Day::NONE,
             None,
             Some(content_search),
         ))
@@ -163,7 +169,7 @@ fn get_history_itmes_with_exact_content_filter() {
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(
             None,
-            None,
+            Day::NONE,
             None,
             Some(content_search),
         ))
@@ -197,7 +203,12 @@ fn search_for_non_existing_year() {
 
     let year = 65537;
     let items_out = db
-        .read_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
+        .read_history_items(HistoryItemSearchParams::new(
+            Some(year),
+            Day::NONE,
+            None,
+            None,
+        ))
         .unwrap();
     assert!(items_out.len() == 0);
 
@@ -208,7 +219,7 @@ fn search_for_non_existing_year() {
 fn search_for_non_existing_day() {
     let (temp_path, db, _items) = create_example();
 
-    let day = Some(65537);
+    let day = 65537.into();
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(None, day, None, None))
         .unwrap();
@@ -225,7 +236,7 @@ fn search_for_non_existing_timestamp() {
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(
             None,
-            None,
+            Day::NONE,
             Some(timestamp),
             None,
         ))
@@ -244,7 +255,7 @@ fn search_for_non_existing_content() {
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(
             None,
-            None,
+            Day::NONE,
             None,
             Some(content_search),
         ))
@@ -261,7 +272,7 @@ fn test_write_read_history_after_db_deletion() {
 
     let write_result = db.write_history_items(vec![HistoryItem {
         year: 2020,
-        day: Some(1),
+        day: 1.into(),
         timestamp: current_timestamp(),
         content: "testcontent".to_string(),
         properties: None,
@@ -271,7 +282,8 @@ fn test_write_read_history_after_db_deletion() {
         "Expected an error when writing to a deleted database"
     );
 
-    let read_result = db.read_history_items(HistoryItemSearchParams::new(None, None, None, None));
+    let read_result =
+        db.read_history_items(HistoryItemSearchParams::new(None, Day::NONE, None, None));
     assert!(
         read_result.is_err(),
         "Expected an error when reading from a deleted database"
@@ -313,7 +325,7 @@ fn test_setting_day_to_some() {
 
     let item = HistoryItem {
         year: 12,
-        day: None,
+        day: Day::NONE,
         timestamp: current_timestamp(),
         content: "testcontent".to_string(),
         properties: None,
@@ -322,7 +334,7 @@ fn test_setting_day_to_some() {
     db.write_history_items(vec![item.clone()].clone()).unwrap();
 
     let old_day = item.day;
-    let new_day = Some(12345);
+    let new_day = 12345.into();
 
     db.redate_history_item(item.timestamp, item.year, new_day)
         .unwrap();
@@ -352,7 +364,7 @@ fn test_setting_day_to_none() {
 
     let item = HistoryItem {
         year: 12,
-        day: Some(34),
+        day: 34.into(),
         timestamp: current_timestamp(),
         content: "testcontent".to_string(),
         properties: None,
@@ -361,7 +373,7 @@ fn test_setting_day_to_none() {
     db.write_history_items(vec![item.clone()].clone()).unwrap();
 
     let old_day = item.day;
-    let new_day = None;
+    let new_day = Day::NONE;
 
     db.redate_history_item(item.timestamp, item.year, new_day)
         .unwrap();
@@ -391,7 +403,7 @@ fn test_delete_history_item() {
     db.delete_history_item(item.timestamp).unwrap();
 
     let items_out = db
-        .read_history_items(HistoryItemSearchParams::new(None, None, None, None))
+        .read_history_items(HistoryItemSearchParams::new(None, Day::NONE, None, None))
         .unwrap();
 
     assert!(!items_out.contains(&item));
@@ -411,7 +423,7 @@ fn test_change_history_item_content() {
     let updated_item = db
         .read_history_items(HistoryItemSearchParams::new(
             None,
-            None,
+            Day::NONE,
             Some(item.timestamp),
             None,
         ))
@@ -436,7 +448,7 @@ fn test_changing_history_item_properties_to_some() {
     let updated_item = db
         .read_history_items(HistoryItemSearchParams::new(
             None,
-            None,
+            Day::NONE,
             Some(item.timestamp),
             None,
         ))
@@ -461,7 +473,7 @@ fn test_changing_history_item_properties_to_none() {
     let updated_item = db
         .read_history_items(HistoryItemSearchParams::new(
             None,
-            None,
+            Day::NONE,
             Some(item.timestamp),
             None,
         ))

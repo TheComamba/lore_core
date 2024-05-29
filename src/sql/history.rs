@@ -2,7 +2,7 @@ use ::diesel::prelude::*;
 
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
-    types::history::HistoryItem,
+    types::{day::Day, history::HistoryItem},
 };
 
 use super::{
@@ -31,11 +31,14 @@ impl LoreDatabase {
         &self,
         timestamp: i64,
         year: i32,
-        day: Option<i32>,
+        day: Day,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::update(history_items::table.filter(history_items::timestamp.eq(timestamp)))
-            .set((history_items::year.eq(year), history_items::day.eq(day)))
+            .set((
+                history_items::year.eq(year),
+                history_items::day.eq(day.to_optional_signed_int()),
+            ))
             .execute(&mut connection)
             .map_err(|e| {
                 LoreCoreError::SqlError(
@@ -105,7 +108,7 @@ impl LoreDatabase {
         }
         let day = search_params.day;
         if day.is_some() {
-            query = query.filter(history_items::day.eq(day));
+            query = query.filter(history_items::day.eq(day.to_optional_signed_int()));
         }
         let timestamp = search_params.timestamp;
         if let Some(timestamp) = timestamp {
@@ -122,7 +125,11 @@ impl LoreDatabase {
         let mut items: Vec<_> = query
             .load::<SqlHistoryItem>(&mut connection)
             .map_err(|e| {
-                sql_loading_error("history items", vec![("year", &year), ("day", &day)], e)
+                sql_loading_error(
+                    "history items",
+                    vec![("year", &year), ("day", &day.to_optional_signed_int())],
+                    e,
+                )
             })?
             .into_iter()
             .map(|item| item.to_history_item())
@@ -139,8 +146,8 @@ pub fn extract_years(items: &[SqlHistoryItem]) -> Vec<i32> {
     years
 }
 
-pub fn extract_days(items: &[SqlHistoryItem]) -> Vec<Option<i32>> {
-    let mut days: Vec<_> = items.iter().map(|item| item.day).collect();
+pub fn extract_days(items: &[SqlHistoryItem]) -> Vec<Day> {
+    let mut days: Vec<_> = items.iter().map(|item| item.day.into()).collect();
     days.sort();
     days.dedup();
     days
