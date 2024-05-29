@@ -249,7 +249,7 @@ fn search_for_non_existing_day() {
 fn search_for_non_existing_timestamp() {
     let (temp_path, db, _items) = create_example();
 
-    let timestamp = 65537;
+    let timestamp = 65537.into();
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(
             None,

@@ -25,7 +25,7 @@ impl PartialEq<&SqlHistoryItem> for SqlHistoryItem {
 impl HistoryItem {
     pub(crate) fn to_sql_history_item(&self) -> SqlHistoryItem {
         SqlHistoryItem {
-            timestamp: self.timestamp,
+            timestamp: self.timestamp.to_int(),
             year: self.year.to_int(),
             day: self.day.to_optional_signed_int(),
             content: self.content.clone(),
@@ -37,7 +37,7 @@ impl HistoryItem {
 impl SqlHistoryItem {
     pub(crate) fn to_history_item(&self) -> HistoryItem {
         HistoryItem {
-            timestamp: self.timestamp,
+            timestamp: self.timestamp.into(),
             year: self.year.into(),
             day: self.day.into(),
             content: self.content.clone(),

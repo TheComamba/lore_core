@@ -1,8 +1,8 @@
-use super::{day::Day, year::Year};
+use super::{day::Day, timestamp::Timestamp, year::Year};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct HistoryItem {
-    pub timestamp: i64, //TODO: Use stronger typing
+    pub timestamp: Timestamp,
     pub year: Year,
     pub day: Day,
     pub content: String,            //TODO: Use stronger typing

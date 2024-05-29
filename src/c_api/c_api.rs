@@ -179,5 +179,5 @@ pub unsafe extern "C" fn read_relationships(
 
 #[no_mangle]
 pub extern "C" fn get_current_timestamp() -> i64 {
-    current_timestamp()
+    current_timestamp().to_int()
 }

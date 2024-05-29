@@ -19,7 +19,7 @@ pub struct CHistoryItem {
 
 fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, LoreCoreError> {
     Ok(CHistoryItem {
-        timestamp: item.timestamp,
+        timestamp: item.timestamp.to_int(),
         year: item.year.to_int(),
         day: item.day.to_int(),
         content: string_to_char_pointer(&item.content),
@@ -37,7 +37,7 @@ impl TryFrom<HistoryItem> for CHistoryItem {
 
 unsafe fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
     Ok(HistoryItem {
-        timestamp: item.timestamp,
+        timestamp: item.timestamp.into(),
         year: item.year.into(),
         day: item.day.into(),
         content: char_pointer_to_string(item.content)?,
