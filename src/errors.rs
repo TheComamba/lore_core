@@ -13,13 +13,12 @@ impl ToString for LoreCoreError {
     }
 }
 
-pub(super) fn sql_loading_error<T, E>(
+pub(super) fn sql_loading_error<E>(
     loadee: &str,
-    params: Vec<(&str, &T)>,
+    params: Vec<(&str, &dyn Debug)>,
     err: E,
 ) -> LoreCoreError
 where
-    T: Debug,
     E: Display,
 {
     let mut message = "Loading ".to_string() + loadee + " ";

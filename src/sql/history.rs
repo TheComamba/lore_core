@@ -125,11 +125,7 @@ impl LoreDatabase {
         let mut items: Vec<_> = query
             .load::<SqlHistoryItem>(&mut connection)
             .map_err(|e| {
-                sql_loading_error(
-                    "history items",
-                    vec![("year", &year), ("day", &day.to_optional_signed_int())],
-                    e,
-                )
+                sql_loading_error("history items", vec![("year", &year), ("day", &day)], e)
             })?
             .into_iter()
             .map(|item| item.to_history_item())
