@@ -2,7 +2,7 @@ use ::diesel::prelude::*;
 
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
-    types::{day::Day, history::HistoryItem},
+    types::{day::Day, history::HistoryItem, year::Year},
 };
 
 use super::{
@@ -30,13 +30,13 @@ impl LoreDatabase {
     pub fn redate_history_item(
         &self,
         timestamp: i64,
-        year: i32,
+        year: Year,
         day: Day,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::update(history_items::table.filter(history_items::timestamp.eq(timestamp)))
             .set((
-                history_items::year.eq(year),
+                history_items::year.eq(year.to_int()),
                 history_items::day.eq(day.to_optional_signed_int()),
             ))
             .execute(&mut connection)
@@ -104,10 +104,10 @@ impl LoreDatabase {
         let mut query = history_items::table.into_boxed();
         let year = search_params.year;
         if let Some(year) = year {
-            query = query.filter(history_items::year.eq(year));
+            query = query.filter(history_items::year.eq(year.to_int()));
         }
         let day = search_params.day;
-        if day.is_some() {
+        if let Some(day) = day {
             query = query.filter(history_items::day.eq(day.to_optional_signed_int()));
         }
         let timestamp = search_params.timestamp;

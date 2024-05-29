@@ -3,6 +3,7 @@ use lorecore::sql::search_params::{HistoryItemSearchParams, SqlSearchText};
 use lorecore::timestamp::current_timestamp;
 use lorecore::types::day::Day;
 use lorecore::types::history::HistoryItem;
+use lorecore::types::year::Year;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
 
@@ -12,7 +13,7 @@ fn write_single_history_item() {
     let path_in: PathBuf = temp_path.as_os_str().into();
     let db = LoreDatabase::open(path_in.clone()).unwrap();
     let item = HistoryItem {
-        year: 2020,
+        year: 2020.into(),
         day: 1.into(),
         timestamp: current_timestamp(),
         content: "testcontent".to_string(),
@@ -32,7 +33,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<HistoryItem>) {
     let path_in: PathBuf = temp_path.as_os_str().into();
     let db = LoreDatabase::open(path_in.clone()).unwrap();
 
-    let years = vec![-13, 0, 2021];
+    let years: Vec<Year> = vec![(-13 as i32).into(), 0.into(), 2021.into()];
     let days: Vec<Day> = vec![1.into(), Day::NONE];
     let contents = vec!["testcontent1".to_string(), "testcontent2".to_string()];
     let properties = vec![Some("{\"is_secret\": true}".to_string()), None];

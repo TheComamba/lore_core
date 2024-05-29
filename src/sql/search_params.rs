@@ -1,4 +1,4 @@
-use crate::types::day::Day;
+use crate::types::{day::Day, year::Year};
 
 #[derive(Debug)]
 pub struct SqlSearchText {
@@ -76,16 +76,16 @@ impl EntityColumnSearchParams {
 
 #[derive(Debug)]
 pub struct HistoryItemSearchParams {
-    pub(crate) year: Option<i32>,
-    pub(crate) day: Day,
+    pub(crate) year: Option<Year>,
+    pub(crate) day: Option<Day>,
     pub(crate) timestamp: Option<i64>,
     pub(crate) content: SqlSearchText,
 }
 
 impl HistoryItemSearchParams {
     pub fn new(
-        year: Option<i32>,
-        day: Day,
+        year: Option<Year>,
+        day: Option<Day>,
         timestamp: Option<i64>,
         content: Option<SqlSearchText>,
     ) -> Self {
@@ -104,7 +104,7 @@ impl HistoryItemSearchParams {
     pub fn empty() -> Self {
         Self {
             year: None,
-            day: Day(None),
+            day: None,
             timestamp: None,
             content: SqlSearchText::empty(),
         }

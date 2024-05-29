@@ -20,7 +20,7 @@ pub struct CHistoryItem {
 fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, LoreCoreError> {
     Ok(CHistoryItem {
         timestamp: item.timestamp,
-        year: item.year,
+        year: item.year.to_int(),
         day: item.day.to_int(),
         content: string_to_char_pointer(&item.content),
         properties: optional_string_to_char_pointer(&item.properties),
@@ -38,7 +38,7 @@ impl TryFrom<HistoryItem> for CHistoryItem {
 unsafe fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
     Ok(HistoryItem {
         timestamp: item.timestamp,
-        year: item.year,
+        year: item.year.into(),
         day: item.day.into(),
         content: char_pointer_to_string(item.content)?,
         properties: char_pointer_to_optional_string(item.properties)?,
@@ -57,11 +57,14 @@ impl TryFrom<&CHistoryItem> for HistoryItem {
 mod tests {
     use super::*;
 
-    use crate::{timestamp::current_timestamp, types::day::Day};
+    use crate::{
+        timestamp::current_timestamp,
+        types::{day::Day, year::Year},
+    };
 
     #[test]
     fn history_item_roundtrips() {
-        let years = vec![-13, 2021];
+        let years = vec![Year(-13), Year(2021)];
         let days = vec![Day(None), Day(Some(14))];
         let contents = vec!["", "Test content", "\\_\"'%$&!{[]}"];
         let properties = vec![
