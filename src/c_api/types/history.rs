@@ -22,7 +22,7 @@ fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, LoreCoreError> 
         timestamp: item.timestamp.to_int(),
         year: item.year.to_int(),
         day: item.day.to_int(),
-        content: string_to_char_pointer(&item.content),
+        content: string_to_char_pointer(item.content.to_str()),
         properties: optional_string_to_char_pointer(&item.properties),
     })
 }
@@ -40,7 +40,7 @@ unsafe fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreEr
         timestamp: item.timestamp.into(),
         year: item.year.into(),
         day: item.day.into(),
-        content: char_pointer_to_string(item.content)?,
+        content: char_pointer_to_string(item.content)?.into(),
         properties: char_pointer_to_optional_string(item.properties)?,
     })
 }
@@ -80,7 +80,7 @@ mod tests {
                             timestamp: current_timestamp(),
                             year,
                             day: *day,
-                            content: content.to_string(),
+                            content: (*content).into(),
                             properties: property.clone(),
                         };
                         let c_item = to_c_history_item(&item_before).unwrap();

@@ -16,7 +16,7 @@ fn write_single_history_item() {
         year: 2020.into(),
         day: 1.into(),
         timestamp: current_timestamp(),
-        content: "testcontent".to_string(),
+        content: "testcontent".into(),
         properties: None,
     };
     db.write_history_items(vec![item.clone()]).unwrap();
@@ -46,7 +46,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<HistoryItem>) {
                         year: *year,
                         day: day.clone(),
                         timestamp: current_timestamp(),
-                        content: content.clone(),
+                        content: content.as_str().into(),
                         properties: property.clone(),
                     });
                 }
@@ -156,7 +156,7 @@ fn get_history_itmes_with_content_filter() {
     let content = "tent1".to_string();
     let expected_items: Vec<_> = items
         .into_iter()
-        .filter(|item| item.content.contains(content.as_str()))
+        .filter(|item| item.content.to_string().contains(content.as_str()))
         .collect();
     let content_search = SqlSearchText::partial(&content);
 
@@ -179,7 +179,7 @@ fn get_history_itmes_with_exact_content_filter() {
     let content = "testcontent1".to_string();
     let expected_items: Vec<_> = items
         .into_iter()
-        .filter(|item| item.content == content)
+        .filter(|item| item.content.to_str() == content)
         .collect();
     let content_search = SqlSearchText::exact(&content);
 
@@ -291,7 +291,7 @@ fn test_write_read_history_after_db_deletion() {
         year: 2020.into(),
         day: 1.into(),
         timestamp: current_timestamp(),
-        content: "testcontent".to_string(),
+        content: "testcontent".into(),
         properties: None,
     }]);
     assert!(
@@ -343,7 +343,7 @@ fn test_setting_day_to_some() {
         year: 12.into(),
         day: Day::NONE,
         timestamp: current_timestamp(),
-        content: "testcontent".to_string(),
+        content: "testcontent".into(),
         properties: None,
     };
 
@@ -382,7 +382,7 @@ fn test_setting_day_to_none() {
         year: 12.into(),
         day: 34.into(),
         timestamp: current_timestamp(),
-        content: "testcontent".to_string(),
+        content: "testcontent".into(),
         properties: None,
     };
 
@@ -431,7 +431,7 @@ fn test_delete_history_item() {
 fn test_change_history_item_content() {
     let (temp_path, db, mut items) = create_example();
     let item = items.pop().unwrap();
-    let new_content = "New_Content".to_string();
+    let new_content = "New_Content".into();
 
     db.change_history_item_content(item.timestamp, &new_content)
         .unwrap();

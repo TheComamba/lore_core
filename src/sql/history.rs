@@ -2,7 +2,10 @@ use ::diesel::prelude::*;
 
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
-    types::{day::Day, history::HistoryItem, timestamp::Timestamp, year::Year},
+    types::{
+        day::Day, history::HistoryItem, history_item_content::HistoryItemContent,
+        timestamp::Timestamp, year::Year,
+    },
 };
 
 use super::{
@@ -67,13 +70,13 @@ impl LoreDatabase {
     pub fn change_history_item_content(
         &self,
         timestamp: Timestamp,
-        content: &str,
+        content: &HistoryItemContent,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::update(
             history_items::table.filter(history_items::timestamp.eq(timestamp.to_int())),
         )
-        .set(history_items::content.eq(content))
+        .set(history_items::content.eq(content.to_str()))
         .execute(&mut connection)
         .map_err(|e| {
             LoreCoreError::SqlError(
