@@ -6,10 +6,6 @@ pub struct Descriptor(pub(crate) String);
 impl Descriptor {
     pub const NONE: Descriptor = Descriptor(String::new());
 
-    pub fn to_string(&self) -> String {
-        self.0.clone()
-    }
-
     pub fn to_str(&self) -> &str {
         &self.0
     }

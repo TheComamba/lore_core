@@ -6,10 +6,6 @@ pub struct Label(pub(crate) String);
 impl Label {
     pub const NONE: Label = Label(String::new());
 
-    pub fn to_string(&self) -> String {
-        self.0.clone()
-    }
-
     pub fn to_str(&self) -> &str {
         &self.0
     }
