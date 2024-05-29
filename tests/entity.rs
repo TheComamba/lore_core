@@ -14,7 +14,7 @@ fn writing_single_entity_column() {
     let path_in: PathBuf = temp_path.as_os_str().into();
     let db = LoreDatabase::open(path_in.clone()).unwrap();
     let entity = EntityColumn {
-        label: "testlabel".to_string(),
+        label: "testlabel".into(),
         descriptor: "testdescriptor".to_string(),
         description: Some("testdescription".to_string()),
     };
@@ -39,7 +39,7 @@ fn write_many_entity_columns() {
     for label in labels.iter() {
         for descriptor in descriptors.iter() {
             entities.push(EntityColumn {
-                label: label.clone(),
+                label: label.as_str().into(),
                 descriptor: descriptor.clone(),
                 description: Some(label.clone() + descriptor),
             });
@@ -64,7 +64,7 @@ fn write_entity_with_empty_description() {
     let path_in: PathBuf = temp_path.as_os_str().into();
     let db = LoreDatabase::open(path_in.clone()).unwrap();
     let entity = EntityColumn {
-        label: "testlabel".to_string(),
+        label: "testlabel".into(),
         descriptor: "testdescriptor".to_string(),
         description: None,
     };
@@ -91,7 +91,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<EntityColumn>) {
     for label in labels.iter() {
         for descriptor in descriptors.iter() {
             entities.push(EntityColumn {
-                label: label.clone(),
+                label: label.as_str().into(),
                 descriptor: descriptor.clone(),
                 description: Some(label.clone() + descriptor),
             });
@@ -135,7 +135,7 @@ fn get_entities_with_label_filter_bel1_returns_some() {
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| e.label == "testlabel1".to_string())
+        .filter(|e| e.label == "testlabel1".into())
         .cloned()
         .collect();
 
@@ -155,7 +155,7 @@ fn get_entities_with_label_filter_testlabel1_returns_some() {
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| e.label == "testlabel1".to_string())
+        .filter(|e| e.label == "testlabel1".into())
         .cloned()
         .collect();
 
@@ -220,7 +220,7 @@ fn get_entities_with_exact_label_filter_testlabel1_returns_some() {
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| e.label == "testlabel1".to_string())
+        .filter(|e| e.label == "testlabel1".into())
         .cloned()
         .collect();
 
@@ -390,9 +390,7 @@ fn get_entities_with_label_filter_bel1_and_descriptor_filter_riptor1_returns_som
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| {
-            e.label == "testlabel1".to_string() && e.descriptor == "testdescriptor1".to_string()
-        })
+        .filter(|e| e.label == "testlabel1".into() && e.descriptor == "testdescriptor1".to_string())
         .cloned()
         .collect();
 
@@ -413,9 +411,7 @@ fn get_entities_with_exact_label_filter_testlabel1_and_exact_descriptor_filter_t
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| {
-            e.label == "testlabel1".to_string() && e.descriptor == "testdescriptor1".to_string()
-        })
+        .filter(|e| e.label == "testlabel1".into() && e.descriptor == "testdescriptor1".to_string())
         .cloned()
         .collect();
 
@@ -435,7 +431,7 @@ fn get_entities_with_exact_label_filter_testlabel1_and_descriptor_filter_riptor_
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| e.label == "testlabel1".to_string())
+        .filter(|e| e.label == "testlabel1".into())
         .cloned()
         .collect();
 
@@ -476,7 +472,7 @@ fn test_write_read_after_db_deletion() {
     temp_path.close().unwrap();
 
     let write_result = db.write_entity_columns(vec![EntityColumn {
-        label: "testlabel".to_string(),
+        label: "testlabel".into(),
         descriptor: "testdescriptor".to_string(),
         description: Some("testdescription".to_string()),
     }]);
@@ -496,7 +492,7 @@ fn test_write_read_after_db_deletion() {
 fn test_relabel_entity() {
     let (temp_path, db, entities) = create_example();
     let old_entity = entities[0].clone();
-    let new_label = "New_Label".to_string();
+    let new_label = "New_Label".into();
 
     // Relabel the entity
     db.relabel_entity(&old_entity.label, &new_label).unwrap();
@@ -504,7 +500,7 @@ fn test_relabel_entity() {
     // Read the entity back from the database
     let updated_entity = db
         .read_entity_columns(EntityColumnSearchParams::new(
-            Some(SqlSearchText::exact(&new_label)),
+            Some(SqlSearchText::exact(&new_label.to_str())),
             None,
         ))
         .unwrap();
@@ -526,7 +522,7 @@ fn test_delete_entity() {
     // Verify the entity exists
     let entity_out = db
         .read_entity_columns(EntityColumnSearchParams::new(
-            Some(SqlSearchText::exact(&entity.label)),
+            Some(SqlSearchText::exact(&entity.label.to_str())),
             None,
         ))
         .unwrap();
@@ -539,7 +535,7 @@ fn test_delete_entity() {
     // Verify the entity no longer exists
     let entity_out = db
         .read_entity_columns(EntityColumnSearchParams::new(
-            Some(SqlSearchText::exact(&entity.label)),
+            Some(SqlSearchText::exact(&entity.label.to_str())),
             None,
         ))
         .unwrap();
@@ -561,7 +557,7 @@ fn test_change_entity_descriptor() {
     // Read the entity back from the database
     let updated_entity = db
         .read_entity_columns(EntityColumnSearchParams::new(
-            Some(SqlSearchText::exact(&old_entity.label)),
+            Some(SqlSearchText::exact(&old_entity.label.to_str())),
             None,
         ))
         .unwrap();
@@ -583,7 +579,7 @@ fn test_delete_entity_column() {
     // Verify the entity exists
     let entity_out = db
         .read_entity_columns(EntityColumnSearchParams::new(
-            Some(SqlSearchText::exact(&entity.label)),
+            Some(SqlSearchText::exact(&entity.label.to_str())),
             None,
         ))
         .unwrap();
@@ -597,7 +593,7 @@ fn test_delete_entity_column() {
     // Verify the entity column no longer exists
     let entity_out = db
         .read_entity_columns(EntityColumnSearchParams::new(
-            Some(SqlSearchText::exact(&entity.label)),
+            Some(SqlSearchText::exact(&entity.label.to_str())),
             Some(SqlSearchText::exact(&entity.descriptor)),
         ))
         .unwrap();
@@ -622,7 +618,7 @@ fn test_change_entity_description() {
     // Read the entity back from the database
     let updated_entity = db
         .read_entity_columns(EntityColumnSearchParams::new(
-            Some(SqlSearchText::exact(&old_entity.label)),
+            Some(SqlSearchText::exact(&old_entity.label.to_str())),
             None,
         ))
         .unwrap();
@@ -652,7 +648,7 @@ fn test_change_entity_description_to_none() {
     // Read the entity back from the database
     let updated_entity = db
         .read_entity_columns(EntityColumnSearchParams::new(
-            Some(SqlSearchText::exact(&old_entity.label)),
+            Some(SqlSearchText::exact(&old_entity.label.to_str())),
             None,
         ))
         .unwrap();

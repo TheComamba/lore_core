@@ -13,7 +13,7 @@ pub(crate) struct SqlEntityColumn {
 impl EntityColumn {
     pub(crate) fn to_sql_entity_column(&self) -> SqlEntityColumn {
         SqlEntityColumn {
-            label: self.label.clone(),
+            label: self.label.to_string(),
             descriptor: self.descriptor.clone(),
             description: self.description.clone(),
         }
@@ -23,7 +23,7 @@ impl EntityColumn {
 impl SqlEntityColumn {
     pub(crate) fn to_entity_column(&self) -> EntityColumn {
         EntityColumn {
-            label: self.label.clone(),
+            label: self.label.clone().into(),
             descriptor: self.descriptor.clone(),
             description: self.description.clone(),
         }

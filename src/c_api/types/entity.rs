@@ -17,7 +17,7 @@ pub struct CEntityColumn {
 
 fn to_c_entity_column(column: &EntityColumn) -> Result<CEntityColumn, LoreCoreError> {
     Ok(CEntityColumn {
-        label: string_to_char_pointer(&column.label),
+        label: string_to_char_pointer(column.label.to_str()),
         descriptor: string_to_char_pointer(&column.descriptor),
         description: optional_string_to_char_pointer(&column.description),
     })
@@ -33,7 +33,7 @@ impl TryFrom<EntityColumn> for CEntityColumn {
 
 unsafe fn to_entity_column(column: &CEntityColumn) -> Result<EntityColumn, LoreCoreError> {
     Ok(EntityColumn {
-        label: char_pointer_to_string(column.label)?,
+        label: char_pointer_to_string(column.label)?.into(),
         descriptor: char_pointer_to_string(column.descriptor)?,
         description: char_pointer_to_optional_string(column.description)?,
     })
@@ -64,7 +64,7 @@ mod tests {
             for descriptor in &descriptors {
                 for description in &descriptions {
                     let column_before = EntityColumn {
-                        label: label.to_string(),
+                        label: label.into(),
                         descriptor: descriptor.to_string(),
                         description: description.clone(),
                     };

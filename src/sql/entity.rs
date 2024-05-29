@@ -4,7 +4,7 @@ use diesel::RunQueryDsl;
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
     sql::schema::entities,
-    types::entity::EntityColumn,
+    types::{entity::EntityColumn, label::Label},
 };
 
 use super::{
@@ -29,10 +29,14 @@ impl LoreDatabase {
         Ok(())
     }
 
-    pub fn relabel_entity(&self, old_label: &str, new_label: &str) -> Result<(), LoreCoreError> {
+    pub fn relabel_entity(
+        &self,
+        old_label: &Label,
+        new_label: &Label,
+    ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::update(entities::table.filter(entities::label.eq(old_label)))
-            .set(entities::label.eq(new_label))
+        diesel::update(entities::table.filter(entities::label.eq(old_label.to_str())))
+            .set(entities::label.eq(new_label.to_str()))
             .execute(&mut connection)
             .map_err(|e| {
                 LoreCoreError::SqlError(
@@ -42,9 +46,9 @@ impl LoreDatabase {
         Ok(())
     }
 
-    pub fn delete_entity(&self, label: String) -> Result<(), LoreCoreError> {
+    pub fn delete_entity(&self, label: Label) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
-        diesel::delete(entities::table.filter(entities::label.eq(label)))
+        diesel::delete(entities::table.filter(entities::label.eq(label.to_str())))
             .execute(&mut connection)
             .map_err(|e| {
                 LoreCoreError::SqlError(
@@ -56,13 +60,13 @@ impl LoreDatabase {
 
     pub fn change_entity_descriptor(
         &self,
-        (label, old_descriptor): (&str, String),
+        (label, old_descriptor): (&Label, String),
         new_descriptor: &str,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::update(
             entities::table
-                .filter(entities::label.eq(label))
+                .filter(entities::label.eq(label.to_str()))
                 .filter(entities::descriptor.eq(old_descriptor)),
         )
         .set(entities::descriptor.eq(new_descriptor))
@@ -77,12 +81,12 @@ impl LoreDatabase {
 
     pub fn delete_entity_column(
         &self,
-        (label, descriptor): (String, String),
+        (label, descriptor): (Label, String),
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::delete(
             entities::table
-                .filter(entities::label.eq(label))
+                .filter(entities::label.eq(label.to_str()))
                 .filter(entities::descriptor.eq(descriptor)),
         )
         .execute(&mut connection)
@@ -96,13 +100,13 @@ impl LoreDatabase {
 
     pub fn change_entity_description(
         &self,
-        (label, descriptor): (&str, &str),
+        (label, descriptor): (&Label, &str),
         new_description: &Option<String>,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::update(
             entities::table
-                .filter(entities::label.eq(label))
+                .filter(entities::label.eq(label.to_str()))
                 .filter(entities::descriptor.eq(descriptor)),
         )
         .set(entities::description.eq(new_description))
