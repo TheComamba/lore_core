@@ -220,6 +220,6 @@ mod tests {
             },
         ];
         let days = extract_days(&items);
-        assert!(days == vec![None, Some(1), Some(2)]);
+        assert!(days == vec![Day::NONE, 1.into(), 2.into()]);
     }
 }
