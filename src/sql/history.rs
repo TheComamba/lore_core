@@ -108,7 +108,10 @@ impl LoreDatabase {
         }
         let day = search_params.day;
         if let Some(day) = day {
-            query = query.filter(history_items::day.eq(day.to_optional_signed_int()));
+            query = match day.to_optional_signed_int() {
+                Some(day) => query.filter(history_items::day.eq(day)),
+                None => query.filter(history_items::day.is_null()),
+            };
         }
         let timestamp = search_params.timestamp;
         if let Some(timestamp) = timestamp {

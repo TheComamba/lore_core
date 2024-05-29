@@ -396,8 +396,8 @@ fn test_setting_day_to_none() {
 
     let updated_item = db
         .read_history_items(HistoryItemSearchParams::new(
-            Some(item.year),
-            Some(new_day),
+            None,
+            None,
             Some(item.timestamp),
             None,
         ))
