@@ -1,4 +1,5 @@
 pub mod day;
+pub mod description;
 pub mod descriptor;
 pub mod entity;
 pub mod history;

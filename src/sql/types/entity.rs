@@ -15,7 +15,7 @@ impl EntityColumn {
         SqlEntityColumn {
             label: self.label.to_string(),
             descriptor: self.descriptor.to_string(),
-            description: self.description.clone(),
+            description: self.description.to_optional_string(),
         }
     }
 }
@@ -25,7 +25,7 @@ impl SqlEntityColumn {
         EntityColumn {
             label: self.label.clone().into(),
             descriptor: self.descriptor.as_str().into(),
-            description: self.description.clone(),
+            description: self.description.clone().into(),
         }
     }
 }

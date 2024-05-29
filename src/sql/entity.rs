@@ -4,7 +4,7 @@ use diesel::RunQueryDsl;
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
     sql::schema::entities,
-    types::{descriptor::Descriptor, entity::EntityColumn, label::Label},
+    types::{description::Description, descriptor::Descriptor, entity::EntityColumn, label::Label},
 };
 
 use super::{
@@ -101,7 +101,7 @@ impl LoreDatabase {
     pub fn change_entity_description(
         &self,
         (label, descriptor): (&Label, &Descriptor),
-        new_description: &Option<String>,
+        new_description: &Description,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::update(
@@ -109,7 +109,7 @@ impl LoreDatabase {
                 .filter(entities::label.eq(label.to_str()))
                 .filter(entities::descriptor.eq(descriptor.to_str())),
         )
-        .set(entities::description.eq(new_description))
+        .set(entities::description.eq(new_description.to_str()))
         .execute(&mut connection)
         .map_err(|e| {
             LoreCoreError::SqlError(

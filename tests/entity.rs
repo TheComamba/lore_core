@@ -3,7 +3,7 @@ use lorecore::{
         lore_database::LoreDatabase,
         search_params::{EntityColumnSearchParams, SqlSearchText},
     },
-    types::entity::EntityColumn,
+    types::{description::Description, entity::EntityColumn},
 };
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
@@ -16,7 +16,7 @@ fn writing_single_entity_column() {
     let entity = EntityColumn {
         label: "testlabel".into(),
         descriptor: "testdescriptor".into(),
-        description: Some("testdescription".to_string()),
+        description: "testdescription".into(),
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
     let entity_out = db
@@ -41,7 +41,7 @@ fn write_many_entity_columns() {
             entities.push(EntityColumn {
                 label: label.as_str().into(),
                 descriptor: descriptor.as_str().into(),
-                description: Some(label.clone() + descriptor),
+                description: (label.clone() + descriptor).into(),
             });
         }
     }
@@ -66,7 +66,7 @@ fn write_entity_with_empty_description() {
     let entity = EntityColumn {
         label: "testlabel".into(),
         descriptor: "testdescriptor".into(),
-        description: None,
+        description: Description::NONE,
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
     let entity_out = db
@@ -93,7 +93,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<EntityColumn>) {
             entities.push(EntityColumn {
                 label: label.as_str().into(),
                 descriptor: descriptor.as_str().into(),
-                description: Some(label.clone() + descriptor),
+                description: (label.clone() + descriptor).into(),
             });
         }
     }
@@ -474,7 +474,7 @@ fn test_write_read_after_db_deletion() {
     let write_result = db.write_entity_columns(vec![EntityColumn {
         label: "testlabel".into(),
         descriptor: "testdescriptor".into(),
-        description: Some("testdescription".to_string()),
+        description: "testdescription".into(),
     }]);
     assert!(
         write_result.is_err(),
@@ -606,12 +606,12 @@ fn test_delete_entity_column() {
 fn test_change_entity_description() {
     let (temp_path, db, entities) = create_example();
     let old_entity = entities[0].clone();
-    let new_description = Some("New_Description".to_string());
+    let new_description = "New_Description".into();
 
     // Change the entity's description
     db.change_entity_description(
         (&old_entity.label, &old_entity.descriptor),
-        &new_description.clone(),
+        &new_description,
     )
     .unwrap();
 
@@ -636,7 +636,7 @@ fn test_change_entity_description() {
 fn test_change_entity_description_to_none() {
     let (temp_path, db, entities) = create_example();
     let old_entity = entities[0].clone();
-    let new_description = None;
+    let new_description = Description::NONE;
 
     // Change the entity's description
     db.change_entity_description(
