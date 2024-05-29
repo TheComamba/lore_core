@@ -4,7 +4,7 @@ use diesel::RunQueryDsl;
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
     sql::schema::entities,
-    types::{entity::EntityColumn, label::Label},
+    types::{descriptor::Descriptor, entity::EntityColumn, label::Label},
 };
 
 use super::{
@@ -60,16 +60,16 @@ impl LoreDatabase {
 
     pub fn change_entity_descriptor(
         &self,
-        (label, old_descriptor): (&Label, String),
-        new_descriptor: &str,
+        (label, old_descriptor): (&Label, Descriptor),
+        new_descriptor: &Descriptor,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::update(
             entities::table
                 .filter(entities::label.eq(label.to_str()))
-                .filter(entities::descriptor.eq(old_descriptor)),
+                .filter(entities::descriptor.eq(old_descriptor.to_str())),
         )
-        .set(entities::descriptor.eq(new_descriptor))
+        .set(entities::descriptor.eq(new_descriptor.to_str()))
         .execute(&mut connection)
         .map_err(|e| {
             LoreCoreError::SqlError(
@@ -81,13 +81,13 @@ impl LoreDatabase {
 
     pub fn delete_entity_column(
         &self,
-        (label, descriptor): (Label, String),
+        (label, descriptor): (Label, Descriptor),
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::delete(
             entities::table
                 .filter(entities::label.eq(label.to_str()))
-                .filter(entities::descriptor.eq(descriptor)),
+                .filter(entities::descriptor.eq(descriptor.to_str())),
         )
         .execute(&mut connection)
         .map_err(|e| {
@@ -100,14 +100,14 @@ impl LoreDatabase {
 
     pub fn change_entity_description(
         &self,
-        (label, descriptor): (&Label, &str),
+        (label, descriptor): (&Label, &Descriptor),
         new_description: &Option<String>,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         diesel::update(
             entities::table
                 .filter(entities::label.eq(label.to_str()))
-                .filter(entities::descriptor.eq(descriptor)),
+                .filter(entities::descriptor.eq(descriptor.to_str())),
         )
         .set(entities::description.eq(new_description))
         .execute(&mut connection)

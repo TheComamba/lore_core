@@ -1,8 +1,8 @@
-use super::label::Label;
+use super::{descriptor::Descriptor, label::Label};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct EntityColumn {
     pub label: Label,
-    pub descriptor: String,          //TODO: Use stronger typing
+    pub descriptor: Descriptor,
     pub description: Option<String>, //TODO: Use stronger typing
 }

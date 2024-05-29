@@ -15,7 +15,7 @@ fn writing_single_entity_column() {
     let db = LoreDatabase::open(path_in.clone()).unwrap();
     let entity = EntityColumn {
         label: "testlabel".into(),
-        descriptor: "testdescriptor".to_string(),
+        descriptor: "testdescriptor".into(),
         description: Some("testdescription".to_string()),
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
@@ -40,7 +40,7 @@ fn write_many_entity_columns() {
         for descriptor in descriptors.iter() {
             entities.push(EntityColumn {
                 label: label.as_str().into(),
-                descriptor: descriptor.clone(),
+                descriptor: descriptor.as_str().into(),
                 description: Some(label.clone() + descriptor),
             });
         }
@@ -65,7 +65,7 @@ fn write_entity_with_empty_description() {
     let db = LoreDatabase::open(path_in.clone()).unwrap();
     let entity = EntityColumn {
         label: "testlabel".into(),
-        descriptor: "testdescriptor".to_string(),
+        descriptor: "testdescriptor".into(),
         description: None,
     };
     db.write_entity_columns(vec![entity.clone()]).unwrap();
@@ -92,7 +92,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<EntityColumn>) {
         for descriptor in descriptors.iter() {
             entities.push(EntityColumn {
                 label: label.as_str().into(),
-                descriptor: descriptor.clone(),
+                descriptor: descriptor.as_str().into(),
                 description: Some(label.clone() + descriptor),
             });
         }
@@ -255,7 +255,7 @@ fn get_entities_with_descriptor_filter_riptor1_returns_some() {
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| e.descriptor == "testdescriptor1".to_string())
+        .filter(|e| e.descriptor == "testdescriptor1".into())
         .cloned()
         .collect();
 
@@ -275,7 +275,7 @@ fn get_entities_with_descriptor_filter_testdescriptor1_returns_some() {
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| e.descriptor == "testdescriptor1".to_string())
+        .filter(|e| e.descriptor == "testdescriptor1".into())
         .cloned()
         .collect();
 
@@ -340,7 +340,7 @@ fn get_entities_with_exact_descriptor_filter_testdescriptor1_returns_some() {
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| e.descriptor == "testdescriptor1".to_string())
+        .filter(|e| e.descriptor == "testdescriptor1".into())
         .cloned()
         .collect();
 
@@ -390,7 +390,7 @@ fn get_entities_with_label_filter_bel1_and_descriptor_filter_riptor1_returns_som
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| e.label == "testlabel1".into() && e.descriptor == "testdescriptor1".to_string())
+        .filter(|e| e.label == "testlabel1".into() && e.descriptor == "testdescriptor1".into())
         .cloned()
         .collect();
 
@@ -411,7 +411,7 @@ fn get_entities_with_exact_label_filter_testlabel1_and_exact_descriptor_filter_t
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| e.label == "testlabel1".into() && e.descriptor == "testdescriptor1".to_string())
+        .filter(|e| e.label == "testlabel1".into() && e.descriptor == "testdescriptor1".into())
         .cloned()
         .collect();
 
@@ -451,7 +451,7 @@ fn get_entities_with_label_filter_bel_and_exact_descriptor_filter_testdescriptor
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
-        .filter(|e| e.descriptor == "testdescriptor1".to_string())
+        .filter(|e| e.descriptor == "testdescriptor1".into())
         .cloned()
         .collect();
 
@@ -473,7 +473,7 @@ fn test_write_read_after_db_deletion() {
 
     let write_result = db.write_entity_columns(vec![EntityColumn {
         label: "testlabel".into(),
-        descriptor: "testdescriptor".to_string(),
+        descriptor: "testdescriptor".into(),
         description: Some("testdescription".to_string()),
     }]);
     assert!(
@@ -548,7 +548,7 @@ fn test_delete_entity() {
 fn test_change_entity_descriptor() {
     let (temp_path, db, entities) = create_example();
     let old_entity = entities[0].clone();
-    let new_descriptor = "New_Descriptor".to_string();
+    let new_descriptor = "New_Descriptor".into();
 
     // Change the entity's descriptor
     db.change_entity_descriptor((&old_entity.label, old_entity.descriptor), &new_descriptor)
@@ -594,7 +594,7 @@ fn test_delete_entity_column() {
     let entity_out = db
         .read_entity_columns(EntityColumnSearchParams::new(
             Some(SqlSearchText::exact(&entity.label.to_str())),
-            Some(SqlSearchText::exact(&entity.descriptor)),
+            Some(SqlSearchText::exact(&entity.descriptor.to_str())),
         ))
         .unwrap();
     assert!(entity_out.is_empty());
