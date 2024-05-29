@@ -4,8 +4,6 @@ use std::fmt::Display;
 pub struct Label(pub(crate) String);
 
 impl Label {
-    pub const NONE: Label = Label(String::new());
-
     pub fn to_str(&self) -> &str {
         &self.0
     }

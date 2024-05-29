@@ -4,8 +4,6 @@ use std::fmt::Display;
 pub struct Descriptor(pub(crate) String);
 
 impl Descriptor {
-    pub const NONE: Descriptor = Descriptor(String::new());
-
     pub fn to_str(&self) -> &str {
         &self.0
     }
