@@ -7,7 +7,10 @@ static LAST_TIMESTAMP: AtomicI64 = AtomicI64::new(0);
 
 pub fn current_timestamp() -> Timestamp {
     let now = SystemTime::now();
-    let mus_since_the_epoch = now.duration_since(UNIX_EPOCH).unwrap().as_micros() as i64;
+    let mus_since_the_epoch = now
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_micros() as i64;
 
     let mut last_timestamp = LAST_TIMESTAMP.load(Ordering::SeqCst);
     while mus_since_the_epoch <= last_timestamp {

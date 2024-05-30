@@ -55,7 +55,7 @@ pub unsafe extern "C" fn read_entity_columns(
     match super::read_database::c_read_entity_columns(db_path) {
         Ok(database_entries) => {
             for (i, _) in database_entries.iter().enumerate() {
-                *columns.add(i) = database_entries[i].to_owned();
+                *columns.add(i) = database_entries[i].clone();
             }
             char_ptr("")
         }
@@ -112,7 +112,7 @@ pub unsafe extern "C" fn read_history_items(
     match super::read_database::c_read_history_items(db_path) {
         Ok(database_entries) => {
             for (i, _) in database_entries.iter().enumerate() {
-                *items.add(i) = database_entries[i].to_owned();
+                *items.add(i) = database_entries[i].clone();
             }
             char_ptr("")
         }
@@ -169,7 +169,7 @@ pub unsafe extern "C" fn read_relationships(
     match super::read_database::c_read_relationships(db_path) {
         Ok(database_entries) => {
             for (i, _) in database_entries.iter().enumerate() {
-                *relationships.add(i) = database_entries[i].to_owned();
+                *relationships.add(i) = database_entries[i].clone();
             }
             char_ptr("")
         }

@@ -16,13 +16,7 @@ pub struct HistoryItem {
 
 impl PartialOrd for HistoryItem {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match self.year.partial_cmp(&other.year) {
-            Some(std::cmp::Ordering::Equal) => match self.day.partial_cmp(&other.day) {
-                Some(std::cmp::Ordering::Equal) => self.timestamp.partial_cmp(&other.timestamp),
-                other => other,
-            },
-            other => other,
-        }
+        Some(self.cmp(other))
     }
 }
 
