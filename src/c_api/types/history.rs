@@ -1,8 +1,5 @@
 use crate::{
-    c_api::auxil::{
-        char_pointer_to_optional_string, char_pointer_to_string, optional_string_to_char_pointer,
-        string_to_char_pointer,
-    },
+    c_api::auxil::{char_pointer_to_string, string_to_char_pointer},
     errors::LoreCoreError,
     types::history::HistoryItem,
 };
@@ -23,7 +20,7 @@ fn to_c_history_item(item: &HistoryItem) -> Result<CHistoryItem, LoreCoreError> 
         year: item.year.to_int(),
         day: item.day.to_int(),
         content: string_to_char_pointer(item.content.to_str()),
-        properties: optional_string_to_char_pointer(&item.properties),
+        properties: string_to_char_pointer(&item.properties.to_string()),
     })
 }
 
@@ -41,7 +38,7 @@ unsafe fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreEr
         year: item.year.into(),
         day: item.day.into(),
         content: char_pointer_to_string(item.content)?.into(),
-        properties: char_pointer_to_optional_string(item.properties)?,
+        properties: (&char_pointer_to_string(item.properties)?).into(),
     })
 }
 
@@ -59,7 +56,7 @@ mod tests {
 
     use crate::{
         timestamp::current_timestamp,
-        types::{day::Day, year::Year},
+        types::{day::Day, history_item_properties::HistoryItemProperties, year::Year},
     };
 
     #[test]
@@ -68,9 +65,9 @@ mod tests {
         let days = vec![Day(None), Day(Some(14))];
         let contents = vec!["", "Test content", "\\_\"'%$&!{[]}"];
         let properties = vec![
-            None,
-            Some("{\"is_secret\":true}".to_string()),
-            Some("{\"additional_concerns\":[\"\\entityref{some_label}\"]}".to_string()),
+            HistoryItemProperties::none(),
+            "{\"is_secret\":true}".into(),
+            "{\"additional_concerns\":[\"\\entityref{some_label}\"]}".into(),
         ];
         for year in years {
             for day in &days {

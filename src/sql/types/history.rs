@@ -29,7 +29,7 @@ impl HistoryItem {
             year: self.year.to_int(),
             day: self.day.to_optional_signed_int(),
             content: self.content.to_string(),
-            properties: self.properties.clone(),
+            properties: Some(self.properties.to_string()),
         }
     }
 }
@@ -41,7 +41,7 @@ impl SqlHistoryItem {
             year: self.year.into(),
             day: self.day.into(),
             content: self.content.as_str().into(),
-            properties: self.properties.clone(),
+            properties: (&self.properties.clone().unwrap_or_default()).into(),
         }
     }
 }

@@ -3,6 +3,7 @@ use lorecore::sql::search_params::{HistoryItemSearchParams, SqlSearchText};
 use lorecore::timestamp::current_timestamp;
 use lorecore::types::day::Day;
 use lorecore::types::history::HistoryItem;
+use lorecore::types::history_item_properties::HistoryItemProperties;
 use lorecore::types::year::Year;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
@@ -17,7 +18,7 @@ fn write_single_history_item() {
         day: 1.into(),
         timestamp: current_timestamp(),
         content: "testcontent".into(),
-        properties: None,
+        properties: HistoryItemProperties::none(),
     };
     db.write_history_items(vec![item.clone()]).unwrap();
     let item_out = db
@@ -47,7 +48,7 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<HistoryItem>) {
                         day: day.clone(),
                         timestamp: current_timestamp(),
                         content: content.as_str().into(),
-                        properties: property.clone(),
+                        properties: (&property.clone().unwrap_or_default()).into(),
                     });
                 }
             }
@@ -292,7 +293,7 @@ fn test_write_read_history_after_db_deletion() {
         day: 1.into(),
         timestamp: current_timestamp(),
         content: "testcontent".into(),
-        properties: None,
+        properties: HistoryItemProperties::none(),
     }]);
     assert!(
         write_result.is_err(),
@@ -344,7 +345,7 @@ fn test_setting_day_to_some() {
         day: Day::NONE,
         timestamp: current_timestamp(),
         content: "testcontent".into(),
-        properties: None,
+        properties: HistoryItemProperties::none(),
     };
 
     db.write_history_items(vec![item.clone()].clone()).unwrap();
@@ -383,7 +384,7 @@ fn test_setting_day_to_none() {
         day: 34.into(),
         timestamp: current_timestamp(),
         content: "testcontent".into(),
-        properties: None,
+        properties: HistoryItemProperties::none(),
     };
 
     db.write_history_items(vec![item.clone()].clone()).unwrap();
@@ -456,7 +457,7 @@ fn test_change_history_item_content() {
 fn test_changing_history_item_properties_to_some() {
     let (temp_path, db, mut items) = create_example();
     let item = items.pop().unwrap();
-    let new_properties = Some("{\"is_secret\": false}".to_string());
+    let new_properties = "{\"is_secret\": false}".into();
 
     db.change_history_item_properties(item.timestamp, &new_properties)
         .unwrap();
@@ -481,7 +482,7 @@ fn test_changing_history_item_properties_to_some() {
 fn test_changing_history_item_properties_to_none() {
     let (temp_path, db, mut items) = create_example();
     let item = items.pop().unwrap();
-    let new_properties = None;
+    let new_properties = HistoryItemProperties::none();
 
     db.change_history_item_properties(item.timestamp, &new_properties)
         .unwrap();
