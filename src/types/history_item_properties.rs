@@ -38,6 +38,6 @@ impl From<&str> for HistoryItemProperties {
 
 impl Display for HistoryItemProperties {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        serde_json::to_string(&self.0).unwrap().fmt(f)
+        serde_json::to_string(&self.0).unwrap_or_default().fmt(f)
     }
 }

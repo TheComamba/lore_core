@@ -21,11 +21,11 @@ pub(super) unsafe fn char_pointer_to_string(
 }
 
 pub(super) fn string_to_char_pointer(string: &str) -> *const libc::c_char {
-    CString::new(string).unwrap().into_raw()
+    CString::new(string).unwrap_or_default().into_raw()
 }
 
 pub(super) fn char_ptr(message: &str) -> *const libc::c_char {
-    CString::new(message).unwrap().into_raw()
+    CString::new(message).unwrap_or_default().into_raw()
 }
 
 #[cfg(test)]

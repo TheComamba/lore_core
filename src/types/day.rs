@@ -7,10 +7,7 @@ impl Day {
     pub const NONE: Day = Day(None);
 
     pub fn to_int(&self) -> u32 {
-        match self.0 {
-            Some(value) => value,
-            None => 0,
-        }
+        self.0.unwrap_or(0)
     }
 
     pub fn to_optional_int(&self) -> Option<u32> {

@@ -15,8 +15,8 @@ pub struct CEntityColumn {
 fn to_c_entity_column(column: &EntityColumn) -> Result<CEntityColumn, LoreCoreError> {
     Ok(CEntityColumn {
         label: string_to_char_pointer(column.label.to_str()),
-        descriptor: string_to_char_pointer(&column.descriptor.to_str()),
-        description: string_to_char_pointer(&column.description.to_str()),
+        descriptor: string_to_char_pointer(column.descriptor.to_str()),
+        description: string_to_char_pointer(column.description.to_str()),
     })
 }
 

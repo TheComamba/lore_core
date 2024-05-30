@@ -6,10 +6,9 @@ pub enum LoreCoreError {
     InputError(String),
     SqlError(String),
 }
-
-impl ToString for LoreCoreError {
-    fn to_string(&self) -> String {
-        format!("{:?}", self)
+impl Display for LoreCoreError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
     }
 }
 

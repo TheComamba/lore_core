@@ -14,9 +14,9 @@ pub struct CEntityRelationship {
 
 fn to_c_relationship(rel: &EntityRelationship) -> Result<CEntityRelationship, LoreCoreError> {
     Ok(CEntityRelationship {
-        parent: string_to_char_pointer(&rel.parent.to_str()),
-        child: string_to_char_pointer(&rel.child.to_str()),
-        role: string_to_char_pointer(&rel.role.to_str()),
+        parent: string_to_char_pointer(rel.parent.to_str()),
+        child: string_to_char_pointer(rel.child.to_str()),
+        role: string_to_char_pointer(rel.role.to_str()),
     })
 }
 

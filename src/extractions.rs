@@ -25,7 +25,7 @@ pub fn extract_years(items: &[HistoryItem]) -> Vec<Year> {
 }
 
 pub fn extract_days(items: &[HistoryItem]) -> Vec<Day> {
-    let mut days: Vec<_> = items.iter().map(|item| item.day.into()).collect();
+    let mut days: Vec<_> = items.iter().map(|item| item.day).collect();
     days.sort();
     days.dedup();
     days
