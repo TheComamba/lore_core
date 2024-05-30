@@ -42,7 +42,7 @@ impl LoreDatabase {
         )
         .set((
             history_items::year.eq(year.to_int()),
-            history_items::day.eq(day.to_optional_signed_int()),
+            history_items::day.eq(day.to_int() as i32),
         ))
         .execute(&mut connection)
         .map_err(|e| {
@@ -118,10 +118,7 @@ impl LoreDatabase {
         }
         let day = search_params.day;
         if let Some(day) = day {
-            query = match day.to_optional_signed_int() {
-                Some(day) => query.filter(history_items::day.eq(day)),
-                None => query.filter(history_items::day.is_null()),
-            };
+            query = query.filter(history_items::day.eq(day.to_int() as i32));
         }
         let timestamp = search_params.timestamp;
         if let Some(timestamp) = timestamp {

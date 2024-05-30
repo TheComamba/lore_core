@@ -4,7 +4,7 @@ diesel::table! {
     entities (label, descriptor) {
         label -> Text,
         descriptor -> Text,
-        description -> Nullable<Text>,
+        description -> Text,
     }
 }
 
@@ -12,9 +12,9 @@ diesel::table! {
     history_items (timestamp) {
         timestamp -> BigInt,
         year -> Integer,
-        day -> Nullable<Integer>,
+        day -> Integer,
         content -> Text,
-        properties -> Nullable<Text>,
+        properties -> Text,
     }
 }
 

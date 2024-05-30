@@ -7,7 +7,7 @@ use crate::{sql::schema::entities, types::entity::EntityColumn};
 pub(crate) struct SqlEntityColumn {
     pub label: String,
     pub descriptor: String,
-    pub description: Option<String>,
+    pub description: String,
 }
 
 impl EntityColumn {
@@ -15,7 +15,7 @@ impl EntityColumn {
         SqlEntityColumn {
             label: self.label.to_string(),
             descriptor: self.descriptor.to_string(),
-            description: self.description.to_optional_string(),
+            description: self.description.to_string(),
         }
     }
 }

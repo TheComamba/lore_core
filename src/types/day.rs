@@ -17,13 +17,6 @@ impl Day {
         self.0
     }
 
-    pub fn to_optional_signed_int(&self) -> Option<i32> {
-        match self.0 {
-            Some(value) => Some(value as i32),
-            None => None,
-        }
-    }
-
     pub fn is_some(&self) -> bool {
         self.0.is_some()
     }
@@ -33,6 +26,16 @@ impl From<u32> for Day {
     fn from(value: u32) -> Self {
         if value > 0 {
             Self(Some(value))
+        } else {
+            Self(None)
+        }
+    }
+}
+
+impl From<i32> for Day {
+    fn from(value: i32) -> Self {
+        if value > 0 {
+            Self(Some(value as u32))
         } else {
             Self(None)
         }

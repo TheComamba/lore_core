@@ -11,7 +11,7 @@ typedef struct CEntityColumn {
 typedef struct CHistoryItem {
   int64_t timestamp;
   int32_t year;
-  int32_t day;
+  uint32_t day;
   const char *content;
   const char *properties;
 } CHistoryItem;

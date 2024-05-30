@@ -7,9 +7,9 @@ use crate::{sql::schema::history_items, types::history::HistoryItem};
 pub(crate) struct SqlHistoryItem {
     pub timestamp: i64,
     pub year: i32,
-    pub day: Option<i32>,
+    pub day: i32,
     pub content: String,
-    pub properties: Option<String>,
+    pub properties: String,
 }
 
 impl PartialEq<&SqlHistoryItem> for SqlHistoryItem {
@@ -27,9 +27,9 @@ impl HistoryItem {
         SqlHistoryItem {
             timestamp: self.timestamp.to_int(),
             year: self.year.to_int(),
-            day: self.day.to_optional_signed_int(),
+            day: self.day.to_int() as i32,
             content: self.content.to_string(),
-            properties: Some(self.properties.to_string()),
+            properties: self.properties.to_string(),
         }
     }
 }
@@ -41,7 +41,7 @@ impl SqlHistoryItem {
             year: self.year.into(),
             day: self.day.into(),
             content: self.content.as_str().into(),
-            properties: (&self.properties.clone().unwrap_or_default()).into(),
+            properties: (&self.properties).into(),
         }
     }
 }

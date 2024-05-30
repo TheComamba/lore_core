@@ -6,14 +6,6 @@ pub struct Description(pub(crate) String);
 impl Description {
     pub const NONE: Description = Description(String::new());
 
-    pub fn to_optional_string(&self) -> Option<String> {
-        if self.0.is_empty() {
-            None
-        } else {
-            Some(self.0.clone())
-        }
-    }
-
     pub fn to_str(&self) -> &str {
         &self.0
     }
