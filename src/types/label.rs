@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use super::{child::Child, parent::Parent};
+
 #[derive(Clone, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Label(pub(crate) String);
 
@@ -18,6 +20,18 @@ impl From<&str> for Label {
 impl From<String> for Label {
     fn from(value: String) -> Self {
         Self(value)
+    }
+}
+
+impl From<Child> for Label {
+    fn from(value: Child) -> Self {
+        Self(value.to_string())
+    }
+}
+
+impl From<Parent> for Label {
+    fn from(value: Parent) -> Self {
+        Self(value.to_string())
     }
 }
 
