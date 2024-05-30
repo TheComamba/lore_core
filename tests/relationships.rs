@@ -3,7 +3,7 @@ use lorecore::{
         lore_database::LoreDatabase,
         search_params::{RelationshipSearchParams, SqlSearchText},
     },
-    types::relationship::EntityRelationship,
+    types::{child::Child, parent::Parent, relationship::EntityRelationship, role::Role},
 };
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
@@ -149,7 +149,7 @@ fn get_relationships_with_parent_filter_testparent1_returns_some() {
     let (temp_path, db, rels) = create_example();
     let expected = rels
         .iter()
-        .filter(|rel| rel.parent == "testparent1".to_string())
+        .filter(|rel| rel.parent == "testparent1".into())
         .cloned()
         .collect::<Vec<_>>();
 
@@ -214,7 +214,7 @@ fn get_relationships_with_exact_parent_filter_testparent1_returns_some() {
     let (temp_path, db, rels) = create_example();
     let expected = rels
         .iter()
-        .filter(|rel| rel.parent == "testparent1".to_string())
+        .filter(|rel| rel.parent == "testparent1".into())
         .cloned()
         .collect::<Vec<_>>();
 
@@ -249,7 +249,7 @@ fn get_relationships_with_child_filter_ild1_returns_some() {
     let (temp_path, db, rels) = create_example();
     let expected = rels
         .iter()
-        .filter(|rel| rel.child == "testchild1".to_string())
+        .filter(|rel| rel.child == "testchild1".into())
         .cloned()
         .collect::<Vec<_>>();
 
@@ -269,7 +269,7 @@ fn get_relationships_with_child_filter_testchild1_returns_some() {
     let (temp_path, db, rels) = create_example();
     let expected = rels
         .iter()
-        .filter(|rel| rel.child == "testchild1".to_string())
+        .filter(|rel| rel.child == "testchild1".into())
         .cloned()
         .collect::<Vec<_>>();
 
@@ -334,7 +334,7 @@ fn get_relationships_with_exact_child_filter_testchild1_returns_some() {
     let (temp_path, db, rels) = create_example();
     let expected = rels
         .iter()
-        .filter(|rel| rel.child == "testchild1".to_string())
+        .filter(|rel| rel.child == "testchild1".into())
         .cloned()
         .collect::<Vec<_>>();
 
@@ -384,8 +384,8 @@ fn get_relationships_with_parent_filter_rent1_and_child_filter_ild1_returns_some
     let (temp_path, db, rels) = create_example();
     let expected = rels
         .iter()
-        .filter(|rel| rel.parent == "testparent1".to_string())
-        .filter(|rel| rel.child == "testchild1".to_string())
+        .filter(|rel| rel.parent == "testparent1".into())
+        .filter(|rel| rel.child == "testchild1".into())
         .cloned()
         .collect::<Vec<_>>();
 
@@ -405,8 +405,8 @@ fn get_relationships_with_parent_filter_testparent1_and_child_filter_testchild1_
     let (temp_path, db, rels) = create_example();
     let expected = rels
         .iter()
-        .filter(|rel| rel.parent == "testparent1".to_string())
-        .filter(|rel| rel.child == "testchild1".to_string())
+        .filter(|rel| rel.parent == "testparent1".into())
+        .filter(|rel| rel.child == "testchild1".into())
         .cloned()
         .collect::<Vec<_>>();
 
@@ -442,9 +442,9 @@ fn test_write_read_relationships_after_db_deletion() {
     temp_path.close().unwrap();
 
     let write_result = db.write_relationships(vec![EntityRelationship {
-        parent: "testparent".to_string(),
-        child: "testchild".to_string(),
-        role: None,
+        parent: "testparent".into(),
+        child: "testchild".into(),
+        role: Role::NONE,
     }]);
     assert!(
         write_result.is_err(),
@@ -462,7 +462,7 @@ fn test_write_read_relationships_after_db_deletion() {
 fn test_change_relationship_role_to_some() {
     let (temp_path, db, rels) = create_example();
     let rel = rels[0].clone();
-    let new_role = Some("New_Role".to_string());
+    let new_role = "New_Role".into();
     db.change_relationship_role(rel.clone(), &new_role).unwrap();
     let rels_out = db
         .read_relationships(RelationshipSearchParams::empty())
@@ -480,7 +480,7 @@ fn test_change_relationship_role_to_some() {
 fn test_change_relationship_role_to_none() {
     let (temp_path, db, rels) = create_example();
     let rel = rels[0].clone();
-    let new_role = None;
+    let new_role = Role::NONE;
     db.change_relationship_role(rel.clone(), &new_role).unwrap();
     let rels_out = db
         .read_relationships(RelationshipSearchParams::empty())
@@ -515,9 +515,9 @@ fn test_delete_relationship_without_role() {
     let db = LoreDatabase::open(path_in.clone()).unwrap();
 
     // Create two relationships, one with a role and one without
-    let parent = "parent".to_string();
-    let child = "child".to_string();
-    let role = Some("role".to_string());
+    let parent: Parent = "parent".into();
+    let child: Child = "child".into();
+    let role = "role".into();
     let rel_with_role = EntityRelationship {
         parent: parent.clone(),
         child: child.clone(),
@@ -526,7 +526,7 @@ fn test_delete_relationship_without_role() {
     let rel_without_role = EntityRelationship {
         parent,
         child,
-        role: None,
+        role: Role::NONE,
     };
 
     // Write the relationships to the database
@@ -557,9 +557,9 @@ fn test_delete_relationship_with_role() {
     let db = LoreDatabase::open(path_in.clone()).unwrap();
 
     // Create two relationships, one with a role and one without
-    let parent = "parent".to_string();
-    let child = "child".to_string();
-    let role = Some("role".to_string());
+    let parent: Parent = "parent".into();
+    let child: Child = "child".into();
+    let role = "role".into();
     let rel_with_role = EntityRelationship {
         parent: parent.clone(),
         child: child.clone(),
@@ -568,7 +568,7 @@ fn test_delete_relationship_with_role() {
     let rel_without_role = EntityRelationship {
         parent,
         child,
-        role: None,
+        role: Role::NONE,
     };
 
     // Write the relationships to the database
