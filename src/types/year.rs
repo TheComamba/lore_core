@@ -3,6 +3,8 @@ use std::{
     ops::{Add, Sub},
 };
 
+use crate::errors::LoreCoreError;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Year(pub(crate) i32);
 
@@ -15,6 +17,20 @@ impl Year {
 impl From<i32> for Year {
     fn from(value: i32) -> Self {
         Self(value)
+    }
+}
+
+impl TryFrom<&str> for Year {
+    type Error = LoreCoreError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value.parse::<i32>() {
+            Ok(value) => Ok(Self(value)),
+            Err(_) => Err(LoreCoreError::InputError(format!(
+                "Unable to parse \"{}\" as year",
+                value
+            ))),
+        }
     }
 }
 
