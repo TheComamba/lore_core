@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use super::{
     day::Day, history_item_content::HistoryItemContent,
     history_item_properties::HistoryItemProperties, timestamp::Timestamp, year::Year,
@@ -33,5 +35,17 @@ impl Ord for HistoryItem {
             },
             other => other,
         }
+    }
+}
+
+impl Display for HistoryItem {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}-{}: {}",
+            self.year.to_int(),
+            self.day.to_int(),
+            self.content.to_str()
+        )
     }
 }
