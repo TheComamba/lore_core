@@ -70,6 +70,14 @@ impl TryFrom<&str> for Day {
     }
 }
 
+impl TryFrom<String> for Day {
+    type Error = LoreCoreError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_str())
+    }
+}
+
 impl Display for Day {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.0 {

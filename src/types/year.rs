@@ -34,6 +34,14 @@ impl TryFrom<&str> for Year {
     }
 }
 
+impl TryFrom<String> for Year {
+    type Error = LoreCoreError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_str())
+    }
+}
+
 impl Display for Year {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.0.fmt(f)
