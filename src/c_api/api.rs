@@ -2,7 +2,7 @@ use crate::timestamp::current_timestamp;
 
 use super::{
     auxil::char_ptr,
-    types::{CEntityColumn, CEntityRelationship, CHistoryItem},
+    types::{entity::CEntityColumn, history::CHistoryItem, relationship::CEntityRelationship},
     write_database::{c_write_entity_column, c_write_history_item, c_write_relationship},
 };
 
@@ -55,7 +55,7 @@ pub unsafe extern "C" fn read_entity_columns(
     match super::read_database::c_read_entity_columns(db_path) {
         Ok(database_entries) => {
             for (i, _) in database_entries.iter().enumerate() {
-                *columns.add(i) = database_entries[i].to_owned();
+                *columns.add(i) = database_entries[i].clone();
             }
             char_ptr("")
         }
@@ -112,7 +112,7 @@ pub unsafe extern "C" fn read_history_items(
     match super::read_database::c_read_history_items(db_path) {
         Ok(database_entries) => {
             for (i, _) in database_entries.iter().enumerate() {
-                *items.add(i) = database_entries[i].to_owned();
+                *items.add(i) = database_entries[i].clone();
             }
             char_ptr("")
         }
@@ -169,7 +169,7 @@ pub unsafe extern "C" fn read_relationships(
     match super::read_database::c_read_relationships(db_path) {
         Ok(database_entries) => {
             for (i, _) in database_entries.iter().enumerate() {
-                *relationships.add(i) = database_entries[i].to_owned();
+                *relationships.add(i) = database_entries[i].clone();
             }
             char_ptr("")
         }
@@ -179,5 +179,5 @@ pub unsafe extern "C" fn read_relationships(
 
 #[no_mangle]
 pub extern "C" fn get_current_timestamp() -> i64 {
-    current_timestamp()
+    current_timestamp().to_int()
 }

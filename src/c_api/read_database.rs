@@ -1,6 +1,6 @@
 use super::{
     auxil::char_pointer_to_string,
-    types::{CEntityColumn, CEntityRelationship, CHistoryItem},
+    types::{entity::CEntityColumn, history::CHistoryItem, relationship::CEntityRelationship},
 };
 use crate::{
     errors::LoreCoreError,

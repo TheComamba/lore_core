@@ -1,6 +1,6 @@
 CREATE TABLE entities (
   label TEXT NOT NULL,
   descriptor TEXT NOT NULL,
-  description TEXT,
+  description TEXT NOT NULL,
   PRIMARY KEY (label, descriptor)
 );

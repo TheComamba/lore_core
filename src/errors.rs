@@ -6,20 +6,18 @@ pub enum LoreCoreError {
     InputError(String),
     SqlError(String),
 }
-
-impl ToString for LoreCoreError {
-    fn to_string(&self) -> String {
-        format!("{:?}", self)
+impl Display for LoreCoreError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
     }
 }
 
-pub(super) fn sql_loading_error<T, E>(
+pub(super) fn sql_loading_error<E>(
     loadee: &str,
-    params: Vec<(&str, &T)>,
+    params: Vec<(&str, &dyn Debug)>,
     err: E,
 ) -> LoreCoreError
 where
-    T: Debug,
     E: Display,
 {
     let mut message = "Loading ".to_string() + loadee + " ";

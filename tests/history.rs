@@ -1,7 +1,10 @@
-use lorecore::sql::history::HistoryItem;
 use lorecore::sql::lore_database::LoreDatabase;
 use lorecore::sql::search_params::{HistoryItemSearchParams, SqlSearchText};
 use lorecore::timestamp::current_timestamp;
+use lorecore::types::day::Day;
+use lorecore::types::history::HistoryItem;
+use lorecore::types::history_item_properties::HistoryItemProperties;
+use lorecore::types::year::Year;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
 
@@ -11,11 +14,11 @@ fn write_single_history_item() {
     let path_in: PathBuf = temp_path.as_os_str().into();
     let db = LoreDatabase::open(path_in.clone()).unwrap();
     let item = HistoryItem {
-        year: 2020,
-        day: Some(1),
+        year: 2020.into(),
+        day: 1.into(),
         timestamp: current_timestamp(),
-        content: "testcontent".to_string(),
-        properties: None,
+        content: "testcontent".into(),
+        properties: HistoryItemProperties::none(),
     };
     db.write_history_items(vec![item.clone()]).unwrap();
     let item_out = db
@@ -31,8 +34,8 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<HistoryItem>) {
     let path_in: PathBuf = temp_path.as_os_str().into();
     let db = LoreDatabase::open(path_in.clone()).unwrap();
 
-    let years = vec![-13, 0, 2021];
-    let days = vec![Some(1), None];
+    let years: Vec<Year> = vec![(-13 as i32).into(), 0.into(), 2021.into()];
+    let days: Vec<Day> = vec![1.into(), Day::NONE];
     let contents = vec!["testcontent1".to_string(), "testcontent2".to_string()];
     let properties = vec![Some("{\"is_secret\": true}".to_string()), None];
     let mut items: Vec<HistoryItem> = Vec::new();
@@ -44,8 +47,8 @@ fn create_example() -> (tempfile::TempPath, LoreDatabase, Vec<HistoryItem>) {
                         year: *year,
                         day: day.clone(),
                         timestamp: current_timestamp(),
-                        content: content.clone(),
-                        properties: property.clone(),
+                        content: content.as_str().into(),
+                        properties: (&property.clone().unwrap_or_default()).into(),
                     });
                 }
             }
@@ -84,7 +87,7 @@ fn get_all_history_items() {
 fn get_history_items_by_year() {
     let (temp_path, db, items) = create_example();
     let year = items[0].year;
-    let expected_items: Vec<_> = items.iter().filter(|item| item.year == year).collect();
+    let expected_items: Vec<_> = items.into_iter().filter(|item| item.year == year).collect();
 
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
@@ -98,10 +101,31 @@ fn get_history_items_by_year() {
 fn get_history_items_by_day() {
     let (temp_path, db, items) = create_example();
     let day = items[0].day;
-    let expected_items: Vec<_> = items.iter().filter(|item| item.day == day).collect();
+    let expected_items: Vec<_> = items.into_iter().filter(|item| item.day == day).collect();
 
     let items_out = db
-        .read_history_items(HistoryItemSearchParams::new(None, day, None, None))
+        .read_history_items(HistoryItemSearchParams::new(None, Some(day), None, None))
+        .unwrap();
+    assert!(items_out == expected_items);
+
+    temp_path.close().unwrap();
+}
+
+#[test]
+fn get_history_items_without_specified_day() {
+    let (temp_path, db, items) = create_example();
+    let expected_items: Vec<_> = items
+        .into_iter()
+        .filter(|item| item.day == Day::NONE)
+        .collect();
+
+    let items_out = db
+        .read_history_items(HistoryItemSearchParams::new(
+            None,
+            Some(Day::NONE),
+            None,
+            None,
+        ))
         .unwrap();
     assert!(items_out == expected_items);
 
@@ -132,8 +156,8 @@ fn get_history_itmes_with_content_filter() {
     let (temp_path, db, items) = create_example();
     let content = "tent1".to_string();
     let expected_items: Vec<_> = items
-        .iter()
-        .filter(|item| item.content.contains(content.as_str()))
+        .into_iter()
+        .filter(|item| item.content.to_string().contains(content.as_str()))
         .collect();
     let content_search = SqlSearchText::partial(&content);
 
@@ -155,8 +179,8 @@ fn get_history_itmes_with_exact_content_filter() {
     let (temp_path, db, items) = create_example();
     let content = "testcontent1".to_string();
     let expected_items: Vec<_> = items
-        .iter()
-        .filter(|item| item.content == content)
+        .into_iter()
+        .filter(|item| item.content.to_str() == content)
         .collect();
     let content_search = SqlSearchText::exact(&content);
 
@@ -179,12 +203,17 @@ fn get_history_items_by_year_and_day() {
     let year = items[0].year;
     let day = items[0].day;
     let expected_items: Vec<_> = items
-        .iter()
+        .into_iter()
         .filter(|item| item.year == year && item.day == day)
         .collect();
 
     let items_out = db
-        .read_history_items(HistoryItemSearchParams::new(Some(year), day, None, None))
+        .read_history_items(HistoryItemSearchParams::new(
+            Some(year),
+            Some(day),
+            None,
+            None,
+        ))
         .unwrap();
     assert!(items_out == expected_items);
 
@@ -195,7 +224,7 @@ fn get_history_items_by_year_and_day() {
 fn search_for_non_existing_year() {
     let (temp_path, db, _items) = create_example();
 
-    let year = 65537;
+    let year = 65537.into();
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(Some(year), None, None, None))
         .unwrap();
@@ -208,7 +237,7 @@ fn search_for_non_existing_year() {
 fn search_for_non_existing_day() {
     let (temp_path, db, _items) = create_example();
 
-    let day = Some(65537);
+    let day = Some(65537.into());
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(None, day, None, None))
         .unwrap();
@@ -221,7 +250,7 @@ fn search_for_non_existing_day() {
 fn search_for_non_existing_timestamp() {
     let (temp_path, db, _items) = create_example();
 
-    let timestamp = 65537;
+    let timestamp = 65537.into();
     let items_out = db
         .read_history_items(HistoryItemSearchParams::new(
             None,
@@ -260,11 +289,11 @@ fn test_write_read_history_after_db_deletion() {
     temp_path.close().unwrap();
 
     let write_result = db.write_history_items(vec![HistoryItem {
-        year: 2020,
-        day: Some(1),
+        year: 2020.into(),
+        day: 1.into(),
         timestamp: current_timestamp(),
-        content: "testcontent".to_string(),
-        properties: None,
+        content: "testcontent".into(),
+        properties: HistoryItemProperties::none(),
     }]);
     assert!(
         write_result.is_err(),
@@ -290,8 +319,8 @@ fn test_setting_year() {
 
     let updated_item = db
         .read_history_items(HistoryItemSearchParams::new(
-            Some(new_year),
-            item.day,
+            None,
+            None,
             Some(item.timestamp),
             None,
         ))
@@ -312,17 +341,17 @@ fn test_setting_day_to_some() {
     let db = LoreDatabase::open(path_in.clone()).unwrap();
 
     let item = HistoryItem {
-        year: 12,
-        day: None,
+        year: 12.into(),
+        day: Day::NONE,
         timestamp: current_timestamp(),
-        content: "testcontent".to_string(),
-        properties: None,
+        content: "testcontent".into(),
+        properties: HistoryItemProperties::none(),
     };
 
     db.write_history_items(vec![item.clone()].clone()).unwrap();
 
     let old_day = item.day;
-    let new_day = Some(12345);
+    let new_day = 12345.into();
 
     db.redate_history_item(item.timestamp, item.year, new_day)
         .unwrap();
@@ -330,7 +359,7 @@ fn test_setting_day_to_some() {
     let updated_item = db
         .read_history_items(HistoryItemSearchParams::new(
             Some(item.year),
-            new_day,
+            Some(new_day),
             Some(item.timestamp),
             None,
         ))
@@ -351,25 +380,25 @@ fn test_setting_day_to_none() {
     let db = LoreDatabase::open(path_in.clone()).unwrap();
 
     let item = HistoryItem {
-        year: 12,
-        day: Some(34),
+        year: 12.into(),
+        day: 34.into(),
         timestamp: current_timestamp(),
-        content: "testcontent".to_string(),
-        properties: None,
+        content: "testcontent".into(),
+        properties: HistoryItemProperties::none(),
     };
 
     db.write_history_items(vec![item.clone()].clone()).unwrap();
 
     let old_day = item.day;
-    let new_day = None;
+    let new_day = Day::NONE;
 
     db.redate_history_item(item.timestamp, item.year, new_day)
         .unwrap();
 
     let updated_item = db
         .read_history_items(HistoryItemSearchParams::new(
-            Some(item.year),
-            new_day,
+            None,
+            None,
             Some(item.timestamp),
             None,
         ))
@@ -403,7 +432,7 @@ fn test_delete_history_item() {
 fn test_change_history_item_content() {
     let (temp_path, db, mut items) = create_example();
     let item = items.pop().unwrap();
-    let new_content = "New_Content".to_string();
+    let new_content = "New_Content".into();
 
     db.change_history_item_content(item.timestamp, &new_content)
         .unwrap();
@@ -428,7 +457,7 @@ fn test_change_history_item_content() {
 fn test_changing_history_item_properties_to_some() {
     let (temp_path, db, mut items) = create_example();
     let item = items.pop().unwrap();
-    let new_properties = Some("{\"is_secret\": false}".to_string());
+    let new_properties = "{\"is_secret\": false}".into();
 
     db.change_history_item_properties(item.timestamp, &new_properties)
         .unwrap();
@@ -453,7 +482,7 @@ fn test_changing_history_item_properties_to_some() {
 fn test_changing_history_item_properties_to_none() {
     let (temp_path, db, mut items) = create_example();
     let item = items.pop().unwrap();
-    let new_properties = None;
+    let new_properties = HistoryItemProperties::none();
 
     db.change_history_item_properties(item.timestamp, &new_properties)
         .unwrap();

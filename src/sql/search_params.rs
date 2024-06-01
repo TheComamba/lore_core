@@ -1,3 +1,5 @@
+use crate::types::{day::Day, timestamp::Timestamp, year::Year};
+
 #[derive(Debug)]
 pub struct SqlSearchText {
     text: Option<String>,
@@ -74,17 +76,17 @@ impl EntityColumnSearchParams {
 
 #[derive(Debug)]
 pub struct HistoryItemSearchParams {
-    pub(crate) year: Option<i32>,
-    pub(crate) day: Option<i32>,
-    pub(crate) timestamp: Option<i64>,
+    pub(crate) year: Option<Year>,
+    pub(crate) day: Option<Day>,
+    pub(crate) timestamp: Option<Timestamp>,
     pub(crate) content: SqlSearchText,
 }
 
 impl HistoryItemSearchParams {
     pub fn new(
-        year: Option<i32>,
-        day: Option<i32>,
-        timestamp: Option<i64>,
+        year: Option<Year>,
+        day: Option<Day>,
+        timestamp: Option<Timestamp>,
         content: Option<SqlSearchText>,
     ) -> Self {
         let content = match content {

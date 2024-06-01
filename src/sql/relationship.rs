@@ -1,63 +1,21 @@
-use super::search_params::RelationshipSearchParams;
-use super::{lore_database::LoreDatabase, schema::relationships};
-use crate::errors::{sql_loading_error, LoreCoreError};
 use ::diesel::prelude::*;
-use diesel::Insertable;
-use diesel::{QueryDsl, Queryable, RunQueryDsl};
+use diesel::{QueryDsl, RunQueryDsl};
 
-const NO_ROLE: &str = "_NO_ROLE_";
+use crate::errors::{sql_loading_error, LoreCoreError};
+use crate::types::child::Child;
+use crate::types::parent::Parent;
+use crate::types::relationship::EntityRelationship;
+use crate::types::role::Role;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-#[repr(C)]
-pub struct EntityRelationship {
-    pub parent: String,
-    pub child: String,
-    pub role: Option<String>,
-}
-
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
-#[diesel(table_name = relationships)]
-struct EntityRelationshipSqlRepresentation {
-    pub parent: String,
-    pub child: String,
-    pub role: String,
-}
-
-impl EntityRelationship {
-    fn to_sql_representation(&self) -> EntityRelationshipSqlRepresentation {
-        EntityRelationshipSqlRepresentation {
-            parent: self.parent.clone(),
-            child: self.child.clone(),
-            role: role_to_sql(&self.role),
-        }
-    }
-}
-
-fn role_to_sql(role: &Option<String>) -> String {
-    match role {
-        Some(role) => role.clone(),
-        None => NO_ROLE.to_string(),
-    }
-}
-
-impl EntityRelationshipSqlRepresentation {
-    fn to_relationship(&self) -> EntityRelationship {
-        EntityRelationship {
-            parent: self.parent.clone(),
-            child: self.child.clone(),
-            role: match self.role.as_str() {
-                NO_ROLE => None,
-                _ => Some(self.role.clone()),
-            },
-        }
-    }
-}
+use super::search_params::RelationshipSearchParams;
+use super::types::relationship::SqlEntityRelationship;
+use super::{lore_database::LoreDatabase, schema::relationships};
 
 impl LoreDatabase {
     pub fn write_relationships(&self, rels: Vec<EntityRelationship>) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
         for rel in rels.into_iter() {
-            let rel = rel.to_sql_representation();
+            let rel = rel.to_sql_entity_relationship();
             diesel::insert_into(relationships::table)
                 .values(&rel)
                 .execute(&mut connection)
@@ -73,18 +31,19 @@ impl LoreDatabase {
     pub fn change_relationship_role(
         &self,
         old_relationship: EntityRelationship,
-        new_role: &Option<String>,
+        new_role: &Role,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
+        let old_relationship = old_relationship.to_sql_entity_relationship();
         diesel::update(
             relationships::table.filter(
                 relationships::parent
                     .eq(old_relationship.parent)
                     .and(relationships::child.eq(old_relationship.child))
-                    .and(relationships::role.eq(role_to_sql(&old_relationship.role))),
+                    .and(relationships::role.eq(old_relationship.role)),
             ),
         )
-        .set(relationships::role.eq(role_to_sql(new_role)))
+        .set(relationships::role.eq(new_role.to_string()))
         .execute(&mut connection)
         .map_err(|e| {
             LoreCoreError::SqlError(
@@ -99,12 +58,13 @@ impl LoreDatabase {
         relationship: EntityRelationship,
     ) -> Result<(), LoreCoreError> {
         let mut connection = self.db_connection()?;
+        let relationship = relationship.to_sql_entity_relationship();
         diesel::delete(
             relationships::table.filter(
                 relationships::parent
                     .eq(relationship.parent)
                     .and(relationships::child.eq(relationship.child))
-                    .and(relationships::role.eq(role_to_sql(&relationship.role))),
+                    .and(relationships::role.eq(relationship.role)),
             ),
         )
         .execute(&mut connection)
@@ -139,7 +99,7 @@ impl LoreDatabase {
             }
         }
         let rels = query
-            .load::<EntityRelationshipSqlRepresentation>(&mut connection)
+            .load::<SqlEntityRelationship>(&mut connection)
             .map_err(|e| {
                 sql_loading_error(
                     "relationships",
@@ -154,22 +114,26 @@ impl LoreDatabase {
     }
 }
 
-pub fn extract_parents(rels: &[EntityRelationship]) -> Vec<String> {
+pub fn extract_parents(rels: &[EntityRelationship]) -> Vec<Parent> {
     let mut parents: Vec<_> = rels.iter().map(|rel| rel.parent.clone()).collect();
     parents.sort();
     parents.dedup();
     parents
 }
 
-pub fn extract_children(rels: &[EntityRelationship]) -> Vec<String> {
+pub fn extract_children(rels: &[EntityRelationship]) -> Vec<Child> {
     let mut children: Vec<_> = rels.iter().map(|rel| rel.child.clone()).collect();
     children.sort();
     children.dedup();
     children
 }
 
-pub fn extract_roles(rels: &[EntityRelationship]) -> Vec<String> {
-    let mut roles: Vec<_> = rels.iter().filter_map(|rel| rel.role.clone()).collect();
+pub fn extract_roles(rels: &[EntityRelationship]) -> Vec<Role> {
+    let mut roles: Vec<_> = rels
+        .iter()
+        .filter(|rel| !rel.role.0.is_empty())
+        .map(|rel| rel.role.clone())
+        .collect();
     roles.sort();
     roles.dedup();
     roles
@@ -183,68 +147,68 @@ mod tests {
     fn test_extract_parents() {
         let rels = vec![
             EntityRelationship {
-                parent: "b".to_string(),
-                child: "c".to_string(),
-                role: None,
+                parent: "b".into(),
+                child: "c".into(),
+                role: Role::NONE,
             },
             EntityRelationship {
-                parent: "a".to_string(),
-                child: "b".to_string(),
-                role: None,
+                parent: "a".into(),
+                child: "b".into(),
+                role: Role::NONE,
             },
             EntityRelationship {
-                parent: "a".to_string(),
-                child: "c".to_string(),
-                role: None,
+                parent: "a".into(),
+                child: "c".into(),
+                role: Role::NONE,
             },
         ];
         let parents = extract_parents(&rels);
-        assert!(parents == vec!["a".to_string(), "b".to_string()]);
+        assert!(parents == vec!["a".into(), "b".into()]);
     }
 
     #[test]
     fn test_extract_children() {
         let rels = vec![
             EntityRelationship {
-                parent: "b".to_string(),
-                child: "c".to_string(),
-                role: None,
+                parent: "b".into(),
+                child: "c".into(),
+                role: Role::NONE,
             },
             EntityRelationship {
-                parent: "a".to_string(),
-                child: "b".to_string(),
-                role: None,
+                parent: "a".into(),
+                child: "b".into(),
+                role: Role::NONE,
             },
             EntityRelationship {
-                parent: "a".to_string(),
-                child: "c".to_string(),
-                role: None,
+                parent: "a".into(),
+                child: "c".into(),
+                role: Role::NONE,
             },
         ];
         let children = extract_children(&rels);
-        assert!(children == vec!["b".to_string(), "c".to_string()]);
+        assert!(children == vec!["b".into(), "c".into()]);
     }
 
     #[test]
     fn test_extract_roles() {
         let rels = vec![
             EntityRelationship {
-                parent: "b".to_string(),
-                child: "c".to_string(),
-                role: Some("r1".to_string()),
+                parent: "b".into(),
+                child: "c".into(),
+                role: "r1".into(),
             },
             EntityRelationship {
-                parent: "a".to_string(),
-                child: "b".to_string(),
-                role: Some("r2".to_string()),
+                parent: "a".into(),
+                child: "b".into(),
+                role: "r2".into(),
             },
             EntityRelationship {
-                parent: "a".to_string(),
-                child: "c".to_string(),
-                role: Some("r1".to_string()),
+                parent: "a".into(),
+                child: "c".into(),
+                role: "r1".into(),
             },
         ];
         let roles = extract_roles(&rels);
-        assert!(roles == vec!["r1".to_string(), "r2".to_string()]);
+        assert!(roles == vec!["r1".into(), "r2".into()]);
     }
 }
