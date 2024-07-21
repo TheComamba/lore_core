@@ -22,10 +22,10 @@ elif os.name == 'posix':
 else:
     raise Exception('Unsupported operating system')
 
-# Load the Rust library
+print("Loading the Rust library")
 rust_lib = ctypes.CDLL(lib_path)
 
-# Define the C structs
+print("Defining the C structs")
 class CEntityColumn(ctypes.Structure):
     _fields_ = [("label", ctypes.c_char_p),
                 ("descriptor", ctypes.c_char_p),
@@ -43,7 +43,7 @@ class CEntityRelationship(ctypes.Structure):
                 ("child", ctypes.c_char_p),
                 ("role", ctypes.c_char_p)]
 
-# Define the Rust functions
+print("Define the Rust functions")
 write_entity_columns = rust_lib.write_entity_columns
 write_entity_columns.argtypes = [ctypes.c_char_p, ctypes.POINTER(CEntityColumn), ctypes.c_int]
 write_entity_columns.restype = ctypes.c_char_p
@@ -85,20 +85,27 @@ get_current_timestamp.argtypes = []
 get_current_timestamp.restype = ctypes.c_longlong
 
 def test_write_entity_column():
+    print("Running the write_entity_column test")
+    
     temp_path = tempfile.NamedTemporaryFile(delete=False)
+    print("Created a temporary file at: " + temp_path.name)
+
     db_path = temp_path.name.encode('utf-8')
     column1 = CEntityColumn(b"testlabel1", b"testdescriptor1", b"testdescription1")
     column2 = CEntityColumn(b"testlabel2", b"testdescriptor2", b"testdescription2")
     columns = (CEntityColumn * 2)(column1, column2)
 
+    print("Writing the entity columns to the database")
     result = write_entity_columns(db_path, columns, len(columns))
     assert result.decode('utf-8') == ""
 
+    print("Getting the number of entity columns in the database")
     size = ctypes.c_int(0)
     result = get_number_of_entity_columns(db_path, ctypes.byref(size))
     assert result.decode('utf-8') == ""
     assert size.value == len(columns)
 
+    print("Reading the entity columns from the database")
     read_columns = (CEntityColumn * size.value)()
     result = read_entity_columns(db_path, read_columns)
     assert result.decode('utf-8') == ""
@@ -107,20 +114,27 @@ def test_write_entity_column():
 test_write_entity_column()
 
 def test_write_history_items():
+    print("Running the write_history_items test")
+
     temp_path = tempfile.NamedTemporaryFile(delete=False)
+    print("Created a temporary file at: " + temp_path.name)
+
     db_path = temp_path.name.encode('utf-8')
     item1 = CHistoryItem(get_current_timestamp(), 2021, 29, b"testcontent1", b"testproperties1")
     item2 = CHistoryItem(get_current_timestamp(), 2021, 30, b"testcontent2", b"testproperties2")
     items = (CHistoryItem * 2)(item1, item2)
 
+    print("Writing the history items to the database")
     result = write_history_items(db_path, items, len(items))
     assert result.decode('utf-8') == ""
 
+    print("Getting the number of history items in the database")
     size = ctypes.c_int(0)
     result = get_number_of_history_items(db_path, ctypes.byref(size))
     assert result.decode('utf-8') == ""
     assert size.value == len(items)
 
+    print("Reading the history items from the database")
     read_items = (CHistoryItem * size.value)()
     result = read_history_items(db_path, read_items)
     assert result.decode('utf-8') == ""
@@ -129,20 +143,27 @@ def test_write_history_items():
 test_write_history_items()
 
 def test_write_relationships():
+    print("Running the write_relationships test")
+
     temp_path = tempfile.NamedTemporaryFile(delete=False)
+    print("Created a temporary file at: " + temp_path.name)
+
     db_path = temp_path.name.encode('utf-8')
     relationship1 = CEntityRelationship(b"testparent1", b"testchild1", b"testrole1")
     relationship2 = CEntityRelationship(b"testparent2", b"testchild2", b"testrole2")
     relationships = (CEntityRelationship * 2)(relationship1, relationship2)
 
+    print("Writing the relationships to the database")
     result = write_relationships(db_path, relationships, len(relationships))
     assert result.decode('utf-8') == ""
 
+    print("Getting the number of relationships in the database")
     size = ctypes.c_int(0)
     result = get_number_of_relationships(db_path, ctypes.byref(size))
     assert result.decode('utf-8') == ""
     assert size.value == len(relationships)
 
+    print("Reading the relationships from the database")
     read_in_relationships = (CEntityRelationship * size.value)()
     result = read_relationships(db_path, read_in_relationships)
     assert result.decode('utf-8') == ""
@@ -151,6 +172,7 @@ def test_write_relationships():
 test_write_relationships()
 
 def test_get_current_timestamp():
+    print("Running the get_current_timestamp test")
     timestamp = get_current_timestamp()
     assert isinstance(timestamp, int)
 test_get_current_timestamp()
