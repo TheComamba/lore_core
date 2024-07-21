@@ -25,12 +25,13 @@ jobs:
           if: ${{ github.ref_name != 'main' }}
           with:
               command: test
+              args: -- --nocapture
   
         - uses: clechasseur/rs-cargo@v1
           if: ${{ github.ref_name == 'main' }}
           with:
               command: test
-              args: --release
+              args: --release -- --nocapture
 
         - uses: clechasseur/rs-cargo@v1
           with:
