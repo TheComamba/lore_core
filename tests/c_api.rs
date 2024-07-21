@@ -4,8 +4,21 @@ mod tests {
 
     #[test]
     fn test_c_api() {
-        let output = Command::new("python3")
-            .arg("tests/c_api.py")
+        let mut command = Command::new("python3");
+        command.arg("tests/c_api.py");
+
+        #[cfg(debug_assertions)]
+        {
+            println!("Calling python script in debug mode.");
+        }
+
+        #[cfg(not(debug_assertions))]
+        {
+            println!("Calling python script in release mode.");
+            command.arg("--release");
+        }
+
+        let output = command
             .output()
             .expect("Failed to execute command. Is python3 installed?");
 

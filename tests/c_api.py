@@ -6,6 +6,7 @@ import tempfile
 
 lib_path = ""
 # Check if the script was called with the "--release" argument
+print(sys.argv)
 if "--release" in sys.argv:
     lib_path = "./target/release/deps/"
 else:
