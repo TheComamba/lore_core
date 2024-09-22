@@ -1,7 +1,7 @@
 use std::sync::atomic::{AtomicI64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use crate::types::timestamp::Timestamp;
+use crate::types::*;
 
 static LAST_TIMESTAMP: AtomicI64 = AtomicI64::new(0);
 

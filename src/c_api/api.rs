@@ -2,7 +2,7 @@ use crate::timestamp::current_timestamp;
 
 use super::{
     auxil::char_ptr,
-    types::{entity::CEntityColumn, history::CHistoryItem, relationship::CEntityRelationship},
+    c_types::*,
     write_database::{c_write_entity_column, c_write_history_item, c_write_relationship},
 };
 

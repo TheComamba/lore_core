@@ -1,7 +1,7 @@
 use crate::{
     c_api::auxil::{char_pointer_to_string, string_to_char_pointer},
     errors::LoreCoreError,
-    types::relationship::EntityRelationship,
+    types::*,
 };
 
 #[repr(C)]

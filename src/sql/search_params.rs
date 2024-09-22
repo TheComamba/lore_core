@@ -1,4 +1,4 @@
-use crate::types::{day::Day, timestamp::Timestamp, year::Year};
+use crate::types::*;
 
 #[derive(Debug)]
 pub struct SqlSearchText {

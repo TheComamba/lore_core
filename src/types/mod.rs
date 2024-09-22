@@ -12,3 +12,18 @@ pub mod relationship;
 pub mod role;
 pub mod timestamp;
 pub mod year;
+
+pub use child::Child;
+pub use day::Day;
+pub use description::Description;
+pub use descriptor::Descriptor;
+pub use entity::EntityColumn;
+pub use history::HistoryItem;
+pub use history_item_content::HistoryItemContent;
+pub use history_item_properties::HistoryItemProperties;
+pub use label::Label;
+pub use parent::Parent;
+pub use relationship::EntityRelationship;
+pub use role::Role;
+pub use timestamp::Timestamp;
+pub use year::Year;

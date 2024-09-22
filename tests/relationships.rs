@@ -3,7 +3,7 @@ use lorecore::{
         lore_database::LoreDatabase,
         search_params::{RelationshipSearchParams, SqlSearchText},
     },
-    types::{child::Child, parent::Parent, relationship::EntityRelationship, role::Role},
+    types::*,
 };
 use std::path::PathBuf;
 use tempfile::NamedTempFile;

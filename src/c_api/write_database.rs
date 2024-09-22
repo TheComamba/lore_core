@@ -1,7 +1,4 @@
-use super::{
-    auxil::char_pointer_to_string,
-    types::{entity::CEntityColumn, history::CHistoryItem, relationship::CEntityRelationship},
-};
+use super::{auxil::char_pointer_to_string, c_types::*};
 use crate::{errors::LoreCoreError, sql::lore_database::LoreDatabase};
 use std::path::PathBuf;
 

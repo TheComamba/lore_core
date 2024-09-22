@@ -1,6 +1,6 @@
 use diesel::{Insertable, Queryable};
 
-use crate::{sql::schema::entities, types::entity::EntityColumn};
+use crate::{sql::schema::entities, types::*};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
 #[diesel(table_name = entities)]

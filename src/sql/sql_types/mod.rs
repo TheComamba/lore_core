@@ -4,3 +4,7 @@
 pub(crate) mod entity;
 pub(crate) mod history;
 pub(crate) mod relationship;
+
+pub(crate) use entity::SqlEntityColumn;
+pub(crate) use history::SqlHistoryItem;
+pub(crate) use relationship::SqlEntityRelationship;

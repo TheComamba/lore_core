@@ -1,7 +1,4 @@
-use crate::types::{
-    day::Day, descriptor::Descriptor, entity::EntityColumn, history::HistoryItem, label::Label,
-    year::Year,
-};
+use crate::types::*;
 
 pub fn extract_labels(cols: &[EntityColumn]) -> Vec<Label> {
     let mut labels: Vec<_> = cols.iter().map(|c| c.label.clone()).collect();
@@ -33,8 +30,6 @@ pub fn extract_days(items: &[HistoryItem]) -> Vec<Day> {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::{description::Description, history_item_properties::HistoryItemProperties};
-
     use super::*;
 
     #[test]

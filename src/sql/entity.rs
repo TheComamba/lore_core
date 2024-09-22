@@ -4,13 +4,10 @@ use diesel::RunQueryDsl;
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
     sql::schema::entities,
-    types::{description::Description, descriptor::Descriptor, entity::EntityColumn, label::Label},
+    types::*,
 };
 
-use super::{
-    lore_database::LoreDatabase, search_params::EntityColumnSearchParams,
-    types::entity::SqlEntityColumn,
-};
+use super::{lore_database::LoreDatabase, search_params::EntityColumnSearchParams, sql_types::*};
 
 impl LoreDatabase {
     pub fn write_entity_columns(&self, cols: Vec<EntityColumn>) -> Result<(), LoreCoreError> {

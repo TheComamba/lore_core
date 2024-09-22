@@ -2,13 +2,10 @@ use ::diesel::prelude::*;
 use diesel::{QueryDsl, RunQueryDsl};
 
 use crate::errors::{sql_loading_error, LoreCoreError};
-use crate::types::child::Child;
-use crate::types::parent::Parent;
-use crate::types::relationship::EntityRelationship;
-use crate::types::role::Role;
+use crate::types::*;
 
 use super::search_params::RelationshipSearchParams;
-use super::types::relationship::SqlEntityRelationship;
+use super::sql_types::*;
 use super::{lore_database::LoreDatabase, schema::relationships};
 
 impl LoreDatabase {

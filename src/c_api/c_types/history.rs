@@ -1,7 +1,7 @@
 use crate::{
     c_api::auxil::{char_pointer_to_string, string_to_char_pointer},
     errors::LoreCoreError,
-    types::history::HistoryItem,
+    types::*,
 };
 
 #[repr(C)]
@@ -54,10 +54,7 @@ impl TryFrom<&CHistoryItem> for HistoryItem {
 mod tests {
     use super::*;
 
-    use crate::{
-        timestamp::current_timestamp,
-        types::{day::Day, history_item_properties::HistoryItemProperties, year::Year},
-    };
+    use crate::timestamp::current_timestamp;
 
     #[test]
     fn history_item_roundtrips() {

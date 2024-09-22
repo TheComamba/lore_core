@@ -1,10 +1,7 @@
 use lorecore::sql::lore_database::LoreDatabase;
 use lorecore::sql::search_params::{HistoryItemSearchParams, SqlSearchText};
 use lorecore::timestamp::current_timestamp;
-use lorecore::types::day::Day;
-use lorecore::types::history::HistoryItem;
-use lorecore::types::history_item_properties::HistoryItemProperties;
-use lorecore::types::year::Year;
+use lorecore::types::*;
 use std::path::PathBuf;
 use tempfile::NamedTempFile;
 

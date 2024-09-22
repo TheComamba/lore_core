@@ -1,6 +1,6 @@
 use diesel::{Insertable, Queryable};
 
-use crate::{sql::schema::history_items, types::history::HistoryItem};
+use crate::{sql::schema::history_items, types::*};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Insertable, Queryable)]
 #[diesel(table_name = history_items)]

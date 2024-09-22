@@ -2,15 +2,12 @@ use ::diesel::prelude::*;
 
 use crate::{
     errors::{sql_loading_error, LoreCoreError},
-    types::{
-        day::Day, history::HistoryItem, history_item_content::HistoryItemContent,
-        history_item_properties::HistoryItemProperties, timestamp::Timestamp, year::Year,
-    },
+    types::*,
 };
 
 use super::{
     lore_database::LoreDatabase, schema::history_items, search_params::HistoryItemSearchParams,
-    types::history::SqlHistoryItem,
+    sql_types::*,
 };
 
 impl LoreDatabase {
