@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install dependencies for Linux
         if: matrix.os == 'ubuntu-latest'
@@ -38,12 +38,12 @@ jobs:
         with:
             toolchain: stable
 
-      - uses: clechasseur/rs-cargo@v1
+      - uses: clechasseur/rs-cargo@v3
         if: ${{ !inputs.isRelease }}
         with:
             command: build
 
-      - uses: clechasseur/rs-cargo@v1
+      - uses: clechasseur/rs-cargo@v3
         if: ${{ inputs.isRelease }}
         with:
             command: build
@@ -68,7 +68,7 @@ jobs:
 
       - name: Upload Artifacts
         if: inputs.isRelease
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: LoreCoreLibrary_${{ matrix.os}}
           path: artifacts
