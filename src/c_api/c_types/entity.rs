@@ -28,7 +28,7 @@ impl TryFrom<EntityColumn> for CEntityColumn {
     }
 }
 
-unsafe fn to_entity_column(column: &CEntityColumn) -> Result<EntityColumn, LoreCoreError> {
+fn to_entity_column(column: &CEntityColumn) -> Result<EntityColumn, LoreCoreError> {
     Ok(EntityColumn {
         label: char_pointer_to_string(column.label)?.into(),
         descriptor: char_pointer_to_string(column.descriptor)?.into(),
@@ -40,7 +40,7 @@ impl TryFrom<&CEntityColumn> for EntityColumn {
     type Error = LoreCoreError;
 
     fn try_from(value: &CEntityColumn) -> Result<Self, Self::Error> {
-        unsafe { to_entity_column(value) }
+        to_entity_column(value)
     }
 }
 
@@ -66,7 +66,7 @@ mod tests {
                         description: description.clone().into(),
                     };
                     let c_column = to_c_entity_column(&column_before).unwrap();
-                    let column_after = unsafe { to_entity_column(&c_column).unwrap() };
+                    let column_after = to_entity_column(&c_column).unwrap();
                     assert_eq!(column_before, column_after);
                 }
             }

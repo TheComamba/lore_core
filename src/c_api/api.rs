@@ -11,14 +11,15 @@ use super::{
 /// `db_path` must be a valid C string.
 /// `columns` must be a valid pointer to an array of `CEntityColumn`s.
 /// `size` must correspond to the length of the array.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn write_entity_columns(
     db_path: *const libc::c_char,
     columns: *const CEntityColumn,
     size: isize,
 ) -> *const libc::c_char {
     for i in 0..size {
-        if let Err(e) = c_write_entity_column(db_path, &*columns.offset(i)) {
+        let column = unsafe { &*columns.offset(i) };
+        if let Err(e) = c_write_entity_column(db_path, column) {
             return char_ptr(&e.to_string());
         }
     }
@@ -29,14 +30,14 @@ pub unsafe extern "C" fn write_entity_columns(
 ///
 /// `db_path` must be a valid C string.
 /// `size` must be a valid pointer to allocated memory of `isize`.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn get_number_of_entity_columns(
     db_path: *const libc::c_char,
     size: *mut isize,
 ) -> *const libc::c_char {
     match super::read_database::c_read_entity_columns(db_path) {
         Ok(cols) => {
-            *size = cols.len() as isize;
+            unsafe { *size = cols.len() as isize };
             char_ptr("")
         }
         Err(e) => char_ptr(&e.to_string()),
@@ -47,7 +48,7 @@ pub unsafe extern "C" fn get_number_of_entity_columns(
 ///
 /// `db_path` must be a valid C string.
 /// `columns` must be a valid pointer to an array of `CEntityColumn`s.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn read_entity_columns(
     db_path: *const libc::c_char,
     columns: *mut CEntityColumn,
@@ -55,7 +56,7 @@ pub unsafe extern "C" fn read_entity_columns(
     match super::read_database::c_read_entity_columns(db_path) {
         Ok(database_entries) => {
             for (i, _) in database_entries.iter().enumerate() {
-                *columns.add(i) = database_entries[i].clone();
+                unsafe { *columns.add(i) = database_entries[i].clone() };
             }
             char_ptr("")
         }
@@ -68,14 +69,15 @@ pub unsafe extern "C" fn read_entity_columns(
 /// `db_path` must be a valid C string.
 /// `items` must be a valid pointer to an array of `CHistoryItem`s.
 /// `size` must correspond to the length of the array.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn write_history_items(
     db_path: *const libc::c_char,
     items: *const CHistoryItem,
     size: isize,
 ) -> *const libc::c_char {
     for i in 0..size {
-        if let Err(e) = c_write_history_item(db_path, &*items.offset(i)) {
+        let item = unsafe { &*items.offset(i) };
+        if let Err(e) = c_write_history_item(db_path, item) {
             return char_ptr(&e.to_string());
         }
     }
@@ -86,14 +88,14 @@ pub unsafe extern "C" fn write_history_items(
 ///
 /// `db_path` must be a valid C string.
 /// `size` must be a valid pointer to allocated memory of `isize`.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn get_number_of_history_items(
     db_path: *const libc::c_char,
     size: *mut isize,
 ) -> *const libc::c_char {
     match super::read_database::c_read_history_items(db_path) {
         Ok(items) => {
-            *size = items.len() as isize;
+            unsafe { *size = items.len() as isize };
             char_ptr("")
         }
         Err(e) => char_ptr(&e.to_string()),
@@ -104,7 +106,7 @@ pub unsafe extern "C" fn get_number_of_history_items(
 ///
 /// `db_path` must be a valid C string.
 /// `items` must be a valid pointer to an array of `CHistoryItem`s.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn read_history_items(
     db_path: *const libc::c_char,
     items: *mut CHistoryItem,
@@ -112,7 +114,7 @@ pub unsafe extern "C" fn read_history_items(
     match super::read_database::c_read_history_items(db_path) {
         Ok(database_entries) => {
             for (i, _) in database_entries.iter().enumerate() {
-                *items.add(i) = database_entries[i].clone();
+                unsafe { *items.add(i) = database_entries[i].clone() };
             }
             char_ptr("")
         }
@@ -125,14 +127,15 @@ pub unsafe extern "C" fn read_history_items(
 /// `db_path` must be a valid C string.
 /// `relationships` must be a valid pointer to an array of `CEntityRelationship`s.
 /// `size` must correspond to the length of the array.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn write_relationships(
     db_path: *const libc::c_char,
     relationships: *const CEntityRelationship,
     size: isize,
 ) -> *const libc::c_char {
     for i in 0..size {
-        if let Err(e) = c_write_relationship(db_path, &*relationships.offset(i)) {
+        let rel = unsafe { &*relationships.offset(i) };
+        if let Err(e) = c_write_relationship(db_path, rel) {
             return char_ptr(&e.to_string());
         }
     }
@@ -143,14 +146,14 @@ pub unsafe extern "C" fn write_relationships(
 ///
 /// `db_path` must be a valid C string.
 /// `size` must be a valid pointer to allocated memory of `isize`.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn get_number_of_relationships(
     db_path: *const libc::c_char,
     size: *mut isize,
 ) -> *const libc::c_char {
     match super::read_database::c_read_relationships(db_path) {
         Ok(relationships) => {
-            *size = relationships.len() as isize;
+            unsafe { *size = relationships.len() as isize };
             char_ptr("")
         }
         Err(e) => char_ptr(&e.to_string()),
@@ -161,7 +164,7 @@ pub unsafe extern "C" fn get_number_of_relationships(
 ///
 /// `db_path` must be a valid C string.
 /// `relationships` must be a valid pointer to an array of `CEntityRelationship`s.
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn read_relationships(
     db_path: *const libc::c_char,
     relationships: *mut CEntityRelationship,
@@ -169,7 +172,7 @@ pub unsafe extern "C" fn read_relationships(
     match super::read_database::c_read_relationships(db_path) {
         Ok(database_entries) => {
             for (i, _) in database_entries.iter().enumerate() {
-                *relationships.add(i) = database_entries[i].clone();
+                unsafe { *relationships.add(i) = database_entries[i].clone() };
             }
             char_ptr("")
         }
@@ -177,7 +180,7 @@ pub unsafe extern "C" fn read_relationships(
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn get_current_timestamp() -> i64 {
     current_timestamp().to_int()
 }

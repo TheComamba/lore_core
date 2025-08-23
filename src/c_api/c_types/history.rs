@@ -32,7 +32,7 @@ impl TryFrom<HistoryItem> for CHistoryItem {
     }
 }
 
-unsafe fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
+fn to_history_item(item: &CHistoryItem) -> Result<HistoryItem, LoreCoreError> {
     Ok(HistoryItem {
         timestamp: item.timestamp.into(),
         year: item.year.into(),
@@ -46,7 +46,7 @@ impl TryFrom<&CHistoryItem> for HistoryItem {
     type Error = LoreCoreError;
 
     fn try_from(value: &CHistoryItem) -> Result<Self, Self::Error> {
-        unsafe { to_history_item(value) }
+        to_history_item(value)
     }
 }
 
@@ -78,7 +78,7 @@ mod tests {
                             properties: property.clone(),
                         };
                         let c_item = to_c_history_item(&item_before).unwrap();
-                        let item_after = unsafe { to_history_item(&c_item).unwrap() };
+                        let item_after = to_history_item(&c_item).unwrap();
                         assert_eq!(item_before, item_after);
                     }
                 }

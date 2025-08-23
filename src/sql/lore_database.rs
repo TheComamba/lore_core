@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use crate::errors::LoreCoreError;
 use diesel::{Connection, SqliteConnection};
-use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 
 pub struct LoreDatabase {
     path: PathBuf,
@@ -30,12 +30,14 @@ impl LoreDatabase {
     pub(super) fn db_connection(&self) -> Result<SqliteConnection, LoreCoreError> {
         let path = match self.path.to_str() {
             Some(str) => str,
-            None => return Err(LoreCoreError::FileError(
-                "Could not open database path.".to_string()
-                    + "This is likely because it contains characters that can not be UTF-8 encoded."
-                    + "The lossy path conversion reads:\n"
-                    + &self.path.to_string_lossy(),
-            )),
+            None => {
+                return Err(LoreCoreError::FileError(
+                    "Could not open database path.".to_string()
+                        + "This is likely because it contains characters that can not be UTF-8 encoded."
+                        + "The lossy path conversion reads:\n"
+                        + &self.path.to_string_lossy(),
+                ));
+            }
         };
         SqliteConnection::establish(path).map_err(|e| {
             LoreCoreError::SqlError(

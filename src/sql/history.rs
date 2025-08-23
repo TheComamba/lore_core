@@ -1,7 +1,7 @@
 use ::diesel::prelude::*;
 
 use crate::{
-    errors::{sql_loading_error, LoreCoreError},
+    errors::{LoreCoreError, sql_loading_error},
     types::*,
 };
 
