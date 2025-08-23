@@ -2,7 +2,7 @@ use ::diesel::prelude::*;
 use diesel::RunQueryDsl;
 
 use crate::{
-    errors::{sql_loading_error, LoreCoreError},
+    errors::{LoreCoreError, sql_loading_error},
     sql::schema::entities,
     types::*,
 };

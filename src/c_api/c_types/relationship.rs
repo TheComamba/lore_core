@@ -28,7 +28,7 @@ impl TryFrom<EntityRelationship> for CEntityRelationship {
     }
 }
 
-unsafe fn to_relationship(rel: &CEntityRelationship) -> Result<EntityRelationship, LoreCoreError> {
+fn to_relationship(rel: &CEntityRelationship) -> Result<EntityRelationship, LoreCoreError> {
     Ok(EntityRelationship {
         parent: char_pointer_to_string(rel.parent)?.into(),
         child: char_pointer_to_string(rel.child)?.into(),
@@ -40,7 +40,7 @@ impl TryFrom<&CEntityRelationship> for EntityRelationship {
     type Error = LoreCoreError;
 
     fn try_from(value: &CEntityRelationship) -> Result<Self, Self::Error> {
-        unsafe { to_relationship(value) }
+        to_relationship(value)
     }
 }
 
@@ -66,7 +66,7 @@ mod tests {
                         role: role.clone().into(),
                     };
                     let c_rel = to_c_relationship(&rel_before).unwrap();
-                    let rel_after = unsafe { to_relationship(&c_rel).unwrap() };
+                    let rel_after = to_relationship(&c_rel).unwrap();
                     assert_eq!(rel_before, rel_after);
                 }
             }

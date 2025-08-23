@@ -9,7 +9,7 @@ use crate::{
     },
 };
 
-pub(super) unsafe fn c_read_entity_columns(
+pub(super) fn c_read_entity_columns(
     db_path: *const libc::c_char,
 ) -> Result<Vec<CEntityColumn>, LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
@@ -22,7 +22,7 @@ pub(super) unsafe fn c_read_entity_columns(
     Ok(columns)
 }
 
-pub(super) unsafe fn c_read_history_items(
+pub(super) fn c_read_history_items(
     db_path: *const libc::c_char,
 ) -> Result<Vec<CHistoryItem>, LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;
@@ -35,7 +35,7 @@ pub(super) unsafe fn c_read_history_items(
     Ok(items)
 }
 
-pub(super) unsafe fn c_read_relationships(
+pub(super) fn c_read_relationships(
     db_path: *const libc::c_char,
 ) -> Result<Vec<CEntityRelationship>, LoreCoreError> {
     let db_path = char_pointer_to_string(db_path)?;

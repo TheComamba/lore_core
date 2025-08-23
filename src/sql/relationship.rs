@@ -1,7 +1,7 @@
 use ::diesel::prelude::*;
 use diesel::{QueryDsl, RunQueryDsl};
 
-use crate::errors::{sql_loading_error, LoreCoreError};
+use crate::errors::{LoreCoreError, sql_loading_error};
 use crate::types::*;
 
 use super::search_params::RelationshipSearchParams;

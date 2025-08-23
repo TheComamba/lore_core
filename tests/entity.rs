@@ -406,8 +406,8 @@ fn get_entities_with_label_filter_bel1_and_descriptor_filter_riptor1_returns_som
 }
 
 #[test]
-fn get_entities_with_exact_label_filter_testlabel1_and_exact_descriptor_filter_testdescriptor1_returns_some(
-) {
+fn get_entities_with_exact_label_filter_testlabel1_and_exact_descriptor_filter_testdescriptor1_returns_some()
+ {
     let (temp_path, db, entities) = create_example();
     let expected: Vec<_> = entities
         .iter()
