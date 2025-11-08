@@ -7,6 +7,10 @@ impl Descriptor {
     pub fn to_str(&self) -> &str {
         &self.0
     }
+
+    pub fn is_protected(&self) -> bool {
+        self.0.starts_with('_')
+    }
 }
 
 impl From<&str> for Descriptor {
